@@ -1,0 +1,509 @@
+//
+//  STStructClasses.m
+//  stein
+//
+//  Created by Peter MacWhinnie on 09/12/13.
+//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//
+
+#import "STStructClasses.h"
+
+static BOOL _CStringHasPrefix(const char *string, const char *prefix)
+{
+	if(strlen(prefix) > strlen(string))
+		return NO;
+	
+	int prefixLength = strlen(prefix);
+	for (int index = 0; index < prefixLength; index++)
+	{
+		if(string[index] != prefix[index])
+		{
+			return NO;
+		}
+	}
+	
+	return YES;
+}
+
+#pragma mark -
+
+@implementation STRange
+
++ (void)load
+{
+	STTypeBridgeRegisterStructWrapper(&kSTRangeStructWrapperDescriptor);
+}
+
+#pragma mark -
+#pragma mark Initialization
+
+- (id)initWithRange:(NSRange)range
+{
+	return [self initWithLocation:range.location length:range.length];
+}
+
+- (id)initWithLocation:(NSUInteger)location length:(NSUInteger)length
+{
+	if((self = [super init]))
+	{
+		mRange.location = location;
+		mRange.length = length;
+		
+		return self;
+	}
+	return nil;
+}
+
+#pragma mark -
+#pragma mark Properties
+
+@dynamic location;
+- (void)setLocation:(NSUInteger)location
+{
+	@synchronized(self)
+	{
+		mRange.location = location;
+	}
+}
+
+- (NSUInteger)location
+{
+	@synchronized(self)
+	{
+		return mRange.location;
+	}
+}
+
+#pragma mark -
+
+@dynamic length;
+- (void)setLength:(NSUInteger)length
+{
+	@synchronized(self)
+	{
+		mRange.length = length;
+	}
+}
+
+- (NSUInteger)length
+{
+	@synchronized(self)
+	{
+		return mRange.length;
+	}
+}
+
+#pragma mark -
+
+@dynamic rangeValue;
+- (NSRange)rangeValue
+{
+	@synchronized(self)
+	{
+		return mRange;
+	}
+}
+
+#pragma mark -
+#pragma mark Bridging
+
+- (void)getValue:(void **)buffer forType:(const char *)objcType
+{
+	*(NSRange *)buffer = mRange;
+}
+
+- (const StructWrapperDescriptor *)descriptor
+{
+	return &kSTPointStructWrapperDescriptor;
+}
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@:%p { %ld, %ld }>", [self className], self, mRange.location, mRange.length];
+}
+
+@end
+
+#pragma mark -
+
+static BOOL STRangeCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	if(sizeof(NSRange) == sizeof(CFRange))
+		return _CStringHasPrefix(objcType, "{_NSRange=") || _CStringHasPrefix(objcType, "{CFRange=");
+	   
+	   return _CStringHasPrefix(objcType, "{_NSRange=");
+}
+
+static id < StructWrapper > STRangeWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+{
+	return [[[STRange alloc] initWithRange:*(NSRange *)data] autorelease];
+}
+
+static size_t STRangeSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return sizeof(NSRange);
+}
+
+StructWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
+	.userData = NULL,
+	.CanWrapStructWithSignature = STRangeCanWrapStructWithSignature,
+	.WrapStructDataWithSignature = STRangeWrapStructDataWithSignature,
+	.SizeOfWrappedValue = STRangeSizeOfWrappedValue
+};
+
+#pragma mark -
+
+@implementation STPoint
+
++ (void)load
+{
+	STTypeBridgeRegisterStructWrapper(&kSTPointStructWrapperDescriptor);
+}
+
+#pragma mark -
+#pragma mark Initialization
+
+- (id)initWithPoint:(CGPoint)point
+{
+	return [self initWithX:point.x y:point.y];
+}
+
+- (id)initWithX:(CGFloat)x y:(CGFloat)y
+{
+	if((self = [super init]))
+	{
+		mPoint.x = x;
+		mPoint.y = y;
+		
+		return self;
+	}
+	return nil;
+}
+
+#pragma mark -
+#pragma mark Properties
+
+@dynamic x;
+- (void)setX:(CGFloat)x
+{
+	@synchronized(self)
+	{
+		mPoint.x = x;
+	}
+}
+
+- (CGFloat)x
+{
+	@synchronized(self)
+	{
+		return mPoint.x;
+	}
+}
+
+#pragma mark -
+
+@dynamic y;
+- (void)setY:(CGFloat)y
+{
+	@synchronized(self)
+	{
+		mPoint.y = y;
+	}
+}
+
+- (CGFloat)y
+{
+	@synchronized(self)
+	{
+		return mPoint.y;
+	}
+}
+
+#pragma mark -
+
+@dynamic pointValue;
+- (CGPoint)pointValue
+{
+	@synchronized(self)
+	{
+		return mPoint;
+	}
+}
+
+#pragma mark -
+#pragma mark Bridging
+
+- (void)getValue:(void **)buffer forType:(const char *)objcType
+{
+	*(CGPoint *)buffer = mPoint;
+}
+
+- (const StructWrapperDescriptor *)descriptor
+{
+	return &kSTPointStructWrapperDescriptor;
+}
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@:%p { %f, %f }>", [self className], self, mPoint.x, mPoint.y];
+}
+
+@end
+
+#pragma mark -
+
+static BOOL STPointCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return _CStringHasPrefix(objcType, "{CGPoint=") || _CStringHasPrefix(objcType, "{_NSPoint=");
+}
+
+static id < StructWrapper > STPointWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+{
+	return [[[STPoint alloc] initWithPoint:*(CGPoint *)data] autorelease];
+}
+
+static size_t STPointSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return sizeof(CGPoint);
+}
+
+StructWrapperDescriptor const kSTPointStructWrapperDescriptor = {
+	.userData = NULL,
+	.CanWrapStructWithSignature = STPointCanWrapStructWithSignature,
+	.WrapStructDataWithSignature = STPointWrapStructDataWithSignature,
+	.SizeOfWrappedValue = STPointSizeOfWrappedValue
+};
+
+#pragma mark -
+
+@implementation STSize
+
++ (void)load
+{
+	STTypeBridgeRegisterStructWrapper(&kSTSizeStructWrapperDescriptor);
+}
+
+#pragma mark -
+#pragma mark Initialization
+
+- (id)initWithSize:(CGSize)size
+{
+	return [self initWithWidth:size.width height:size.height];
+}
+
+- (id)initWithWidth:(CGFloat)width height:(CGFloat)height
+{
+	if((self = [super init]))
+	{
+		mSize.width = width;
+		mSize.height = height;
+		
+		return self;
+	}
+	return nil;
+}
+
+#pragma mark -
+#pragma mark Properties
+
+@dynamic width;
+- (void)setWidth:(CGFloat)width
+{
+	@synchronized(self)
+	{
+		mSize.width = width;
+	}
+}
+
+- (CGFloat)width
+{
+	@synchronized(self)
+	{
+		return mSize.width;
+	}
+}
+
+#pragma mark -
+
+@dynamic height;
+- (void)setHeight:(CGFloat)height
+{
+	@synchronized(self)
+	{
+		mSize.height = height;
+	}
+}
+
+- (CGFloat)height
+{
+	@synchronized(self)
+	{
+		return mSize.height;
+	}
+}
+
+#pragma mark -
+
+@dynamic sizeValue;
+- (CGSize)sizeValue
+{
+	@synchronized(self)
+	{
+		return mSize;
+	}
+}
+
+#pragma mark -
+#pragma mark Bridging
+
+- (void)getValue:(void **)buffer forType:(const char *)objcType
+{
+	*(CGSize *)buffer = mSize;
+}
+
+- (const StructWrapperDescriptor *)descriptor
+{
+	return &kSTSizeStructWrapperDescriptor;
+}
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@:%p { %f, %f }>", [self className], self, mSize.width, mSize.height];
+}
+
+@end
+
+#pragma mark -
+
+static BOOL STSizeCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return _CStringHasPrefix(objcType, "{CGSize=") || _CStringHasPrefix(objcType, "{_NSSize=");
+}
+
+static id < StructWrapper > STSizeWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+{
+	return [[[STSize alloc] initWithSize:*(CGSize *)data] autorelease];
+}
+
+static size_t STSizeSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return sizeof(CGSize);
+}
+
+StructWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
+	.userData = NULL,
+	.CanWrapStructWithSignature = STSizeCanWrapStructWithSignature,
+	.WrapStructDataWithSignature = STSizeWrapStructDataWithSignature,
+	.SizeOfWrappedValue = STSizeSizeOfWrappedValue
+};
+
+#pragma mark -
+
+@implementation STRect
+
++ (void)load
+{
+	STTypeBridgeRegisterStructWrapper(&kSTRectStructWrapperDescriptor);
+}
+
+#pragma mark -
+#pragma mark Destruction
+
+- (void)dealloc
+{
+	[mOrigin release];
+	mOrigin = nil;
+	
+	[mSize release];
+	mSize = nil;
+	
+	[super dealloc];
+}
+
+#pragma mark -
+#pragma mark Initialization
+
+- (id)initWithRect:(CGRect)rect
+{
+	return [self initWithX:CGRectGetMinX(rect) 
+						 y:CGRectGetMinY(rect) 
+					 width:CGRectGetWidth(rect) 
+					height:CGRectGetHeight(rect)];
+}
+
+- (id)initWithOrigin:(STPoint *)origin size:(STSize *)size
+{
+	if((self = [super init]))
+	{
+		mOrigin = [origin retain] ?: [STPoint new];
+		mSize = [size retain] ?: [STSize new];
+		
+		return self;
+	}
+	return nil;
+}
+
+- (id)initWithX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
+{
+	STPoint *origin = [[[STPoint alloc] initWithX:x y:y] autorelease];
+	STSize *size = [[[STSize alloc] initWithWidth:width height:height] autorelease];
+	return [self initWithOrigin:origin size:size];
+}
+
+#pragma mark -
+#pragma mark Size
+
+@synthesize origin = mOrigin;
+@synthesize size = mSize;
+
+#pragma mark -
+
+@dynamic rectValue;
+- (CGRect)rectValue
+{
+	return (CGRect){ .origin = mOrigin.pointValue, .size = mSize.sizeValue };
+}
+
+#pragma mark -
+#pragma mark Bridging
+
+- (void)getValue:(void **)buffer forType:(const char *)objcType
+{
+	*(CGRect *)buffer = self.rectValue;
+}
+
+- (const StructWrapperDescriptor *)descriptor
+{
+	return &kSTRectStructWrapperDescriptor;
+}
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@:%p { %@, %@ }>", [self className], self, mOrigin, mSize];
+}
+
+@end
+
+#pragma mark -
+
+static BOOL STRectCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return _CStringHasPrefix(objcType, "{CGRect=") || _CStringHasPrefix(objcType, "{_NSRect=");
+}
+
+static id < StructWrapper > STRectWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+{
+	return [[[STRect alloc] initWithRect:*(CGRect *)data] autorelease];
+}
+
+static size_t STRectSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+{
+	return sizeof(CGRect);
+}
+
+StructWrapperDescriptor const kSTRectStructWrapperDescriptor = {
+	.userData = NULL,
+	.CanWrapStructWithSignature = STRectCanWrapStructWithSignature,
+	.WrapStructDataWithSignature = STRectWrapStructDataWithSignature,
+	.SizeOfWrappedValue = STRectSizeOfWrappedValue
+};
