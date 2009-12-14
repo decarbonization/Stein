@@ -79,7 +79,9 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-	return [[[self class] allocWithZone:zone] initWithArray:mContents];
+	STList *list = [[[self class] allocWithZone:zone] initWithArray:mContents];
+	list->mEvaluator = mEvaluator;
+	return list;
 }
 
 #pragma mark -
@@ -104,7 +106,9 @@
 
 - (STList *)sublistWithRange:(NSRange)range
 {
-	return [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
+	STList *sublist = [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
+	sublist.evaluator = mEvaluator;
+	return sublist;
 }
 
 #pragma mark -

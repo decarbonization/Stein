@@ -131,7 +131,7 @@ int main (int argc, const char * argv[])
 				}
 				else
 				{
-					id result = [evaluator evaluateExpression:expressions];
+					id result = [evaluator evaluateExpression:expressions inScope:nil];
 					fprintf(stdout, "%s => %s\n", [path UTF8String], [[result description] UTF8String]);
 				}
 				

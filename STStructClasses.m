@@ -31,7 +31,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 
 + (void)load
 {
-	STTypeBridgeRegisterStructWrapper(&kSTRangeStructWrapperDescriptor);
+	STTypeBridgeRegisterWrapper(@"Range", &kSTRangeStructWrapperDescriptor);
 }
 
 #pragma mark -
@@ -112,7 +112,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 	*(NSRange *)buffer = mRange;
 }
 
-- (const StructWrapperDescriptor *)descriptor
+- (const STPrimitiveValueWrapperDescriptor *)descriptor
 {
 	return &kSTPointStructWrapperDescriptor;
 }
@@ -126,7 +126,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 
 #pragma mark -
 
-static BOOL STRangeCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+static BOOL STRangeCanWrapValueWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	if(sizeof(NSRange) == sizeof(CFRange))
 		return _CStringHasPrefix(objcType, "{_NSRange=") || _CStringHasPrefix(objcType, "{CFRange=");
@@ -134,21 +134,27 @@ static BOOL STRangeCanWrapStructWithSignature(const StructWrapperDescriptor *des
 	   return _CStringHasPrefix(objcType, "{_NSRange=");
 }
 
-static id < StructWrapper > STRangeWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+static id < STPrimitiveValueWrapper > STRangeWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
 	return [[[STRange alloc] initWithRange:*(NSRange *)data] autorelease];
 }
 
-static size_t STRangeSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+static size_t STRangeSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return sizeof(NSRange);
 }
 
-StructWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
+static const char *STRangeObjCType(const STPrimitiveValueWrapperDescriptor *descriptor)
+{
+	return @encode(NSRange);
+}
+
+STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 	.userData = NULL,
-	.CanWrapStructWithSignature = STRangeCanWrapStructWithSignature,
-	.WrapStructDataWithSignature = STRangeWrapStructDataWithSignature,
-	.SizeOfWrappedValue = STRangeSizeOfWrappedValue
+	.CanWrapValueWithSignature = STRangeCanWrapValueWithSignature,
+	.WrapDataWithSignature = STRangeWrapDataWithSignature,
+	.SizeOfPrimitiveValue = STRangeSizeOfPrimitiveValue,
+	.ObjCType = STRangeObjCType,
 };
 
 #pragma mark -
@@ -157,7 +163,7 @@ StructWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 
 + (void)load
 {
-	STTypeBridgeRegisterStructWrapper(&kSTPointStructWrapperDescriptor);
+	STTypeBridgeRegisterWrapper(@"Point", &kSTPointStructWrapperDescriptor);
 }
 
 #pragma mark -
@@ -238,7 +244,7 @@ StructWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 	*(CGPoint *)buffer = mPoint;
 }
 
-- (const StructWrapperDescriptor *)descriptor
+- (const STPrimitiveValueWrapperDescriptor *)descriptor
 {
 	return &kSTPointStructWrapperDescriptor;
 }
@@ -252,26 +258,32 @@ StructWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 
 #pragma mark -
 
-static BOOL STPointCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+static BOOL STPointCanWrapValueWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return _CStringHasPrefix(objcType, "{CGPoint=") || _CStringHasPrefix(objcType, "{_NSPoint=");
 }
 
-static id < StructWrapper > STPointWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+static id < STPrimitiveValueWrapper > STPointWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
 	return [[[STPoint alloc] initWithPoint:*(CGPoint *)data] autorelease];
 }
 
-static size_t STPointSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+static size_t STPointSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return sizeof(CGPoint);
 }
 
-StructWrapperDescriptor const kSTPointStructWrapperDescriptor = {
+static const char *STPointObjCType(const STPrimitiveValueWrapperDescriptor *descriptor)
+{
+	return @encode(NSPoint);
+}
+
+STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 	.userData = NULL,
-	.CanWrapStructWithSignature = STPointCanWrapStructWithSignature,
-	.WrapStructDataWithSignature = STPointWrapStructDataWithSignature,
-	.SizeOfWrappedValue = STPointSizeOfWrappedValue
+	.CanWrapValueWithSignature = STPointCanWrapValueWithSignature,
+	.WrapDataWithSignature = STPointWrapDataWithSignature,
+	.SizeOfPrimitiveValue = STPointSizeOfPrimitiveValue,
+	.ObjCType = STPointObjCType,
 };
 
 #pragma mark -
@@ -280,7 +292,7 @@ StructWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 
 + (void)load
 {
-	STTypeBridgeRegisterStructWrapper(&kSTSizeStructWrapperDescriptor);
+	STTypeBridgeRegisterWrapper(@"Size", &kSTSizeStructWrapperDescriptor);
 }
 
 #pragma mark -
@@ -361,7 +373,7 @@ StructWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 	*(CGSize *)buffer = mSize;
 }
 
-- (const StructWrapperDescriptor *)descriptor
+- (const STPrimitiveValueWrapperDescriptor *)descriptor
 {
 	return &kSTSizeStructWrapperDescriptor;
 }
@@ -375,26 +387,32 @@ StructWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 
 #pragma mark -
 
-static BOOL STSizeCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+static BOOL STSizeCanWrapValueWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return _CStringHasPrefix(objcType, "{CGSize=") || _CStringHasPrefix(objcType, "{_NSSize=");
 }
 
-static id < StructWrapper > STSizeWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+static id < STPrimitiveValueWrapper > STSizeWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
 	return [[[STSize alloc] initWithSize:*(CGSize *)data] autorelease];
 }
 
-static size_t STSizeSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+static size_t STSizeSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return sizeof(CGSize);
 }
 
-StructWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
+static const char *STSizeObjCType(const STPrimitiveValueWrapperDescriptor *descriptor)
+{
+	return @encode(NSSize);
+}
+
+STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 	.userData = NULL,
-	.CanWrapStructWithSignature = STSizeCanWrapStructWithSignature,
-	.WrapStructDataWithSignature = STSizeWrapStructDataWithSignature,
-	.SizeOfWrappedValue = STSizeSizeOfWrappedValue
+	.CanWrapValueWithSignature = STSizeCanWrapValueWithSignature,
+	.WrapDataWithSignature = STSizeWrapDataWithSignature,
+	.SizeOfPrimitiveValue = STSizeSizeOfPrimitiveValue,
+	.ObjCType = STSizeObjCType,
 };
 
 #pragma mark -
@@ -403,7 +421,7 @@ StructWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 
 + (void)load
 {
-	STTypeBridgeRegisterStructWrapper(&kSTRectStructWrapperDescriptor);
+	STTypeBridgeRegisterWrapper(@"Rect", &kSTRectStructWrapperDescriptor);
 }
 
 #pragma mark -
@@ -472,7 +490,7 @@ StructWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 	*(CGRect *)buffer = self.rectValue;
 }
 
-- (const StructWrapperDescriptor *)descriptor
+- (const STPrimitiveValueWrapperDescriptor *)descriptor
 {
 	return &kSTRectStructWrapperDescriptor;
 }
@@ -486,24 +504,30 @@ StructWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 
 #pragma mark -
 
-static BOOL STRectCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+static BOOL STRectCanWrapValueWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return _CStringHasPrefix(objcType, "{CGRect=") || _CStringHasPrefix(objcType, "{_NSRect=");
 }
 
-static id < StructWrapper > STRectWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+static id < STPrimitiveValueWrapper > STRectWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
 	return [[[STRect alloc] initWithRect:*(CGRect *)data] autorelease];
 }
 
-static size_t STRectSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+static size_t STRectSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return sizeof(CGRect);
 }
 
-StructWrapperDescriptor const kSTRectStructWrapperDescriptor = {
+static const char *STRectObjCType(const STPrimitiveValueWrapperDescriptor *descriptor)
+{
+	return @encode(NSRect);
+}
+
+STPrimitiveValueWrapperDescriptor const kSTRectStructWrapperDescriptor = {
 	.userData = NULL,
-	.CanWrapStructWithSignature = STRectCanWrapStructWithSignature,
-	.WrapStructDataWithSignature = STRectWrapStructDataWithSignature,
-	.SizeOfWrappedValue = STRectSizeOfWrappedValue
+	.CanWrapValueWithSignature = STRectCanWrapValueWithSignature,
+	.WrapDataWithSignature = STRectWrapDataWithSignature,
+	.SizeOfPrimitiveValue = STRectSizeOfPrimitiveValue,
+	.ObjCType = STRectObjCType,
 };

@@ -92,13 +92,14 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	return NO;
 }
 
-- (id)applyWithArguments:(STList *)arguments inContext:(NSMutableDictionary *)context
+- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)superscope
 {
+	NSMutableDictionary *scope = [mEvaluator scopeWithEnclosingScope:superscope];
 	NSUInteger index = 0;
 	for (id name in mPrototype)
-		[context setObject:[arguments objectAtIndex:index++] forKey:name];
+		[scope setObject:[arguments objectAtIndex:index++] forKey:name];
 	
-	return [mEvaluator evaluateExpression:mImplementation];
+	return [mEvaluator evaluateExpression:mImplementation inScope:scope];
 }
 
 #pragma mark -
@@ -111,13 +112,16 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, void **arguments, void *userData)
 {
 	STClosure *self = (STClosure *)userData;
+	STEvaluator *evaluator = self->mEvaluator;
 	
 	STList *argumentsAsObjects = [[STList new] autorelease];
 	NSUInteger numberOfArguments = [self->mClosureSignature numberOfArguments];
 	for (NSUInteger index = 0; index < numberOfArguments; index++)
 		[argumentsAsObjects addObject:STTypeBridgeConvertValueOfTypeIntoObject(arguments[index], [self->mClosureSignature getArgumentTypeAtIndex:index])];
 	
-	id resultObject = [self applyWithArguments:argumentsAsObjects inContext:nil];
+	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
+	id resultObject = [self applyWithArguments:argumentsAsObjects inScope:scope];
+	
 	const char *type = [self->mClosureSignature methodReturnType];
 	STTypeBridgeConvertObjectIntoType(resultObject, type, returnBuffer);
 }

@@ -23,14 +23,14 @@ static id EvaluateListOrFunction(id listOrFunction)
 	{
 		STList *list = listOrFunction;
 		STEvaluator *evaluator = [list evaluator];
-		return [evaluator evaluateExpression:list];
+		return [evaluator evaluateExpression:list inScope:nil];
 	}
 	
 	//If we've been given a function, we evaluate it.
 	id < STFunction > function = listOrFunction;
 	STEvaluator *evaluator = [function evaluator];
-	NSMutableDictionary *rootContext = (NSMutableDictionary *)[evaluator rootContext];
-	return [function applyWithArguments:[STList list] inContext:rootContext];
+	NSMutableDictionary *rootContext = (NSMutableDictionary *)[evaluator rootScope];
+	return [function applyWithArguments:[STList list] inScope:rootContext];
 }
 
 @implementation NSObject (Stein)
@@ -121,6 +121,7 @@ static id EvaluateListOrFunction(id listOrFunction)
 - (id)match:(STList *)matchers
 {
 	STEvaluator *evaluator = matchers.evaluator;
+	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
 	for (id pair in matchers)
 	{
 		if(![pair isKindOfClass:[STList class]])
@@ -128,10 +129,10 @@ static id EvaluateListOrFunction(id listOrFunction)
 		
 		id unevaluatedObjectToMatch = [pair head];
 		if([unevaluatedObjectToMatch isEqualTo:[STSymbol symbolWithString:@"_"]])
-			return [evaluator evaluateExpression:[pair tail]];
+			return [evaluator evaluateExpression:[pair tail] inScope:scope];
 			
-		if([self isEqualTo:[evaluator evaluateExpression:unevaluatedObjectToMatch]])
-			return [evaluator evaluateExpression:[pair tail]];
+		if([self isEqualTo:[evaluator evaluateExpression:unevaluatedObjectToMatch inScope:scope]])
+			return [evaluator evaluateExpression:[pair tail] inScope:scope];
 	}
 	
 	return nil;

@@ -136,8 +136,8 @@ size_t STTypeBridgeSizeofObjCType(const char *objcType)
 			return sizeof(SEL);
 			
 		case kObjectiveCTypeStruct: {
-			const StructWrapperDescriptor *wrapperDescriptor = STTypeBridgeStructWrapperForType(type);
-			return wrapperDescriptor->SizeOfWrappedValue(wrapperDescriptor, type);
+			const STPrimitiveValueWrapperDescriptor *wrapperDescriptor = STTypeBridgeGetWrapperForType(type);
+			return wrapperDescriptor->SizeOfPrimitiveValue(wrapperDescriptor, type);
 		}
 			
 		case kObjectiveCTypeCArray:
@@ -207,6 +207,7 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 		case kObjectiveCTypeCString:
 			return [NSString stringWithUTF8String:*(const char **)value];
 			
+		case kObjectiveCTypeCArray:
 		case kObjectiveCTypePointer:
 			return [NSNull null];
 			
@@ -218,11 +219,10 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 			return NSStringFromSelector(*(SEL *)value);
 			
 		case kObjectiveCTypeStruct: {
-			const StructWrapperDescriptor *wrapperDescriptor = STTypeBridgeStructWrapperForType(type);
-			return wrapperDescriptor->WrapStructDataWithSignature(wrapperDescriptor, value, type);
+			const STPrimitiveValueWrapperDescriptor *wrapperDescriptor = STTypeBridgeGetWrapperForType(type);
+			return wrapperDescriptor->WrapDataWithSignature(wrapperDescriptor, value, type);
 		}
 			
-		case kObjectiveCTypeCArray:
 		case kObjectiveCTypeUnion:
 		case kObjectiveCTypeBitfield:
 		case kObjectiveCTypeUnknown:
@@ -301,6 +301,7 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 			*(const char **)value = [object UTF8String];
 			break;
 			
+		case kObjectiveCTypeCArray:
 		case kObjectiveCTypePointer:
 			*(void **)value = NULL;
 			break;
@@ -318,10 +319,9 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 			break;
 			
 		case kObjectiveCTypeStruct:
-			[(id < StructWrapper >)object getValue:value forType:type];
+			[(id < STPrimitiveValueWrapper >)object getValue:value forType:type];
 			break;
 			
-		case kObjectiveCTypeCArray:
 		case kObjectiveCTypeUnion:
 		case kObjectiveCTypeBitfield:
 		case kObjectiveCTypeUnknown:
@@ -335,7 +335,7 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 #pragma mark -
 #pragma mark Struct Bridging
 
-@interface STTypeBridgeGenericStructWrapper : NSObject < StructWrapper >
+@interface STTypeBridgeGenericStructWrapper : NSObject < STPrimitiveValueWrapper >
 {
 	void *mValue;
 	size_t mSizeOfValue;
@@ -346,26 +346,27 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 
 #pragma mark -
 
-static BOOL GenericStructCanWrapStructWithSignature(const StructWrapperDescriptor *descriptor, const char *objcType)
+static BOOL GenericStructCanWrapValueWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return YES;
 }
 
-static id < StructWrapper > GenericStructWrapStructDataWithSignature(const StructWrapperDescriptor *descriptor, void *data, const char *objcType)
+static id < STPrimitiveValueWrapper > GenericStructWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
 	return [[[STTypeBridgeGenericStructWrapper alloc] initWithValue:data ofType:objcType] autorelease];
 }
 
-static size_t GenericStructSizeOfWrappedValue(const StructWrapperDescriptor *descriptor, const char *objcType)
+static size_t GenericStructSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
 	return sizeof(void *);
 }
 
-static StructWrapperDescriptor const kGenericStructWrapperDescriptor = {
+static STPrimitiveValueWrapperDescriptor const kGenericStructWrapperDescriptor = {
 	.userData = NULL,
-	.CanWrapStructWithSignature = GenericStructCanWrapStructWithSignature,
-	.WrapStructDataWithSignature = GenericStructWrapStructDataWithSignature,
-	.SizeOfWrappedValue = GenericStructSizeOfWrappedValue
+	.CanWrapValueWithSignature = GenericStructCanWrapValueWithSignature,
+	.WrapDataWithSignature = GenericStructWrapDataWithSignature,
+	.SizeOfPrimitiveValue = GenericStructSizeOfPrimitiveValue,
+	.ObjCType = NULL,
 };
 
 #pragma mark -
@@ -430,7 +431,7 @@ static StructWrapperDescriptor const kGenericStructWrapperDescriptor = {
 			 @"Could not copy value into buffer.");
 }
 
-- (const StructWrapperDescriptor *)descriptor
+- (const STPrimitiveValueWrapperDescriptor *)descriptor
 {
 	return &kGenericStructWrapperDescriptor;
 }
@@ -439,47 +440,50 @@ static StructWrapperDescriptor const kGenericStructWrapperDescriptor = {
 
 #pragma mark -
 
-const StructWrapperDescriptor *StructWrapperRetainCallBack(CFAllocatorRef allocator, const StructWrapperDescriptor *descriptor)
+const STPrimitiveValueWrapperDescriptor *StructWrapperRetainCallBack(CFAllocatorRef allocator, const STPrimitiveValueWrapperDescriptor *descriptor)
 {
-	StructWrapperDescriptor *descriptorCopy = CFAllocatorAllocate(allocator, sizeof(StructWrapperDescriptor), 0);
-	memcpy(descriptorCopy, descriptor, sizeof(StructWrapperDescriptor));
+	STPrimitiveValueWrapperDescriptor *descriptorCopy = CFAllocatorAllocate(allocator, sizeof(STPrimitiveValueWrapperDescriptor), 0);
+	memcpy(descriptorCopy, descriptor, sizeof(STPrimitiveValueWrapperDescriptor));
 	return descriptorCopy;
 }
 
-void StructWrapperReleaseCallBack(CFAllocatorRef allocator, const StructWrapperDescriptor *value)
+void StructWrapperReleaseCallBack(CFAllocatorRef allocator, const STPrimitiveValueWrapperDescriptor *value)
 {
 	CFAllocatorDeallocate(allocator, (void *)value);
 }
 
-static CFStringRef StructWrapperCopyDescriptionCallBack(const StructWrapperDescriptor *value)
+static CFStringRef StructWrapperCopyDescriptionCallBack(const STPrimitiveValueWrapperDescriptor *value)
 {
 	return CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("<StructWrapperDescriptor:%p>"), value);
 }
 
-static Boolean StructWrapperEqualCallBack(const StructWrapperDescriptor *value1, const StructWrapperDescriptor *value2)
+static Boolean StructWrapperEqualCallBack(const STPrimitiveValueWrapperDescriptor *value1, const STPrimitiveValueWrapperDescriptor *value2)
 {
 	return (value1->userData == value2->userData && 
-			value1->CanWrapStructWithSignature == value2->CanWrapStructWithSignature && 
-			value1->WrapStructDataWithSignature == value2->WrapStructDataWithSignature && 
-			value1->SizeOfWrappedValue == value2->SizeOfWrappedValue);
+			value1->CanWrapValueWithSignature == value2->CanWrapValueWithSignature && 
+			value1->WrapDataWithSignature == value2->WrapDataWithSignature && 
+			value1->SizeOfPrimitiveValue == value2->SizeOfPrimitiveValue);
 }
 
-static CFArrayCallBacks const kStructWrapperArrayCallbacks = {
+static CFDictionaryValueCallBacks const kStructWrapperValueCallbacks = {
 	.version = 0,
-	.retain = (CFArrayRetainCallBack)StructWrapperRetainCallBack,
-	.release = (CFArrayReleaseCallBack)StructWrapperReleaseCallBack,
-	.copyDescription = (CFArrayCopyDescriptionCallBack)StructWrapperCopyDescriptionCallBack,
-	.equal = (CFArrayEqualCallBack)StructWrapperEqualCallBack
+	.retain = (CFDictionaryRetainCallBack)StructWrapperRetainCallBack,
+	.release = (CFDictionaryReleaseCallBack)StructWrapperReleaseCallBack,
+	.copyDescription = (CFDictionaryCopyDescriptionCallBack)StructWrapperCopyDescriptionCallBack,
+	.equal = (CFDictionaryEqualCallBack)StructWrapperEqualCallBack
 };
 
-static CFMutableArrayRef STTypeBridgeGetStructWrappers()
+static CFMutableDictionaryRef STTypeBridgeGetStructWrappers()
 {
-	static CFMutableArrayRef wrappers = NULL;
+	static CFMutableDictionaryRef wrappers = NULL;
 	
 	OSMemoryBarrier();
 	if(!wrappers)
 	{
-		CFMutableArrayRef array = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kStructWrapperArrayCallbacks);
+		CFMutableDictionaryRef array = CFDictionaryCreateMutable(kCFAllocatorDefault, 
+																 0, 
+																 &kCFTypeDictionaryKeyCallBacks, 
+																 &kStructWrapperValueCallbacks);
 		if(!OSAtomicCompareAndSwapPtrBarrier(NULL, array, (void * volatile *)&wrappers))
 			CFRelease(array);
 	}
@@ -489,21 +493,24 @@ static CFMutableArrayRef STTypeBridgeGetStructWrappers()
 
 #pragma mark -
 
-void STTypeBridgeRegisterStructWrapper(const StructWrapperDescriptor *wrapper)
+void STTypeBridgeRegisterWrapper(NSString *name, const STPrimitiveValueWrapperDescriptor *wrapper)
 {
-	CFMutableArrayRef wrappers = STTypeBridgeGetStructWrappers();
-	CFArrayAppendValue(wrappers, wrapper);
+	CFMutableDictionaryRef wrappers = STTypeBridgeGetStructWrappers();
+	CFDictionarySetValue(wrappers, name, wrapper);
 }
 
-const StructWrapperDescriptor *STTypeBridgeStructWrapperForType(const char *type)
+const STPrimitiveValueWrapperDescriptor *STTypeBridgeGetWrapperForType(const char *type)
 {
-	CFMutableArrayRef wrappers = STTypeBridgeGetStructWrappers();
+	CFMutableDictionaryRef wrappers = STTypeBridgeGetStructWrappers();
 	
-	CFIndex wrappersCount = CFArrayGetCount(wrappers);
-	for (CFIndex index = 0; index < wrappersCount; index++)
+	CFIndex dictionaryLength = CFDictionaryGetCount(wrappers);
+	const STPrimitiveValueWrapperDescriptor *wrapperValues[dictionaryLength];
+	CFDictionaryGetKeysAndValues(wrappers, NULL, (const void **)wrapperValues);
+	
+	for (CFIndex index = 0; index < dictionaryLength; index++)
 	{
-		const StructWrapperDescriptor *wrapperDescriptor = CFArrayGetValueAtIndex(wrappers, index);
-		if(wrapperDescriptor->CanWrapStructWithSignature(wrapperDescriptor, type))
+		const STPrimitiveValueWrapperDescriptor *wrapperDescriptor = wrapperValues[index];
+		if(wrapperDescriptor->CanWrapValueWithSignature(wrapperDescriptor, type))
 			return wrapperDescriptor;
 	}
 	
@@ -511,7 +518,7 @@ const StructWrapperDescriptor *STTypeBridgeStructWrapperForType(const char *type
 }
 
 #pragma mark -
-#pragma mark Objective-C to FFI type conversion
+#pragma mark Type system conversions
 
 static const void *CStringRetainCallBack(CFAllocatorRef allocator, const void *value)
 {
@@ -766,6 +773,7 @@ ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType)
 		case kObjectiveCTypeDouble: return &ffi_type_double;
 		case kObjectiveCTypeBool: return &ffi_type_uchar;
 		case kObjectiveCTypeVoid: return &ffi_type_void;
+		case kObjectiveCTypeCArray:
 		case kObjectiveCTypePointer:
 		case kObjectiveCTypeCString:
 		case kObjectiveCTypeObject:
@@ -774,7 +782,6 @@ ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType)
 			return &ffi_type_pointer;
 			
 		case kObjectiveCTypeStruct: return STTypeBridgeGetFFITypeForStruct(type);
-		case kObjectiveCTypeCArray:
 		case kObjectiveCTypeUnion:
 		case kObjectiveCTypeUnknown:
 		default:
@@ -783,4 +790,54 @@ ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType)
 	}
 	
 	return &ffi_type_void;
+}
+
+#pragma mark -
+
+NSString *STTypeBridgeGetObjCTypeForHumanReadableType(NSString *type)
+{
+	if([type hasPrefix:@"^"])
+		return [@"^" stringByAppendingString:STTypeBridgeGetObjCTypeForHumanReadableType([type substringFromIndex:1])];
+	
+	if([type isEqualToString:@"char"])
+		return @"c";
+	else if([type isEqualToString:@"int"])
+		return @"i";
+	else if([type isEqualToString:@"short"])
+		return @"s";
+	else if([type isEqualToString:@"long"])
+		return @"l";
+	else if([type isEqualToString:@"longlong"])
+		return @"q";
+	else if([type isEqualToString:@"uchar"])
+		return @"C";
+	else if([type isEqualToString:@"uint"])
+		return @"I";
+	else if([type isEqualToString:@"ushort"])
+		return @"S";
+	else if([type isEqualToString:@"ulong"])
+		return @"L";
+	else if([type isEqualToString:@"ulonglong"])
+		return @"Q";
+	else if([type isEqualToString:@"float"])
+		return @"f";
+	else if([type isEqualToString:@"double"])
+		return @"d";
+	else if([type isEqualToString:@"_bool"])
+		return @"B";
+	else if([type isEqualToString:@"void"])
+		return @"v";
+	else if([type isEqualToString:@"Class"])
+		return @"#";
+	else if([type isEqualToString:@"id"] || (NSClassFromString(type) != nil))
+		return @"@";
+	else if([type isEqualToString:@"SEL"])
+		return @":";
+	
+	CFMutableDictionaryRef wrappers = STTypeBridgeGetStructWrappers();
+	const STPrimitiveValueWrapperDescriptor *descriptor = CFDictionaryGetValue(wrappers, type);
+	if(descriptor && descriptor->ObjCType)
+		return [NSString stringWithUTF8String:descriptor->ObjCType(descriptor)];
+	
+	return @"?";
 }

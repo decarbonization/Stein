@@ -16,7 +16,7 @@
 #define STBuiltInFunctionWithNameForEvaluator(name, evaluator) STBuiltInFunction##name(evaluator)
 
 @class STEvaluator, STList;
-typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *context);
+typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope);
 
 @interface STBuiltInFunction : NSObject < STFunction >
 {

@@ -13,24 +13,98 @@
 #import "STList.h"
 
 #import "STFunction.h"
+#import "STClosure.h"
 #import "STMessageBridge.h"
 
 #import "STBuiltInFunctions.h"
 
-static id EvaluateExpression(STEvaluator *self, id expression);
+NSString *const kSTEvaluatorEnclosingScopeKey = @"$__enclosingScope";
+static id EvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary *scope);
 
 #pragma mark -
 #pragma mark Core Built Ins
 
-STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *context) {
+STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	NSCAssert(([arguments count] >= 2), 
 			  @"Wrong number of arguments given to set, expected 2 got %ld.", [arguments count]);
 	
 	NSString *key = [[arguments objectAtIndex:0] string];
-	id value = EvaluateExpression(evaluator, [arguments objectAtIndex:1]);
-	[context setValue:value forKey:key];
+	id value = EvaluateExpression(evaluator, [arguments objectAtIndex:1], scope);
+	[scope setValue:value forKey:key];
 	
 	return value;
+});
+
+STBuiltInFunctionDefine(Lambda, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSCAssert(([arguments count] >= 2), 
+			  @"Wrong number of arguments given to lambda, expected at least 2, got %ld.", [arguments count]);
+	
+	NSString *signature = nil;
+	STList *parameterList = nil;
+	STList *implementation = nil;
+	
+	id first = [arguments objectAtIndex:0];
+	if([first isKindOfClass:[NSString class]])
+	{
+		signature = first;
+		parameterList = [arguments objectAtIndex:1];
+		implementation = [STList listWithList:[arguments objectAtIndex:2]];
+	}
+	else
+	{
+		parameterList = first;
+		implementation = [STList listWithList:[arguments objectAtIndex:1]];
+		
+		NSMutableString *signatureInProgress = [NSMutableString stringWithString:@"@"];
+		for (NSUInteger index = 0; index < [parameterList count]; index++)
+			[signatureInProgress appendString:@"@"];
+		
+		signature = signatureInProgress;
+	}
+	implementation.isQuoted = NO;
+	
+	return [[[STClosure alloc] initWithPrototype:parameterList
+							   forImplementation:implementation
+								   withSignature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]
+								   fromEvaluator:evaluator] autorelease];
+});
+
+STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSCAssert(([arguments count] >= 3), 
+			  @"Wrong number of arguments given to lambda, expected at least 3, got %ld.", [arguments count]);
+	
+	NSString *signature = nil;
+	STList *parameterList = nil;
+	STList *implementation = nil;
+	
+	id firstValueInDefinition = [arguments objectAtIndex:1];
+	if([firstValueInDefinition isKindOfClass:[NSString class]])
+	{
+		signature = firstValueInDefinition;
+		parameterList = [arguments objectAtIndex:2];
+		implementation = [STList listWithList:[arguments objectAtIndex:3]];
+	}
+	else
+	{
+		parameterList = firstValueInDefinition;
+		implementation = [STList listWithList:[arguments objectAtIndex:2]];
+		
+		NSMutableString *signatureInProgress = [NSMutableString stringWithString:@"@"];
+		for (NSUInteger index = 0; index < [parameterList count]; index++)
+			[signatureInProgress appendString:@"@"];
+		
+		signature = signatureInProgress;
+	}
+	implementation.isQuoted = NO;
+	
+	STClosure *closure = [[[STClosure alloc] initWithPrototype:parameterList
+											 forImplementation:implementation
+												 withSignature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]
+												 fromEvaluator:evaluator] autorelease];
+	NSString *functionName = [[arguments objectAtIndex:0] string];
+	[scope setObject:closure forKey:functionName];
+	
+	return closure;
 });
 
 #pragma mark -
@@ -41,8 +115,8 @@ STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments,
 
 - (void)dealloc
 {
-	[mRootContext release];
-	mRootContext = nil;
+	[mRootScope release];
+	mRootScope = nil;
 	
 	[super dealloc];
 }
@@ -54,31 +128,33 @@ STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments,
 {
 	if((self = [super init]))
 	{
-		mRootContext = [NSMutableDictionary new];
+		mRootScope = [NSMutableDictionary new];
 		
 		//Built in Math Functions
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Add, self) forKey:@"+"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Subtract, self) forKey:@"-"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Multiply, self) forKey:@"*"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Divide, self) forKey:@"/"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Modulo, self) forKey:@"%"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Power, self) forKey:@"**"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Add, self) forKey:@"+"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Subtract, self) forKey:@"-"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Multiply, self) forKey:@"*"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Divide, self) forKey:@"/"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Modulo, self) forKey:@"%"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Power, self) forKey:@"**"];
 		
 		//Built in Comparison Functions
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Equal, self) forKey:@"="];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(NotEqual, self) forKey:@"≠"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(LessThan, self) forKey:@"<"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(LessThanOrEqual, self) forKey:@"≤"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThan, self) forKey:@">"];
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThanOrEqual, self) forKey:@"≥"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Equal, self) forKey:@"="];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(NotEqual, self) forKey:@"≠"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThan, self) forKey:@"<"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThanOrEqual, self) forKey:@"≤"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThan, self) forKey:@">"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThanOrEqual, self) forKey:@"≥"];
 		
-		//Built in Variable Functions
-		[mRootContext setObject:STBuiltInFunctionWithNameForEvaluator(Set, self) forKey:@"set"];
+		//Core Built ins
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Set, self) forKey:@"set"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Lambda, self) forKey:@"lambda"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Function, self) forKey:@"function"];
 		
 		//Constants
-		[mRootContext setObject:[NSNumber numberWithBool:YES] forKey:@"true"];
-		[mRootContext setObject:[NSNumber numberWithBool:NO] forKey:@"false"];
-		[mRootContext setObject:[NSNull null] forKey:@"null"];
+		[mRootScope setObject:[NSNumber numberWithBool:YES] forKey:@"true"];
+		[mRootScope setObject:[NSNumber numberWithBool:NO] forKey:@"false"];
+		[mRootScope setObject:[NSNull null] forKey:@"null"];
 		
 		return self;
 	}
@@ -86,44 +162,82 @@ STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments,
 }
 
 #pragma mark -
-#pragma mark Root Context
+#pragma mark Root Scope
 
-- (void)setValue:(id)value forKeyInRootContext:(NSString *)key
+- (void)setValue:(id)value forKeyInRootScope:(NSString *)key
 {
 	@synchronized(self)
 	{
 		if(value)
-			[mRootContext setObject:value forKey:key];
+			[mRootScope setObject:value forKey:key];
 		else
-			[mRootContext removeObjectForKey:key];
+			[mRootScope removeObjectForKey:key];
 	}
 }
 
-- (id)valueForKeyInRootContext:(NSString *)key
+- (id)valueForKeyInRootScope:(NSString *)key
 {
 	@synchronized(self)
 	{
-		return [mRootContext objectForKey:key];
+		return [mRootScope objectForKey:key];
 	}
 }
 
 #pragma mark -
 
-@synthesize rootContext = mRootContext;
+@synthesize rootScope = mRootScope;
+
+#pragma mark -
+#pragma mark Context Scope
+
+- (NSMutableDictionary *)scopeWithEnclosingScope:(NSMutableDictionary *)enclosingScope
+{
+	NSMutableDictionary *scope = [NSMutableDictionary dictionaryWithCapacity:1];
+	if(enclosingScope)
+		[scope setObject:enclosingScope forKey:kSTEvaluatorEnclosingScopeKey];
+	else
+		[scope setObject:mRootScope forKey:kSTEvaluatorEnclosingScopeKey];
+	
+	return scope;
+}
 
 #pragma mark -
 #pragma mark Variables
 
-- (void)setObject:(id)object forVariableNamed:(NSString *)name
+static NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScope, NSString *name)
 {
-	[self setValue:object forKeyInRootContext:name];
+	while (currentScope != nil)
+	{
+		if([[currentScope allKeys] containsObject:name])
+			return currentScope;
+		
+		currentScope = [currentScope objectForKey:kSTEvaluatorEnclosingScopeKey];
+	}
+	
+	return nil;
 }
 
-- (id)objectForVariableNamed:(NSString *)name
+- (void)setObject:(id)object forVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope
 {
-	id value = [self valueForKeyInRootContext:name];
-	if(value)
-		return value;
+	NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, name);
+	if(!targetScope)
+		targetScope = scope;
+	
+	if(object)
+		[targetScope setObject:object forKey:name];
+	else
+		[targetScope removeObjectForKey:name];
+}
+
+- (id)objectForVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope
+{
+	NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, name);
+	if(targetScope)
+	{
+		id value = [self valueForKeyInRootScope:name];
+		if(value)
+			return value;
+	}
 	
 	Class class = NSClassFromString(name);
 	NSAssert((class != nil), @"Could not find a value for the variable '%@'.", name);
@@ -142,19 +256,19 @@ STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments,
 #pragma mark -
 #pragma mark Evaluation
 
-static STList *EvaluateArgumentList(STEvaluator *self, STList *arguments)
+static STList *EvaluateArgumentList(STEvaluator *self, STList *arguments, NSMutableDictionary *scope)
 {
 	STList *evaluatedArguments = [STList list];
 	for (id expression in arguments)
 	{
-		id evaluateArgument = EvaluateExpression(self, expression);
+		id evaluateArgument = EvaluateExpression(self, expression, scope);
 		[evaluatedArguments addObject:evaluateArgument];
 	}
 	
 	return evaluatedArguments;
 }
 
-static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments)
+static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments, NSMutableDictionary *scope)
 {
 	NSMutableString *selector = [NSMutableString string];
 	NSMutableArray *evaluatedArguments = [NSMutableArray array];
@@ -166,7 +280,7 @@ static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList
 		if((index % 2) == 0)
 			[selector appendString:[expression string]];
 		else
-			[evaluatedArguments addObject:EvaluateExpression(self, expression)];
+			[evaluatedArguments addObject:EvaluateExpression(self, expression, scope)];
 		
 		index++;
 	}
@@ -174,69 +288,69 @@ static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList
 	return STMessageBridgeSend(target, NSSelectorFromString(selector), evaluatedArguments);
 }
 
-static id EvaluateList(STEvaluator *self, STList *list)
+static id EvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 {
 	if([list count] == 0)
 		return [NSNull null];
 	
 	if(list.isQuoted)
-	{
-		list.evaluator = self;
 		return list;
-	}
 	
-	id target = EvaluateExpression(self, [list head]);
+	id target = EvaluateExpression(self, [list head], scope);
 	
 	if([target conformsToProtocol:@protocol(STFunction)])
 	{
 		NSObject < STFunction > *function = target;
 		if([function evaluatesOwnArguments])
-			return [function applyWithArguments:[list tail] inContext:self->mRootContext];
+			return [function applyWithArguments:[list tail] inScope:self->mRootScope];
 		
-		STList *evaluatedArguments = EvaluateArgumentList(self, [list tail]);
-		return [function applyWithArguments:evaluatedArguments inContext:self->mRootContext];
+		STList *evaluatedArguments = EvaluateArgumentList(self, [list tail], scope);
+		return [function applyWithArguments:evaluatedArguments inScope:self->mRootScope];
 	}
 	
 	if([list count] == 1)
 		return target;
 	
-	return SendMessageWithTargetAndArguments(self, target, [list tail]);
+	return SendMessageWithTargetAndArguments(self, target, [list tail], scope);
 }
 
 #pragma mark -
 
-static id EvaluateExpression(STEvaluator *self, id expression)
+static id EvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary *scope)
 {
 	if([expression isKindOfClass:[NSArray class]])
 	{
 		id lastResult = nil;
 		for (id subexpression in expression)
-			lastResult = EvaluateExpression(self, subexpression);
+			lastResult = EvaluateExpression(self, subexpression, scope);
 		
 		return lastResult;
 	}
 	else if([expression isKindOfClass:[STList class]])
 	{
-		return EvaluateList(self, expression);
+		return EvaluateList(self, expression, scope);
 	}
 	else if([expression isKindOfClass:[STSymbol class]])
 	{
-		return [self objectForVariableNamed:[expression string]];
+		return [self objectForVariableNamed:[expression string] inScope:scope];
 	}
 	
 	return expression;
 }
 
-- (id)evaluateExpression:(id)expression
+- (id)evaluateExpression:(id)expression inScope:(NSMutableDictionary *)scope
 {
-	return EvaluateExpression(self, expression);
+	if(!scope)
+		scope = mRootScope;
+	
+	return EvaluateExpression(self, expression, scope);
 }
 
 #pragma mark -
 
 - (id)parseAndEvaluateString:(NSString *)string
 {
-	return [self evaluateExpression:[self parseString:string]];
+	return [self evaluateExpression:[self parseString:string] inScope:mRootScope];
 }
 
 @end

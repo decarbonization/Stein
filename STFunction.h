@@ -14,6 +14,6 @@
 - (BOOL)evaluatesOwnArguments;
 - (STEvaluator *)evaluator;
 
-- (id)applyWithArguments:(STList *)arguments inContext:(NSMutableDictionary *)context;
+- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope;
 
 @end

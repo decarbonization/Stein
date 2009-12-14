@@ -11,7 +11,7 @@
 
 #pragma once
 
-@interface STRange : NSObject < StructWrapper >
+@interface STRange : NSObject < STPrimitiveValueWrapper >
 {
 	NSRange mRange;
 }
@@ -25,11 +25,11 @@
 @property (readonly) NSRange rangeValue;
 
 @end
-StructWrapperDescriptor const kSTRangeStructWrapperDescriptor;
+STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor;
 
 #pragma mark -
 
-@interface STPoint : NSObject < StructWrapper >
+@interface STPoint : NSObject < STPrimitiveValueWrapper >
 {
 	CGPoint mPoint;
 }
@@ -43,11 +43,11 @@ StructWrapperDescriptor const kSTRangeStructWrapperDescriptor;
 @property (readonly) CGPoint pointValue;
 
 @end
-StructWrapperDescriptor const kSTPointStructWrapperDescriptor;
+STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor;
 
 #pragma mark -
 
-@interface STSize : NSObject < StructWrapper >
+@interface STSize : NSObject < STPrimitiveValueWrapper >
 {
 	CGSize mSize;
 }
@@ -61,9 +61,9 @@ StructWrapperDescriptor const kSTPointStructWrapperDescriptor;
 @property (readonly) CGSize sizeValue;
 
 @end
-StructWrapperDescriptor const kSTSizeStructWrapperDescriptor;
+STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor;
 
-@interface STRect : NSObject < StructWrapper >
+@interface STRect : NSObject < STPrimitiveValueWrapper >
 {
 	STPoint *mOrigin;
 	STSize *mSize;
@@ -79,4 +79,4 @@ StructWrapperDescriptor const kSTSizeStructWrapperDescriptor;
 @property (readonly) CGRect rectValue;
 
 @end
-StructWrapperDescriptor const kSTRectStructWrapperDescriptor;
+STPrimitiveValueWrapperDescriptor const kSTRectStructWrapperDescriptor;
