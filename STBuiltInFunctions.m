@@ -9,6 +9,7 @@
 #import "STBuiltInFunctions.h"
 #import "STEvaluator.h"
 #import "STList.h"
+#import "STBridgedFunction.h"
 
 @implementation STBuiltInFunction
 
@@ -183,4 +184,16 @@ STBuiltInFunctionDefine(GreaterThanOrEqual, NO, ^id(STEvaluator *evaluator, STLi
 	}
 	
 	return [NSNumber numberWithBool:YES];
+});
+
+#pragma mark -
+
+STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSCAssert(([arguments count] >= 2), @"Expected at least two arguments, got %ld.", [arguments count]);
+	
+	NSString *symbolName = [[arguments objectAtIndex:0] string];
+	NSString *signature = [arguments objectAtIndex:1];
+	
+	return [[[STBridgedFunction alloc] initWithSymbolNamed:symbolName 
+												 signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]] autorelease];
 });

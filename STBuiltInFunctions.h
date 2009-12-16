@@ -46,3 +46,5 @@ STBuiltInFunctionExport(LessThan);
 STBuiltInFunctionExport(LessThanOrEqual);
 STBuiltInFunctionExport(GreaterThan);
 STBuiltInFunctionExport(GreaterThanOrEqual);
+
+STBuiltInFunctionExport(BridgeFunction);

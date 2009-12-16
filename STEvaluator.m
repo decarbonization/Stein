@@ -163,6 +163,9 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Function, self) forKey:@"function"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(SendMessage, self) forKey:@"#"];
 		
+		//Bridging
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
+		
 		//Constants
 		[mRootScope setObject:[NSNumber numberWithBool:YES] forKey:@"true"];
 		[mRootScope setObject:[NSNumber numberWithBool:NO] forKey:@"false"];
