@@ -4,10 +4,8 @@
 
 #define FLAG_IS_SET(options, flag) ((options & flag) == flag)
 
-void RunREPL()
+static void RunREPL(STEvaluator *evaluator)
 {
-	STEvaluator *evaluator = [STEvaluator new];
-	
 	//Initialize readline so we get history.
 	rl_initialize();
 	
@@ -32,8 +30,6 @@ void RunREPL()
 			fprintf(stderr, "Error: %s\n", [[e reason] UTF8String]);
 		}
 	}
-	
-	[evaluator release];
 }
 
 #pragma mark -
@@ -41,9 +37,10 @@ void RunREPL()
 typedef enum ProgramOptions {
 	kProgramOptionSandboxEachFile = (1 << 0),
 	kProgramOptionParseOnly = (1 << 1),
+	kProgramOptionRunREPLInBackground = (1 << 2),
 } ProgramOptions;
 
-void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outPaths, ProgramOptions *outOptions)
+static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outPaths, ProgramOptions *outOptions)
 {
 	NSCParameterAssert(argv);
 	NSCParameterAssert(outPaths);
@@ -66,12 +63,19 @@ void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outPaths, P
 			
 			switch (arg[1])
 			{
+				case 'S':
 				case 's':
 					options |= kProgramOptionSandboxEachFile;
 					break;
 					
+				case 'P':
 				case 'p':
 					options |= kProgramOptionParseOnly;
+					break;
+					
+				case 'R':
+				case 'r':
+					options |= kProgramOptionRunREPLInBackground;
 					break;
 					
 				default:
@@ -91,14 +95,34 @@ void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outPaths, P
 
 #pragma mark -
 
+static void Help()
+{
+	fprintf(stdout, "stein [-spr] [paths...]\n\n");
+	fprintf(stdout, "\t-s\tRun each file in it's own evaluator, isolating their environments from each other.\n");
+	fprintf(stdout, "\t-p\tOnly parse the files, printing the compiled structure.\n");
+	fprintf(stdout, "\t-r\tRun the REPL on a background thread while the files are run on the main thread.\n");
+}
+
+#pragma mark -
+
 int main (int argc, const char * argv[])
 {
 	NSAutoreleasePool *pool = [NSAutoreleasePool new];
 	
+	if((argc >= 2) && (strcmp(argv[1], "help") == 0))
+	{
+		Help();
+		
+		[pool drain];
+		return 0;
+	}
+	
 	//If we're only given one argument (the path of your executable), then we enter REPL mode.
 	if(argc == 1)
 	{
-		RunREPL();
+		STEvaluator *evaluator = [STEvaluator new];
+		RunREPL(evaluator);
+		[evaluator release];
 	}
 	else
 	{
@@ -106,8 +130,26 @@ int main (int argc, const char * argv[])
 		ProgramOptions options = 0;
 		AnalyzeProgramArguments(argc, argv, &paths, &options);
 		
-		NSError *error = nil;
 		STEvaluator *evaluator = [STEvaluator new];
+		if(FLAG_IS_SET(options, kProgramOptionRunREPLInBackground))
+		{
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				if(FLAG_IS_SET(options, kProgramOptionSandboxEachFile))
+				{
+					STEvaluator *replEvaluator = [STEvaluator new];
+					RunREPL(replEvaluator);
+					[replEvaluator release];
+				}
+				else
+				{
+					RunREPL(evaluator);
+				}
+				
+				exit(EXIT_SUCCESS);
+			});
+		}
+		
+		NSError *error = nil;
 		for (NSString *path in paths)
 		{
 			NSString *fileContents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];

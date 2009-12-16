@@ -122,7 +122,8 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 	STClosure *closure = [[STClosure alloc] initWithPrototype:prototype 
 											forImplementation:implementation 
 												withSignature:[NSMethodSignature signatureWithObjCTypes:typeSignature] 
-												fromEvaluator:list.evaluator];
+												fromEvaluator:list.evaluator 
+													  inScope:nil];
 	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
 	
 	if(isInstanceMethod)

@@ -48,6 +48,9 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	[mImplementation release];
 	mImplementation = nil;
 	
+	[mSuperscope release];
+	mSuperscope = nil;
+	
 	[super dealloc];
 }
 
@@ -70,7 +73,7 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	return nil;
 }
 
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation withSignature:(NSMethodSignature *)signature fromEvaluator:(STEvaluator *)evaluator
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation withSignature:(NSMethodSignature *)signature fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope
 {
 	if((self = [super init]))
 	{
@@ -78,6 +81,7 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 		mImplementation = [implementation retain];
 		mClosureSignature = [signature retain];
 		mEvaluator = evaluator;
+		mSuperscope = [superscope retain];
 		
 		return self;
 	}
@@ -119,11 +123,8 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	for (NSUInteger index = 0; index < numberOfArguments; index++)
 		[argumentsAsObjects addObject:STTypeBridgeConvertValueOfTypeIntoObject(arguments[index], [self->mClosureSignature getArgumentTypeAtIndex:index])];
 	
-	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
-	id resultObject = [self applyWithArguments:argumentsAsObjects inScope:scope];
-	
-	const char *type = [self->mClosureSignature methodReturnType];
-	STTypeBridgeConvertObjectIntoType(resultObject, type, returnBuffer);
+	id resultObject = [self applyWithArguments:argumentsAsObjects inScope:self->mSuperscope];
+	STTypeBridgeConvertObjectIntoType(resultObject, [self->mClosureSignature methodReturnType], returnBuffer);
 }
 
 @dynamic functionPointer;
@@ -179,6 +180,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 #pragma mark Properties
 
 @synthesize evaluator = mEvaluator;
+@synthesize superscope = mSuperscope;
 
 #pragma mark -
 

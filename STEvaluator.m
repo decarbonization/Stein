@@ -19,6 +19,10 @@
 #import "STBuiltInFunctions.h"
 
 NSString *const kSTEvaluatorEnclosingScopeKey = @"$__enclosingScope";
+
+static STList *EvaluateArgumentList(STEvaluator *self, STList *arguments, NSMutableDictionary *scope);
+static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments, NSMutableDictionary *scope);
+static id EvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope);
 static id EvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary *scope);
 
 #pragma mark -
@@ -66,7 +70,8 @@ STBuiltInFunctionDefine(Lambda, YES, ^id(STEvaluator *evaluator, STList *argumen
 	return [[[STClosure alloc] initWithPrototype:parameterList
 							   forImplementation:implementation
 								   withSignature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]
-								   fromEvaluator:evaluator] autorelease];
+								   fromEvaluator:evaluator 
+										 inScope:scope] autorelease];
 });
 
 STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
@@ -100,11 +105,17 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 	STClosure *closure = [[[STClosure alloc] initWithPrototype:parameterList
 											 forImplementation:implementation
 												 withSignature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]
-												 fromEvaluator:evaluator] autorelease];
+												 fromEvaluator:evaluator 
+													   inScope:scope] autorelease];
 	NSString *functionName = [[arguments objectAtIndex:0] string];
 	[scope setObject:closure forKey:functionName];
 	
 	return closure;
+});
+
+STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	id target = EvaluateExpression(evaluator, [arguments head], scope);
+	return SendMessageWithTargetAndArguments(evaluator, target, [arguments tail], scope);
 });
 
 #pragma mark -
@@ -150,6 +161,7 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Set, self) forKey:@"set"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Lambda, self) forKey:@"lambda"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Function, self) forKey:@"function"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(SendMessage, self) forKey:@"#"];
 		
 		//Constants
 		[mRootScope setObject:[NSNumber numberWithBool:YES] forKey:@"true"];

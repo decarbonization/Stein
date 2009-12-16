@@ -15,22 +15,18 @@
 static id EvaluateListOrFunction(id listOrFunction)
 {
 	//If we've been given nil then we're just going to return nil.
-	if(!listOrFunction)
+	if(!listOrFunction || ![listOrFunction respondsToSelector:@selector(evaluator)])
 		return nil;
+	
+	STEvaluator *evaluator = [listOrFunction evaluator];
+	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
 	
 	//If we've been given a list, we evaluate it [sort of] like a function.
 	if([listOrFunction isKindOfClass:[STList class]])
-	{
-		STList *list = listOrFunction;
-		STEvaluator *evaluator = [list evaluator];
-		return [evaluator evaluateExpression:list inScope:nil];
-	}
+		return [evaluator evaluateExpression:listOrFunction inScope:scope];
 	
 	//If we've been given a function, we evaluate it.
-	id < STFunction > function = listOrFunction;
-	STEvaluator *evaluator = [function evaluator];
-	NSMutableDictionary *rootContext = (NSMutableDictionary *)[evaluator rootScope];
-	return [function applyWithArguments:[STList list] inScope:rootContext];
+	return [listOrFunction applyWithArguments:[STList list] inScope:scope];
 }
 
 @implementation NSObject (Stein)
