@@ -8,6 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+ST_EXTERN NSString *const kSTEvaluatorEnclosingScopeKey;
+ST_EXTERN NSString *const kSTEvaluatorSuperclassKey;
+
 @interface STEvaluator : NSObject
 {
 	NSMutableDictionary *mRootScope;

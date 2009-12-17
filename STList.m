@@ -89,7 +89,7 @@
 
 - (id)head
 {
-	return [mContents objectAtIndex:0];
+	return ([mContents count] > 0)? [mContents objectAtIndex:0] : nil;
 }
 
 - (STList *)tail

@@ -54,7 +54,7 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 				break;
 				
 			case kLookingForType:
-				[typeSignature appendString:STTypeBridgeGetObjCTypeForHumanReadableType([expression head])];
+				[typeSignature appendString:STTypeBridgeGetObjCTypeForHumanReadableType([[expression head] string])];
 				break;
 				
 			case kLookingForPrototypePiece:
@@ -64,6 +64,10 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 			default:
 				break;
 		}
+		
+		whatWereLookingFor++;
+		if(whatWereLookingFor > kLookingForPrototypePiece)
+			whatWereLookingFor = kLookingForSelector;
 	}
 	
 	*outSelector = NSSelectorFromString(selectorString);
@@ -128,6 +132,7 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 												withSignature:[NSMethodSignature signatureWithObjCTypes:typeSignature] 
 												fromEvaluator:list.evaluator 
 													  inScope:nil];
+	closure.superclass = [class superclass];
 	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
 	
 	if(isInstanceMethod)
@@ -178,7 +183,7 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 			if([head isEqualTo:@"+"])
 				AddMethodFromClosureToClass([expression tail], NO, newClass);
 			else if([head isEqualTo:@"-"])
-				AddMethodFromClosureToClass([expression tail], NO, newClass);
+				AddMethodFromClosureToClass([expression tail], YES, newClass);
 		}
 	}
 	

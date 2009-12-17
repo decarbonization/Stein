@@ -21,6 +21,7 @@
 #import "NSObject+SteinClassAdditions.h"
 
 NSString *const kSTEvaluatorEnclosingScopeKey = @"$__enclosingScope";
+NSString *const kSTEvaluatorSuperclassKey = @"$__superclass";
 
 static STList *EvaluateArgumentList(STEvaluator *self, STList *arguments, NSMutableDictionary *scope);
 static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments, NSMutableDictionary *scope);
@@ -94,6 +95,28 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 	return SendMessageWithTargetAndArguments(evaluator, target, [arguments tail], scope);
 });
 
+STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	id target = [scope objectForKey:@"self"];
+	Class superclass = [scope objectForKey:kSTEvaluatorSuperclassKey];
+	
+	NSMutableString *selectorString = [NSMutableString string];
+	NSMutableArray *evaluatedArguments = [NSMutableArray array];
+	
+	NSUInteger index = 0;
+	for (id expression in arguments)
+	{
+		//If it's even, it's part of the selector
+		if((index % 2) == 0)
+			[selectorString appendString:[expression string]];
+		else
+			[evaluatedArguments addObject:EvaluateExpression(evaluator, expression, scope)];
+		
+		index++;
+	}
+	
+	return STMessageBridgeSendSuper(target, superclass, NSSelectorFromString(selectorString), evaluatedArguments);
+});
+
 #pragma mark -
 
 @implementation STEvaluator
@@ -142,6 +165,7 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Set, self) forKey:@"set"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Function, self) forKey:@"function"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(SendMessage, self) forKey:@"#"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Super, self) forKey:@"super"];
 		
 		//Bridging
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
@@ -281,7 +305,7 @@ static STList *EvaluateArgumentList(STEvaluator *self, STList *arguments, NSMuta
 
 static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments, NSMutableDictionary *scope)
 {
-	NSMutableString *selector = [NSMutableString string];
+	NSMutableString *selectorString = [NSMutableString string];
 	NSMutableArray *evaluatedArguments = [NSMutableArray array];
 	
 	NSUInteger index = 0;
@@ -289,14 +313,14 @@ static id SendMessageWithTargetAndArguments(STEvaluator *self, id target, STList
 	{
 		//If it's even, it's part of the selector
 		if((index % 2) == 0)
-			[selector appendString:[expression string]];
+			[selectorString appendString:[expression string]];
 		else
 			[evaluatedArguments addObject:EvaluateExpression(self, expression, scope)];
 		
 		index++;
 	}
 	
-	return STMessageBridgeSend(target, NSSelectorFromString(selector), evaluatedArguments);
+	return STMessageBridgeSend(target, NSSelectorFromString(selectorString), evaluatedArguments);
 }
 
 static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDictionary *scope)

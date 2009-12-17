@@ -20,6 +20,7 @@
 {
 	/* weak */		STEvaluator *mEvaluator;
 	/* strong */	NSMutableDictionary *mSuperscope;
+	/* weak */		Class mSuperclass;
 	
 	//Closure Description
 	/* strong */	NSMethodSignature *mClosureSignature;
@@ -71,6 +72,14 @@
  @abstract	The superscope of the closure.
  */
 @property (readonly) NSMutableDictionary *superscope;
+
+/*!
+ @property
+ @abstract		This property is provided for closures that serve as the implementation for methods.
+ @discussion	When this property is set, the closure will set a value for the key kSTEvaluatorSuperclassKey
+				in it's scope. This allows the super function to be used.
+ */
+@property (assign) Class superclass;
 
 #pragma mark -
 

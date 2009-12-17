@@ -19,3 +19,14 @@
  @discussion	If target is nil or NSNull then this method returns NSNull immediately.
  */
 ST_EXTERN id STMessageBridgeSend(id target, SEL selector, NSArray *arguments);
+
+/*!
+ @function
+ @abstract		Send a message to an object's superclass with a specified selector and a specified array of arguments.
+ @param			target		The receiver of the meessage.
+ @param			superclass	The target superclass. May not be nil.
+ @param			selector	A selector describing the message to send. May not be nil.
+ @param			arguments	The arguments to send along with the message. May not be nil.
+ @discussion	If the target is nil or NSNull then this method returns NSNull immediately.
+ */
+ST_EXTERN id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments);

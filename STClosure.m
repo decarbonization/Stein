@@ -107,7 +107,14 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	for (id name in mPrototype)
 		[scope setObject:[arguments objectAtIndex:index++] forKey:name];
 	
-	return [mEvaluator evaluateExpression:mImplementation inScope:scope];
+	if(mSuperclass)
+		[scope setObject:mSuperclass forKey:kSTEvaluatorSuperclassKey];
+	
+	id result = nil;
+	for (id expression in mImplementation)
+		result = [mEvaluator evaluateExpression:expression inScope:scope];
+	
+	return result;
 }
 
 #pragma mark -
@@ -188,6 +195,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 
 @synthesize evaluator = mEvaluator;
 @synthesize superscope = mSuperscope;
+@synthesize superclass = mSuperclass;
 
 #pragma mark -
 

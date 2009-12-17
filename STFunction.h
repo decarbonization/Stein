@@ -9,11 +9,15 @@
 #import <Cocoa/Cocoa.h>
 
 @class STEvaluator, STList;
-@protocol STFunction
+@protocol STFunction < NSObject >
 
 - (BOOL)evaluatesOwnArguments;
 - (STEvaluator *)evaluator;
 
 - (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope;
+
+@optional
+
+- (NSMutableDictionary *)superscope;
 
 @end
