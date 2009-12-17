@@ -7,8 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <Stein/STEvaluator.h>
+#import <Stein/STList.h>
 
-@class STEvaluator, STList;
 @protocol STFunction < NSObject >
 
 - (BOOL)evaluatesOwnArguments;
@@ -21,3 +22,13 @@
 - (NSMutableDictionary *)superscope;
 
 @end
+
+ST_INLINE id STFunctionApply(id < STFunction > function)
+{
+	STEvaluator *evaluator = [function evaluator];
+	
+	id superscope = [function respondsToSelector:@selector(superscope)]? [function superscope] : nil;
+	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:superscope];
+	
+	return [function applyWithArguments:[STList list] inScope:scope];
+}

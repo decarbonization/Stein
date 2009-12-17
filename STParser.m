@@ -233,16 +233,17 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 	expression.evaluator = targetEvaluator;
 	
 	NSUInteger index = *ioIndex;
-	if(!isUnbordered)
-		index++;
-	
 	if(usingDoNotation)
 	{
+		index++;
+		
 		expression.isQuoted = YES;
 		expression.isDoConstruct = YES;
 	}
-	else
+	else if(!isUnbordered)
 	{
+		index++;
+		
 		if([string characterAtIndex:*ioIndex] == LIST_QUOTE_CHARACTER)
 		{
 			index++;
@@ -320,7 +321,19 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 			NSCAssert((secondCharacter != 0), 
 					  @"Unexpected quote token at the end of a file.");
 			
-			[expression addObject:GetExpressionAt(&index, string, NO, (secondCharacter != LIST_OPEN_CHARACTER), targetEvaluator)];
+			if(secondCharacter == LIST_OPEN_CHARACTER)
+			{
+				[expression addObject:GetExpressionAt(&index, string, NO, NO, targetEvaluator)];
+			}
+			else
+			{
+				//Move past the opening quote.
+				index++;
+				
+				STSymbol *identifier = GetIdentifierAt(&index, string);
+				identifier.isQuoted = YES;
+				[expression addObject:identifier];
+			}
 		}
 		//If we encounter the list open character we scan the next subexpression.
 		else if(character == LIST_OPEN_CHARACTER)
@@ -356,7 +369,6 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 	for (NSUInteger index = 0; index < stringLength; index++)
 	{
 		unichar character = [string characterAtIndex:index];
-		NSCAssert((character != DO_CLOSE_CHARACTER), @"Unexpected do-notation termination at %ld", index);
 		
 		//We ignore whitespace, it doesn't really do anything.
 		if(IsCharacterWhitespace(character))
@@ -373,22 +385,6 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 		else if(character == COMMENT_CHARACTER)
 		{
 			IgnoreCommentAt(&index, string);
-		}
-		//If we encounter the word 'do' at the end of a line, we start do-notation expression parsing.
-		else if(character == 'd' && 
-				SafelyGetCharacterAtIndex(string, index + 1) == 'o' && 
-				IsCharacterWhitespace(SafelyGetCharacterAtIndex(string, index + 2)))
-		{
-			[expressions addObject:GetExpressionAt(&index, string, YES, NO, targetEvaluator)];
-		}
-		//When we come across a list quote character, we've been asked to create a quoted list.
-		else if(character == LIST_QUOTE_CHARACTER)
-		{
-			unichar secondCharacter = SafelyGetCharacterAtIndex(string, index + 1);
-			NSCAssert((secondCharacter != 0), 
-					  @"Unexpected quote token at the end of a file.");
-			
-			[expressions addObject:GetExpressionAt(&index, string, NO, (secondCharacter != LIST_OPEN_CHARACTER), targetEvaluator)];
 		}
 		//When we reach this clause it's time to start parsing the line as though it's an expression.
 		else

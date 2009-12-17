@@ -401,6 +401,9 @@ static id EvaluateExpression(STEvaluator *self, id expression, NSMutableDictiona
 	}
 	else if([expression isKindOfClass:[STSymbol class]])
 	{
+		if([expression isQuoted])
+			return expression;
+		
 		return [self objectForVariableNamed:[expression string] inScope:scope] ?: [NSNull null];
 	}
 	

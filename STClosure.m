@@ -218,4 +218,25 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return [super isEqualTo:object];
 }
 
+#pragma mark -
+#pragma mark Looping
+
+- (id)whileTrue:(STClosure *)closure
+{
+	id result = nil;
+	while ([STFunctionApply(self) isTrue])
+		result = STFunctionApply(closure);
+	
+	return result;
+}
+
+- (id)whileFalse:(STClosure *)closure
+{
+	id result = nil;
+	while (![STFunctionApply(self) isTrue])
+		result = STFunctionApply(closure);
+	
+	return result;
+}
+
 @end

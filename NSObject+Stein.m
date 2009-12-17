@@ -13,16 +13,6 @@
 #import "STSymbol.h"
 #import "STEvaluator.h"
 
-ST_INLINE id ApplyFunction(id < STFunction > function)
-{
-	STEvaluator *evaluator = [function evaluator];
-	
-	id superscope = [function respondsToSelector:@selector(superscope)]? [function superscope] : nil;
-	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:superscope];
-	
-	return [function applyWithArguments:[STList list] inScope:scope];
-}
-
 @implementation NSObject (Stein)
 
 #pragma mark Truthiness
@@ -44,20 +34,20 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 {
 	if([self isTrue])
 	{
-		return ApplyFunction(thenClause);
+		return STFunctionApply(thenClause);
 	}
 	
-	return ApplyFunction(elseClause);
+	return STFunctionApply(elseClause);
 }
 
 - (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
 {
 	if([self isTrue])
 	{
-		return ApplyFunction(thenClause);
+		return STFunctionApply(thenClause);
 	}
 	
-	return ApplyFunction(elseClause);
+	return STFunctionApply(elseClause);
 }
 
 #pragma mark -
@@ -78,20 +68,20 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 {
 	if(![self isTrue])
 	{
-		return ApplyFunction(thenClause);
+		return STFunctionApply(thenClause);
 	}
 	
-	return ApplyFunction(elseClause);
+	return STFunctionApply(elseClause);
 }
 
 - (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause
 {
 	if(![self isTrue])
 	{
-		return ApplyFunction(thenClause);
+		return STFunctionApply(thenClause);
 	}
 	
-	return ApplyFunction(elseClause);
+	return STFunctionApply(elseClause);
 }
 
 #pragma mark -

@@ -52,6 +52,7 @@
 #pragma mark Properties
 
 @synthesize string = mString;
+@synthesize isQuoted = mIsQuoted;
 
 #pragma mark -
 #pragma mark Identity
@@ -68,7 +69,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"'%@", mString];
+	return [NSString stringWithFormat:@"<%@:%p %@%@>", [self className], self, mIsQuoted? @"'" : @"", mString];
 }
 
 @end

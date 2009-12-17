@@ -11,13 +11,16 @@
 @interface STSymbol : NSObject
 {
 	NSString *mString;
+	BOOL mIsQuoted;
 }
 #pragma mark Creation
 
 + (STSymbol *)symbolWithString:(NSString *)string;
 - (id)initWithString:(NSString *)string;
 
-#pragma mark Destruction
+#pragma mark -
+#pragma mark Properties
 
 @property (readonly) NSString *string;
+@property BOOL isQuoted;
 @end

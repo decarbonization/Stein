@@ -100,4 +100,11 @@
  @abstract	An STList of expressions describing the closure's implementation.
  */
 @property (readonly) STList *implementation;
+
+#pragma mark -
+#pragma mark Looping
+
+- (id)whileTrue:(STClosure *)closure;
+- (id)whileFalse:(STClosure *)closure;
+
 @end

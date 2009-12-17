@@ -179,7 +179,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<%@#%P %@(%@)>", [self className], self, mIsQuoted? @"'" : @"", [mContents componentsJoinedByString:@" "]];
+	return [NSString stringWithFormat:@"<%@#%p %@(%@)>", [self className], self, mIsQuoted? @"'" : @"", [mContents componentsJoinedByString:@" "]];
 }
 
 #pragma mark -
