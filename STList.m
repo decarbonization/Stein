@@ -43,6 +43,8 @@
 
 - (id)initWithArray:(NSArray *)array
 {
+	NSParameterAssert(array);
+	
 	if((self = [self init]))
 	{
 		[mContents setArray:array];
@@ -61,8 +63,13 @@
 
 - (id)initWithList:(STList *)list
 {
+	NSParameterAssert(list);
+	
 	if((self = [self init]))
 	{
+		mEvaluator = list->mEvaluator;
+		mIsQuoted = list->mIsQuoted;
+		mIsDoConstruct = list->mIsDoConstruct;
 		[mContents setArray:list->mContents];
 		
 		return self;
@@ -79,9 +86,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-	STList *list = [[[self class] allocWithZone:zone] initWithArray:mContents];
-	list->mEvaluator = mEvaluator;
-	return list;
+	return [[[self class] allocWithZone:zone] initWithList:self];
 }
 
 #pragma mark -
@@ -94,7 +99,7 @@
 
 - (STList *)tail
 {
-	return [self sublistWithRange:NSMakeRange(1, [mContents count] - 1)];
+	return ([mContents count] > 1)? [self sublistWithRange:NSMakeRange(1, [mContents count] - 1)] : [STList list];
 }
 
 #pragma mark -
@@ -174,7 +179,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"%@(%@)", mIsQuoted? @"'" : @"", [mContents componentsJoinedByString:@" "]];
+	return [NSString stringWithFormat:@"<%@#%P %@(%@)>", [self className], self, mIsQuoted? @"'" : @"", [mContents componentsJoinedByString:@" "]];
 }
 
 #pragma mark -
@@ -190,6 +195,12 @@
 - (NSUInteger)count
 {
 	return [mContents count];
+}
+
+@dynamic allObjects;
+- (NSArray *)allObjects
+{
+	return [NSArray arrayWithArray:mContents];
 }
 
 #pragma mark -

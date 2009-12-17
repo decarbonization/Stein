@@ -59,6 +59,7 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 	return (character != LIST_QUOTE_CHARACTER && 
 			character != LIST_OPEN_CHARACTER && 
 			character != LIST_CLOSE_CHARACTER &&
+			character != DO_OPEN_CHARACTER &&
 			character != DO_CLOSE_CHARACTER &&
 			!IsCharacterWhitespace(character) && 
 			(isFirstCharacter || !IsCharacterPartOfNumber(character, NO)));
