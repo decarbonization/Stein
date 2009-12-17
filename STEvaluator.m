@@ -212,7 +212,8 @@ static NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *curr
 - (void)setObject:(id)object forVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope
 {
 	if([name isEqualToString:@"_here"] || [name isEqualToString:@"_interpreter"])
-		[NSException raise:NSInternalInconsistencyException format:@"You cannot set the variable %@, it is read only.", name];
+		[NSException raise:NSInternalInconsistencyException 
+					format:@"You cannot set the variable %@, it is read only.", name];
 	
 	
 	unichar firstCharacterInName = [name characterAtIndex:0];

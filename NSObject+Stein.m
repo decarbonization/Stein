@@ -40,7 +40,7 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 #pragma mark -
 #pragma mark Control Flow
 
-+ (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
++ (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
 {
 	if([self isTrue])
 	{
@@ -50,7 +50,7 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 	return ApplyFunction(elseClause);
 }
 
-- (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
+- (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
 {
 	if([self isTrue])
 	{
@@ -62,19 +62,19 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 
 #pragma mark -
 
-+ (id)if:(id < STFunction >)thenClause
++ (id)ifTrue:(id < STFunction >)thenClause
 {
-	return [self if:thenClause else:nil];
+	return [self ifTrue:thenClause ifFalse:nil];
 }
 
-- (id)if:(id < STFunction >)thenClause
+- (id)ifTrue:(id < STFunction >)thenClause
 {
-	return [self if:thenClause else:nil];
+	return [self ifTrue:thenClause ifFalse:nil];
 }
 
 #pragma mark -
 
-+ (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
++ (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause
 {
 	if(![self isTrue])
 	{
@@ -84,7 +84,7 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 	return ApplyFunction(elseClause);
 }
 
-- (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
+- (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause
 {
 	if(![self isTrue])
 	{
@@ -96,14 +96,14 @@ ST_INLINE id ApplyFunction(id < STFunction > function)
 
 #pragma mark -
 
-+ (id)ifNot:(id < STFunction >)thenClause
++ (id)ifFalse:(id < STFunction >)thenClause
 {
-	return [self ifNot:thenClause else:nil];
+	return [self ifFalse:thenClause ifTrue:nil];
 }
 
-- (id)ifNot:(id < STFunction >)thenClause
+- (id)ifFalse:(id < STFunction >)thenClause
 {
-	return [self ifNot:thenClause else:nil];
+	return [self ifFalse:thenClause ifTrue:nil];
 }
 
 #pragma mark -

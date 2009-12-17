@@ -21,23 +21,23 @@
 #pragma mark -
 #pragma mark Control Flow
 
-+ (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
-- (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
++ (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause;
+- (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause;
 
 #pragma mark -
 
-+ (id)if:(id < STFunction >)thenClause;
-- (id)if:(id < STFunction >)thenClause;
++ (id)ifTrue:(id < STFunction >)thenClause;
+- (id)ifTrue:(id < STFunction >)thenClause;
 
 #pragma mark -
 
-+ (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
-- (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
++ (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause;
+- (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause;
 
 #pragma mark -
 
-+ (id)ifNot:(id < STFunction >)thenClause;
-- (id)ifNot:(id < STFunction >)thenClause;
++ (id)ifFalse:(id < STFunction >)thenClause;
+- (id)ifFalse:(id < STFunction >)thenClause;
 
 #pragma mark -
 
