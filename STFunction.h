@@ -23,12 +23,12 @@
 
 @end
 
-ST_INLINE id STFunctionApply(id < STFunction > function)
+ST_INLINE id STFunctionApply(id < STFunction > function, STList *arguments)
 {
 	STEvaluator *evaluator = [function evaluator];
 	
 	id superscope = [function respondsToSelector:@selector(superscope)]? [function superscope] : nil;
 	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:superscope];
 	
-	return [function applyWithArguments:[STList list] inScope:scope];
+	return [function applyWithArguments:arguments inScope:scope];
 }

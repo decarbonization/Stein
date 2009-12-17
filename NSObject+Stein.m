@@ -34,20 +34,20 @@
 {
 	if([self isTrue])
 	{
-		return STFunctionApply(thenClause);
+		return STFunctionApply(thenClause, [STList list]);
 	}
 	
-	return STFunctionApply(elseClause);
+	return STFunctionApply(elseClause, [STList list]);
 }
 
 - (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
 {
 	if([self isTrue])
 	{
-		return STFunctionApply(thenClause);
+		return STFunctionApply(thenClause, [STList list]);
 	}
 	
-	return STFunctionApply(elseClause);
+	return STFunctionApply(elseClause, [STList list]);
 }
 
 #pragma mark -
@@ -68,20 +68,20 @@
 {
 	if(![self isTrue])
 	{
-		return STFunctionApply(thenClause);
+		return STFunctionApply(thenClause, [STList list]);
 	}
 	
-	return STFunctionApply(elseClause);
+	return STFunctionApply(elseClause, [STList list]);
 }
 
 - (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause
 {
 	if(![self isTrue])
 	{
-		return STFunctionApply(thenClause);
+		return STFunctionApply(thenClause, [STList list]);
 	}
 	
-	return STFunctionApply(elseClause);
+	return STFunctionApply(elseClause, [STList list]);
 }
 
 #pragma mark -

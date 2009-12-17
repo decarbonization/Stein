@@ -104,7 +104,31 @@
 #pragma mark -
 #pragma mark Looping
 
+/*!
+ @method
+ @abstract	Repeatedly apply the receiver until the result it returns is false, invoking a specified block each time it is true.
+ @param		closure		The closure to apply for each loop.
+ @result	The last value returned from the specified closure.
+ */
 - (id)whileTrue:(STClosure *)closure;
+
+/*!
+ @method
+ @abstract	Repeatedly apply the receiver until the result it returns is true, invoking a specified block each time it is false.
+ @param		closure		The closure to apply for each loop.
+ @result	The last value returned from the specified closure.
+ */
 - (id)whileFalse:(STClosure *)closure;
+
+#pragma mark -
+#pragma mark Exception Handling
+
+/*!
+ @method
+ @abstract	Invoke the receiver in the context of a try..catch block, invoking a specified block if an exception occurs.
+ @param		closure		The closure to invoke if an exception is raised while evaluating the receiver.
+ @result	YES if an exception was raised while evaluating the receiver; NO otherwise.
+ */
+- (BOOL)onException:(STClosure *)closure;
 
 @end

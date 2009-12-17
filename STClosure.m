@@ -104,8 +104,14 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 {
 	NSMutableDictionary *scope = [mEvaluator scopeWithEnclosingScope:superscope];
 	NSUInteger index = 0;
+	NSUInteger countOfArguments = [arguments count];
 	for (id name in mPrototype)
-		[scope setObject:[arguments objectAtIndex:index++] forKey:name];
+	{
+		if(index++ >= countOfArguments)
+			[scope setObject:[NSNull null] forKey:name];
+		else
+			[scope setObject:[arguments objectAtIndex:index] forKey:name];
+	}
 	
 	if(mSuperclass)
 		[scope setObject:mSuperclass forKey:kSTEvaluatorSuperclassKey];
@@ -224,8 +230,8 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 - (id)whileTrue:(STClosure *)closure
 {
 	id result = nil;
-	while ([STFunctionApply(self) isTrue])
-		result = STFunctionApply(closure);
+	while ([STFunctionApply(self, nil) isTrue])
+		result = STFunctionApply(closure, nil);
 	
 	return result;
 }
@@ -233,10 +239,31 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 - (id)whileFalse:(STClosure *)closure
 {
 	id result = nil;
-	while (![STFunctionApply(self) isTrue])
-		result = STFunctionApply(closure);
+	while (![STFunctionApply(self, nil) isTrue])
+		result = STFunctionApply(closure, nil);
 	
 	return result;
+}
+
+#pragma mark -
+#pragma mark Exception Handling
+
+- (BOOL)onException:(STClosure *)closure
+{
+	@try
+	{
+		STFunctionApply(self, [STList list]);
+	}
+	@catch (id e)
+	{
+		STList *arguments = [STList list];
+		[arguments addObject:e];
+		STFunctionApply(closure, arguments);
+		
+		return YES;
+	}
+	
+	return NO;
 }
 
 @end

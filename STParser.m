@@ -23,18 +23,20 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 #pragma mark -
 #pragma mark Character Definitions
 
-#define LIST_QUOTE_CHARACTER	'\''
+#define LIST_QUOTE_CHARACTER		'\''
 
-#define LIST_OPEN_CHARACTER		'('
-#define LIST_CLOSE_CHARACTER	')'
+#define LIST_OPEN_CHARACTER			'('
+#define LIST_CLOSE_CHARACTER		')'
 
-#define DO_OPEN_CHARACTER		'['
-#define DO_CLOSE_CHARACTER		']'
+#define DO_OPEN_CHARACTER			'['
+#define DO_CLOSE_CHARACTER			']'
 
-#define STRING_OPEN_CHARACTER	'"'
-#define STRING_CLOSE_CHARACTER	'"'
+#define STRING_OPEN_CHARACTER		'"'
+#define STRING_CLOSE_CHARACTER		'"'
 
-#define COMMENT_CHARACTER		';'
+#define COMMENT_CHARACTER			';'
+
+#define UNBORDERED_CLOSE_CHARACTER	','
 
 #pragma mark -
 #pragma mark Checkers
@@ -61,6 +63,7 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 			character != LIST_CLOSE_CHARACTER &&
 			character != DO_OPEN_CHARACTER &&
 			character != DO_CLOSE_CHARACTER &&
+			character != UNBORDERED_CLOSE_CHARACTER &&
 			!IsCharacterWhitespace(character) && 
 			(isFirstCharacter || !IsCharacterPartOfNumber(character, NO)));
 }
@@ -269,7 +272,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 		}
 		
 		//If we're unbordered and we've encountered a newline, our expression is done.
-		if(isUnbordered && IsCharacterNewline(character))
+		if(isUnbordered && (character == UNBORDERED_CLOSE_CHARACTER || IsCharacterNewline(character)))
 		{
 			break;
 		}
