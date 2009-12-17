@@ -16,8 +16,17 @@
 #import "STTypeBridge.h"
 
 static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalIvarsTable";
+static CFMutableDictionaryRef _IMPToClosureMap = NULL;
 
 @implementation NSObject (SteinClassAdditions)
+
++ (void)load
+{
+	if(!_IMPToClosureMap)
+	{
+		_IMPToClosureMap = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+	}
+}
 
 #pragma mark -
 #pragma mark Extension
@@ -135,10 +144,13 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 	closure.superclass = [class superclass];
 	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
 	
+	IMP implementationFunction = closure.functionPointer;
 	if(isInstanceMethod)
-		class_addMethod(class, selector, (IMP)closure.functionPointer, typeSignature);
+		class_addMethod(class, selector, implementationFunction, typeSignature);
 	else
-		class_addMethod(objc_getMetaClass(class_getName(class)), selector, (IMP)closure.functionPointer, typeSignature);
+		class_addMethod(objc_getMetaClass(class_getName(class)), selector, implementationFunction, typeSignature);
+	
+	CFDictionarySetValue(_IMPToClosureMap, implementationFunction, closure);
 }
 
 #pragma mark -

@@ -7,9 +7,13 @@
 //
 
 #import "STBuiltInFunctions.h"
+
 #import "STEvaluator.h"
 #import "STList.h"
 #import "STBridgedFunction.h"
+
+#import "STTypeBridge.h"
+#import <dlfcn.h>
 
 @implementation STBuiltInFunction
 
@@ -236,4 +240,16 @@ STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList 
 	
 	return [[[STBridgedFunction alloc] initWithSymbolNamed:symbolName 
 												 signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]] autorelease];
+});
+
+STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSCAssert(([arguments count] >= 2), @"Expected at least two arguments, got %ld.", [arguments count]);
+	
+	NSString *symbolName = [[arguments objectAtIndex:0] string];
+	NSString *signature = [arguments objectAtIndex:1];
+	
+	void *value = dlsym(RTLD_DEFAULT, [symbolName UTF8String]);
+	NSCAssert((value != NULL), @"Could not find constant named %@.", symbolName);
+	
+	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
 });

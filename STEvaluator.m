@@ -169,6 +169,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		
 		//Bridging
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
 		
 		//Constants
 		[mRootScope setObject:[NSNumber numberWithBool:YES] forKey:@"true"];

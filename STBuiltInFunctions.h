@@ -15,6 +15,8 @@
 #define STBuiltInFunctionDefine(name, evaluates, ...) STBuiltInFunction *STBuiltInFunction##name(STEvaluator *evaluator) { return [STBuiltInFunction builtInFunctionWithImplementation:(__VA_ARGS__) evaluatesOwnArguments:evaluates evaluator:evaluator]; }
 #define STBuiltInFunctionWithNameForEvaluator(name, evaluator) STBuiltInFunction##name(evaluator)
 
+#pragma mark -
+
 @class STEvaluator, STList;
 typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope);
 
@@ -33,12 +35,18 @@ typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arg
 @property (readonly) BOOL evaluatesOwnArguments;
 @end
 
+#pragma mark -
+#pragma mark Basic Math
+
 STBuiltInFunctionExport(Add);
 STBuiltInFunctionExport(Subtract);
 STBuiltInFunctionExport(Multiply);
 STBuiltInFunctionExport(Divide);
 STBuiltInFunctionExport(Modulo);
 STBuiltInFunctionExport(Power);
+
+#pragma mark -
+#pragma mark Comparisons
 
 STBuiltInFunctionExport(Equal);
 STBuiltInFunctionExport(NotEqual);
@@ -47,8 +55,15 @@ STBuiltInFunctionExport(LessThanOrEqual);
 STBuiltInFunctionExport(GreaterThan);
 STBuiltInFunctionExport(GreaterThanOrEqual);
 
+#pragma mark -
+#pragma mark Logical Operations
+
 STBuiltInFunctionExport(Or);
 STBuiltInFunctionExport(And);
 STBuiltInFunctionExport(Not);
 
+#pragma mark -
+#pragma mark Bridging
+
 STBuiltInFunctionExport(BridgeFunction);
+STBuiltInFunctionExport(BridgeConstant);
