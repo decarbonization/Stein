@@ -8,17 +8,23 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STList;
+@class STClosure;
 @interface NSObject (SteinClassAdditions)
 
-#pragma mark -
 #pragma mark Extension
 
-+ (Class)extend:(STList *)expressions;
++ (Class)extend:(STClosure *)expressions;
 
+#pragma mark -
 #pragma mark Subclassing
 
 + (Class)subclass:(NSString *)subclassName;
-+ (Class)subclass:(NSString *)subclassName where:(STList *)expressions;
++ (Class)subclass:(NSString *)subclassName where:(STClosure *)expressions;
+
+#pragma mark -
+#pragma mark Ivars
+
+- (void)setValue:(id)value forIvarNamed:(NSString *)name;
+- (id)valueForIvarNamed:(NSString *)name;
 
 @end

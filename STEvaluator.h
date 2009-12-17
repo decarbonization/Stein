@@ -12,17 +12,8 @@
 {
 	NSMutableDictionary *mRootScope;
 }
-#pragma mark Root Scope
 
-- (void)setValue:(id)value forKeyInRootScope:(NSString *)key;
-- (id)valueForKeyInRootScope:(NSString *)key;
-
-#pragma mark -
-
-@property (readonly) NSDictionary *rootScope;
-
-#pragma mark -
-#pragma mark Scope Creation
+#pragma mark Scoping
 
 /*!
  @method
@@ -31,6 +22,15 @@
  @result	A new autoreleased dictionary ready for use with STEvaluator.
  */
 - (NSMutableDictionary *)scopeWithEnclosingScope:(NSMutableDictionary *)enclosingScope;
+
+#pragma mark -
+
+- (void)setObject:(id)object forVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope;
+- (id)objectForVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope;
+
+#pragma mark -
+
+@property (readonly) NSMutableDictionary *rootScope;
 
 #pragma mark -
 #pragma mark Parsing & Evaluation

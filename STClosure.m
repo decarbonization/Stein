@@ -75,6 +75,10 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 
 - (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation withSignature:(NSMethodSignature *)signature fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope
 {
+	NSParameterAssert(prototype);
+	NSParameterAssert(implementation);
+	NSParameterAssert(evaluator);
+	
 	if((self = [super init]))
 	{
 		mPrototype = [prototype retain];
@@ -130,6 +134,9 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 @dynamic functionPointer;
 - (void *)functionPointer
 {
+	if(!mClosureSignature)
+		return NULL;
+	
 	//Creation of the libffi closure is deferred
 	//until it is actually needed. This way we
 	//don't waste resources when we don't have to.

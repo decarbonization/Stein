@@ -13,6 +13,7 @@
 {
 	NSMutableArray *mContents;
 	BOOL mIsQuoted;
+	BOOL mIsDoConstruct;
 	STEvaluator *mEvaluator;
 }
 #pragma mark Creation
@@ -42,8 +43,15 @@
 
 - (void)addObject:(id)object;
 - (void)insertObject:(id)object atIndex:(NSUInteger)index;
+
+#pragma mark -
+
 - (void)removeObject:(id)object;
 - (void)removeObjectAtIndex:(NSUInteger)index;
+
+#pragma mark -
+
+- (void)replaceValuesByPerformingSelectorOnEachObject:(SEL)selector;
 
 #pragma mark -
 #pragma mark Finding Objects
@@ -55,6 +63,7 @@
 #pragma mark Properties
 
 @property BOOL isQuoted;
+@property BOOL isDoConstruct;
 @property (assign) STEvaluator *evaluator;
 @property (readonly) NSUInteger count;
 

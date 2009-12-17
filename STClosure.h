@@ -53,7 +53,8 @@
 
 /*!
  @property
- @abstract	The closure's native function pointer suitable for use anywhere a function pointer is expected.
+ @abstract		The closure's native function pointer suitable for use anywhere a function pointer is expected.
+ @discussion	Only closure's who have had type signature's specified can produce a valid function pointer.
  */
 @property (readonly) void *functionPointer;
 

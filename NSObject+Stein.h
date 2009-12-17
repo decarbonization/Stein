@@ -8,7 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STList;
+@protocol STFunction;
+@class STClosure;
+
 @interface NSObject (Stein)
 
 #pragma mark Truthiness
@@ -19,27 +21,27 @@
 #pragma mark -
 #pragma mark Control Flow
 
-+ (id)if:(id)thenClause else:(id)elseClause;
-- (id)if:(id)thenClause else:(id)elseClause;
++ (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
+- (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
 
 #pragma mark -
 
-+ (id)if:(id)thenClause;
-- (id)if:(id)thenClause;
++ (id)if:(id < STFunction >)thenClause;
+- (id)if:(id < STFunction >)thenClause;
 
 #pragma mark -
 
-+ (id)ifNot:(id)thenClause else:(id)elseClause;
-- (id)ifNot:(id)thenClause else:(id)elseClause;
++ (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
+- (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause;
 
 #pragma mark -
 
-+ (id)ifNot:(id)thenClause;
-- (id)ifNot:(id)thenClause;
++ (id)ifNot:(id < STFunction >)thenClause;
+- (id)ifNot:(id < STFunction >)thenClause;
 
 #pragma mark -
 
-- (id)match:(STList *)matchers;
+- (id)match:(STClosure *)matchers;
 
 #pragma mark -
 #pragma mark Printing

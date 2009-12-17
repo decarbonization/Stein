@@ -28,7 +28,8 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 #define LIST_OPEN_CHARACTER		'('
 #define LIST_CLOSE_CHARACTER	')'
 
-#define DO_TERMATION_CHARACTER	'.'
+#define DO_OPEN_CHARACTER		'['
+#define DO_CLOSE_CHARACTER		']'
 
 #define STRING_OPEN_CHARACTER	'"'
 #define STRING_CLOSE_CHARACTER	'"'
@@ -58,7 +59,7 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 	return (character != LIST_QUOTE_CHARACTER && 
 			character != LIST_OPEN_CHARACTER && 
 			character != LIST_CLOSE_CHARACTER &&
-			character != DO_TERMATION_CHARACTER &&
+			character != DO_CLOSE_CHARACTER &&
 			!IsCharacterWhitespace(character) && 
 			(isFirstCharacter || !IsCharacterPartOfNumber(character, NO)));
 }
@@ -69,21 +70,19 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 static void IgnoreCommentAt(NSUInteger *ioIndex, NSString *string)
 {
 	NSUInteger stringLength = [string length];
-	BOOL foundNewline = NO;
 	for (NSUInteger index = *ioIndex; index < stringLength; index++)
 	{
 		unichar character = [string characterAtIndex:index];
 		if(IsCharacterNewline(character))
 		{
-			foundNewline = YES;
-			*ioIndex = index;
+			*ioIndex = index - 1;
 			
-			break;
+			return;
 		}
 	}
 	
-	if(!foundNewline)
-		*ioIndex = stringLength - 1;
+	//We only reach here if we EOF without finding a newline.
+	*ioIndex = stringLength - 1;
 }
 
 #pragma mark -
@@ -239,7 +238,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 	if(usingDoNotation)
 	{
 		expression.isQuoted = YES;
-		index++;
+		expression.isDoConstruct = YES;
 	}
 	else
 	{
@@ -255,7 +254,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 	{
 		unichar character = [string characterAtIndex:index];
 		
-		if(character == DO_TERMATION_CHARACTER)
+		if(character == DO_CLOSE_CHARACTER)
 		{
 			//If we're unbordered then we need to move back one character
 			//so that any containing do-dot statement will see it's closing
@@ -289,9 +288,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 			IgnoreCommentAt(&index, string);
 		}
 		//If we encounter the word 'do' at the end of a line, we start do-notation expression parsing.
-		else if(character == 'd' && 
-				SafelyGetCharacterAtIndex(string, index + 1) == 'o' && 
-				IsCharacterWhitespace(SafelyGetCharacterAtIndex(string, index + 2)))
+		else if(character == DO_OPEN_CHARACTER)
 		{
 			[expression addObject:GetExpressionAt(&index, string, YES, NO, targetEvaluator)];
 		}
@@ -358,7 +355,7 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 	for (NSUInteger index = 0; index < stringLength; index++)
 	{
 		unichar character = [string characterAtIndex:index];
-		NSCAssert((character != DO_TERMATION_CHARACTER), @"Unexpected do-notation termination at %ld", index);
+		NSCAssert((character != DO_CLOSE_CHARACTER), @"Unexpected do-notation termination at %ld", index);
 		
 		//We ignore whitespace, it doesn't really do anything.
 		if(IsCharacterWhitespace(character))

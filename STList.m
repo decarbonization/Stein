@@ -124,6 +124,8 @@
 	[mContents insertObject:object atIndex:index];
 }
 
+#pragma mark -
+
 - (void)removeObject:(id)object
 {
 	[mContents removeObject:object];
@@ -132,6 +134,16 @@
 - (void)removeObjectAtIndex:(NSUInteger)index
 {
 	[mContents removeObjectAtIndex:index];
+}
+
+#pragma mark -
+
+- (void)replaceValuesByPerformingSelectorOnEachObject:(SEL)selector
+{
+	NSParameterAssert(selector);
+	
+	for (NSInteger index = (self.count - 1); index >= 0; index--)
+		[mContents replaceObjectAtIndex:index withObject:[[mContents objectAtIndex:index] performSelector:selector]];
 }
 
 #pragma mark -
@@ -169,7 +181,10 @@
 #pragma mark Properties
 
 @synthesize isQuoted = mIsQuoted;
+@synthesize isDoConstruct = mIsDoConstruct;
 @synthesize evaluator = mEvaluator;
+
+#pragma mark -
 
 @dynamic count;
 - (NSUInteger)count

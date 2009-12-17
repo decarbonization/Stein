@@ -9,24 +9,16 @@
 #import "NSObject+Stein.h"
 #import "STFunction.h"
 #import "STList.h"
+#import "STClosure.h"
 #import "STSymbol.h"
 #import "STEvaluator.h"
 
-static id EvaluateListOrFunction(id listOrFunction)
+ST_INLINE id ApplyFunction(id < STFunction > function)
 {
-	//If we've been given nil then we're just going to return nil.
-	if(!listOrFunction || ![listOrFunction respondsToSelector:@selector(evaluator)])
-		return nil;
-	
-	STEvaluator *evaluator = [listOrFunction evaluator];
+	STEvaluator *evaluator = [function evaluator];
 	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
 	
-	//If we've been given a list, we evaluate it [sort of] like a function.
-	if([listOrFunction isKindOfClass:[STList class]])
-		return [evaluator evaluateExpression:listOrFunction inScope:scope];
-	
-	//If we've been given a function, we evaluate it.
-	return [listOrFunction applyWithArguments:[STList list] inScope:scope];
+	return [function applyWithArguments:[STList list] inScope:scope];
 }
 
 @implementation NSObject (Stein)
@@ -46,79 +38,79 @@ static id EvaluateListOrFunction(id listOrFunction)
 #pragma mark -
 #pragma mark Control Flow
 
-+ (id)if:(id)thenClause else:(id)elseClause
++ (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
 {
 	if([self isTrue])
 	{
-		return EvaluateListOrFunction(thenClause);
+		return ApplyFunction(thenClause);
 	}
 	
-	return EvaluateListOrFunction(elseClause);
+	return ApplyFunction(elseClause);
 }
 
-- (id)if:(id)thenClause else:(id)elseClause
+- (id)if:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
 {
 	if([self isTrue])
 	{
-		return EvaluateListOrFunction(thenClause);
+		return ApplyFunction(thenClause);
 	}
 	
-	return EvaluateListOrFunction(elseClause);
+	return ApplyFunction(elseClause);
 }
 
 #pragma mark -
 
-+ (id)if:(id)thenClause
++ (id)if:(id < STFunction >)thenClause
 {
 	return [self if:thenClause else:nil];
 }
 
-- (id)if:(id)thenClause
+- (id)if:(id < STFunction >)thenClause
 {
 	return [self if:thenClause else:nil];
 }
 
 #pragma mark -
 
-+ (id)ifNot:(id)thenClause else:(id)elseClause
++ (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
 {
 	if(![self isTrue])
 	{
-		return EvaluateListOrFunction(thenClause);
+		return ApplyFunction(thenClause);
 	}
 	
-	return EvaluateListOrFunction(elseClause);
+	return ApplyFunction(elseClause);
 }
 
-- (id)ifNot:(id)thenClause else:(id)elseClause
+- (id)ifNot:(id < STFunction >)thenClause else:(id < STFunction >)elseClause
 {
 	if(![self isTrue])
 	{
-		return EvaluateListOrFunction(thenClause);
+		return ApplyFunction(thenClause);
 	}
 	
-	return EvaluateListOrFunction(elseClause);
+	return ApplyFunction(elseClause);
 }
 
 #pragma mark -
 
-+ (id)ifNot:(id)thenClause
++ (id)ifNot:(id < STFunction >)thenClause
 {
 	return [self ifNot:thenClause else:nil];
 }
 
-- (id)ifNot:(id)thenClause
+- (id)ifNot:(id < STFunction >)thenClause
 {
 	return [self ifNot:thenClause else:nil];
 }
 
 #pragma mark -
 
-- (id)match:(STList *)matchers
+- (id)match:(STClosure *)matchers
 {
 	STEvaluator *evaluator = matchers.evaluator;
 	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
-	for (id pair in matchers)
+	for (id pair in matchers.implementation)
 	{
 		if(![pair isKindOfClass:[STList class]])
 			continue;

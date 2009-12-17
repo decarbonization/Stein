@@ -60,6 +60,7 @@
 @end
 
 #pragma mark -
+#pragma mark Mathematical
 
 STBuiltInFunctionDefine(Add, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	double value = [[arguments head] doubleValue];
@@ -110,6 +111,7 @@ STBuiltInFunctionDefine(Power, NO, ^id(STEvaluator *evaluator, STList *arguments
 });
 
 #pragma mark -
+#pragma mark Comparisons
 
 STBuiltInFunctionDefine(Equal, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	id last = [arguments head];
@@ -187,6 +189,44 @@ STBuiltInFunctionDefine(GreaterThanOrEqual, NO, ^id(STEvaluator *evaluator, STLi
 });
 
 #pragma mark -
+#pragma mark Boolean Operations
+
+STBuiltInFunctionDefine(Or, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	BOOL isTrue = [[arguments head] isTrue];
+	if(!isTrue)
+	{
+		for (id object in [arguments tail])
+		{
+			isTrue = isTrue || [object isTrue];
+			if(isTrue)
+				break;
+		}
+	}
+	
+	return [NSNumber numberWithBool:isTrue];
+});
+
+STBuiltInFunctionDefine(And, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	BOOL isTrue = [[arguments head] isTrue];
+	if(isTrue)
+	{
+		for (id object in [arguments tail])
+		{
+			isTrue = isTrue && [object isTrue];
+			if(!isTrue)
+				break;
+		}
+	}
+	
+	return [NSNumber numberWithBool:isTrue];
+});
+
+STBuiltInFunctionDefine(Not, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	return [NSNumber numberWithBool:![[arguments head] isTrue]];
+});
+
+#pragma mark -
+#pragma mark Bridging
 
 STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	NSCAssert(([arguments count] >= 2), @"Expected at least two arguments, got %ld.", [arguments count]);

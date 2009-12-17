@@ -15,6 +15,8 @@
 #import "STClosure.h"
 #import "STTypeBridge.h"
 
+static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalIvarsTable";
+
 @implementation NSObject (SteinClassAdditions)
 
 #pragma mark -
@@ -40,6 +42,7 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 		if([expression isKindOfClass:[STList class]] && [expression isQuoted])
 		{
 			implementation = expression;
+			implementation.isDoConstruct = NO;
 			implementation.isQuoted = NO;
 			break;
 		}
@@ -55,7 +58,7 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 				break;
 				
 			case kLookingForPrototypePiece:
-				[prototype addObject:expression];
+				[prototype addObject:[expression string]];
 				break;
 				
 			default:
@@ -82,6 +85,7 @@ static void GetMethodDefinitionFromListWithoutTypes(STList *list, SEL *outSelect
 		if([expression isKindOfClass:[STList class]])
 		{
 			implementation = expression;
+			implementation.isDoConstruct = NO;
 			implementation.isQuoted = NO;
 			break;
 		}
@@ -93,7 +97,7 @@ static void GetMethodDefinitionFromListWithoutTypes(STList *list, SEL *outSelect
 		else
 		{
 			[typeSignature appendString:@"@"];
-			[prototype addObject:expression];
+			[prototype addObject:[expression string]];
 		}
 		
 		index++;
@@ -134,9 +138,9 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 
 #pragma mark -
 
-+ (Class)extend:(STList *)expressions
++ (Class)extend:(STClosure *)expressions
 {
-	for (id expression in expressions)
+	for (id expression in expressions.implementation)
 	{
 		if([expression isKindOfClass:[STList class]])
 		{
@@ -159,14 +163,14 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 	return [self subclass:subclassName where:nil];
 }
 
-+ (Class)subclass:(NSString *)subclassName where:(STList *)expressions
++ (Class)subclass:(NSString *)subclassName where:(STClosure *)expressions
 {
 	NSParameterAssert(subclassName);
 	
 	Class newClass = objc_allocateClassPair(self, [subclassName UTF8String], 0);
 	objc_registerClassPair(newClass);
 	
-	for (id expression in expressions)
+	for (id expression in expressions.implementation)
 	{
 		if([expression isKindOfClass:[STList class]])
 		{
@@ -179,6 +183,71 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 	}
 	
 	return newClass;
+}
+
+#pragma mark -
+#pragma mark Ivars
+
++ (void)setValue:(id)value forIvarNamed:(NSString *)name
+{
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	if(!ivarTable)
+	{
+		ivarTable = [NSMutableDictionary dictionary];
+		objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+	}
+	
+	if(value)
+		[ivarTable setObject:value forKey:name];
+	else
+		[ivarTable removeObjectForKey:value];
+}
+
++ (id)valueForIvarNamed:(NSString *)name
+{
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	return [ivarTable objectForKey:name];
+}
+
+#pragma mark -
+
+- (void)setValue:(id)value forIvarNamed:(NSString *)name
+{
+	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
+	if(!ivar)
+	{
+		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+		if(!ivarTable)
+		{
+			ivarTable = [NSMutableDictionary dictionary];
+			objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+		}
+		
+		if(value)
+			[ivarTable setObject:value forKey:name];
+		else
+			[ivarTable removeObjectForKey:value];
+		
+		return;
+	}
+	
+	const char *ivarTypeEncoding = ivar_getTypeEncoding(ivar);
+	Byte buffer[STTypeBridgeSizeofObjCType(ivarTypeEncoding)];
+	STTypeBridgeConvertObjectIntoType(value, ivarTypeEncoding, (void **)&buffer);
+	object_setIvar(self, ivar, (void *)buffer);
+}
+
+- (id)valueForIvarNamed:(NSString *)name
+{
+	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
+	if(!ivar)
+	{
+		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+		return [ivarTable objectForKey:name];
+	}
+	
+	void *location = object_getIvar(self, ivar);
+	return STTypeBridgeConvertValueOfTypeIntoObject(&location, ivar_getTypeEncoding(ivar));
 }
 
 @end

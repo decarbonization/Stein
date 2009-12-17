@@ -10,10 +10,12 @@
 #pragma once
 
 #if __cplusplus
-#	define ST_EXTERN extern "C"
+#	define ST_EXTERN	extern "C"
 #else
-#	define ST_EXTERN extern
+#	define ST_EXTERN	extern
 #endif /* __cplusplus */
+
+#define ST_INLINE	static inline
 
 #ifdef __OBJC__
 

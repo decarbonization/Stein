@@ -47,4 +47,8 @@ STBuiltInFunctionExport(LessThanOrEqual);
 STBuiltInFunctionExport(GreaterThan);
 STBuiltInFunctionExport(GreaterThanOrEqual);
 
+STBuiltInFunctionExport(Or);
+STBuiltInFunctionExport(And);
+STBuiltInFunctionExport(Not);
+
 STBuiltInFunctionExport(BridgeFunction);

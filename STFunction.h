@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STList, STEvaluator;
+@class STEvaluator, STList;
 @protocol STFunction
 
 - (BOOL)evaluatesOwnArguments;
