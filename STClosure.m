@@ -108,7 +108,7 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	for (id name in mPrototype)
 	{
 		if(index++ >= countOfArguments)
-			[scope setObject:[NSNull null] forKey:name];
+			[scope setObject:STNull forKey:name];
 		else
 			[scope setObject:[arguments objectAtIndex:index] forKey:name];
 	}

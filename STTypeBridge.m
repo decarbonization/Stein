@@ -202,18 +202,18 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 			return [NSNumber numberWithBool:*(_Bool *)value];
 			
 		case kObjectiveCTypeVoid:
-			return [NSNull null];
+			return STNull;
 			
 		case kObjectiveCTypeCString:
 			return [NSString stringWithUTF8String:*(const char **)value];
 			
 		case kObjectiveCTypeCArray:
 		case kObjectiveCTypePointer:
-			return [NSNull null];
+			return STNull;
 			
 		case kObjectiveCTypeClass:
 		case kObjectiveCTypeObject:
-			return *(id *)value ?: [NSNull null];
+			return *(id *)value ?: STNull;
 			
 		case kObjectiveCTypeSelector:
 			return NSStringFromSelector(*(SEL *)value);
@@ -232,7 +232,7 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 			break;
 	}
 	
-	return [NSNull null];
+	return STNull;
 }
 
 void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **value)
@@ -308,7 +308,7 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 			
 		case kObjectiveCTypeClass:
 		case kObjectiveCTypeObject:
-			if(object == (id)kCFNull)
+			if(object == STNull)
 				*(id *)value = nil;
 			else
 				*(id *)value = object;

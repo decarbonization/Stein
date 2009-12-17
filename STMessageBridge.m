@@ -11,13 +11,28 @@
 #import "STFunctionInvocation.h"
 #import <objc/objc-runtime.h>
 
+/*!
+ @function
+ @abstract		Determines whether or not a specified selector is exempt from null messaging.
+ @discussion	Under normal circumstances sending a message to null will result in null, however
+				our control flow operators are implemented as messages, and it would be very bad
+				if they were to stop working even if the receiver is null.
+ */
+ST_INLINE BOOL IsSelectorExemptFromNullMessaging(SEL selector)
+{
+	return (selector == @selector(ifTrue:) || selector == @selector(ifTrue:ifFalse:) ||
+			selector == @selector(ifFalse:) || selector == @selector(ifFalse:ifTrue:) ||
+			selector == @selector(whileTrue:) || selector == @selector(whileFalse:) ||
+			selector == @selector(match:));
+}
+
 id STMessageBridgeSend(id target, SEL selector, NSArray *arguments)
 {
 	NSCParameterAssert(selector);
 	NSCParameterAssert(arguments);
 	
-	if(!target || (target == (id)kCFNull))
-		return (id)kCFNull;
+	if(!IsSelectorExemptFromNullMessaging(selector) && (!target || (target == STNull)))
+		return STNull;
 	
 	NSMethodSignature *targetMethodSignature = [target methodSignatureForSelector:selector];
 	if(!targetMethodSignature)
@@ -60,8 +75,8 @@ id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *
 	NSCParameterAssert(selector);
 	NSCParameterAssert(arguments);
 	
-	if(!target || (target == (id)kCFNull))
-		return (id)kCFNull;
+	if(!IsSelectorExemptFromNullMessaging(selector) && (!target || (target == STNull)))
+		return STNull;
 	
 	NSCAssert2([target isKindOfClass:superclass], 
 			   @"%@ is not a descendent of %@", [target class], superclass);

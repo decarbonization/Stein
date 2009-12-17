@@ -83,7 +83,7 @@
 	
 	//If it returns void, it should be nil
 	if([functionSignature methodReturnType][0] == 'v')
-		return [NSNull null];
+		return STNull;
 	
 	void *returnValue = NULL;
 	[mInvocation getReturnValue:&returnValue];

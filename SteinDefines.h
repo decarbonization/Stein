@@ -23,4 +23,8 @@
 
 ST_EXTERN NSBundle *SteinBundle();
 
+#define STNull	((NSNull *)kCFNull)
+#define STTrue	((NSNumber *)kCFBooleanTrue)
+#define STFalse	((NSNumber *)kCFBooleanFalse)
+
 #endif /* __OBJC__ */

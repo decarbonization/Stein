@@ -48,7 +48,7 @@ STBuiltInFunctionDefine(Set, YES, ^id(STEvaluator *evaluator, STList *arguments,
 		[scope removeObjectForKey:key];
 	}
 	
-	return [NSNull null];
+	return STNull;
 });
 
 STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
@@ -172,9 +172,9 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
 		
 		//Constants
-		[mRootScope setObject:[NSNumber numberWithBool:YES] forKey:@"true"];
-		[mRootScope setObject:[NSNumber numberWithBool:NO] forKey:@"false"];
-		[mRootScope setObject:[NSNull null] forKey:@"null"];
+		[mRootScope setObject:STTrue forKey:@"true"];
+		[mRootScope setObject:STFalse forKey:@"false"];
+		[mRootScope setObject:STNull forKey:@"null"];
 		
 		return self;
 	}
@@ -363,7 +363,7 @@ static id EvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *sco
 		return list;
 	
 	if([list count] == 0)
-		return [NSNull null];
+		return STNull;
 	
 	id target = EvaluateExpression(self, [list head], scope);
 	
@@ -404,7 +404,7 @@ static id EvaluateExpression(STEvaluator *self, id expression, NSMutableDictiona
 		if([expression isQuoted])
 			return expression;
 		
-		return [self objectForVariableNamed:[expression string] inScope:scope] ?: [NSNull null];
+		return [self objectForVariableNamed:[expression string] inScope:scope] ?: STNull;
 	}
 	
 	return expression;
