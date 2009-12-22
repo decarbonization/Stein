@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <Stein/STEnumerable.h>
 
 @protocol STFunction;
 @class STClosure;
@@ -46,7 +47,23 @@
 #pragma mark -
 #pragma mark Printing
 
+- (NSString *)prettyDescription;
+- (NSString *)prettyPrint;
+
+#pragma mark -
+
 - (NSString *)print;
+
+#pragma mark -
+#pragma mark Ivars
+
+- (void)setValue:(id)value forIvarNamed:(NSString *)name;
+- (id)valueForIvarNamed:(NSString *)name;
+
+#pragma mark -
+#pragma mark Extension
+
++ (Class)extend:(STClosure *)extensions;
 
 @end
 
@@ -55,6 +72,12 @@
 @interface NSNumber (Stein)
 
 - (BOOL)isTrue;
+
+@end
+
+#pragma mark -
+
+@interface NSString (Stein)
 
 @end
 
@@ -69,18 +92,14 @@
 
 #pragma mark -
 
-@interface NSArray (Stein)
-
-- (void)foreach:(STClosure *)closure;
-- (NSArray *)map:(STClosure *)closure;
-- (NSArray *)filter:(STClosure *)closure;
+@interface NSArray (Stein) < STEnumerable >
 
 @end
 
-@interface NSSet (Stein)
+@interface NSSet (Stein) < STEnumerable >
 
-- (void)foreach:(STClosure *)closure;
-- (NSSet *)map:(STClosure *)closure;
-- (NSSet *)filter:(STClosure *)closure;
+@end
+
+@interface NSDictionary (Stein) < STEnumerable >
 
 @end

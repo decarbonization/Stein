@@ -7,6 +7,7 @@
 //
 
 #import "STList.h"
+#import "NSObject+Stein.h"
 
 @implementation STList
 
@@ -133,6 +134,14 @@
 	return sublist;
 }
 
+- (STList *)sublistFromIndex:(NSUInteger)index
+{
+	NSAssert((index < [self count]), 
+			 @"Index %ld beyond bounds {0, %ld}", index, [self count]);
+	
+	return [self sublistWithRange:NSMakeRange(index, [self count] - index)];
+}
+
 #pragma mark -
 #pragma mark Modification
 
@@ -199,6 +208,36 @@
 	return [NSString stringWithFormat:@"<%@#%p %@(%@)>", [self className], self, mIsQuoted? @"'" : @"", [mContents componentsJoinedByString:@" "]];
 }
 
+- (NSString *)prettyDescription
+{
+	//Format: (print "hello, world")
+	NSMutableString *description = [NSMutableString string];
+	
+	//Add the leading quote if we're a quoted string.
+	if(mIsQuoted)
+		[description appendString:@"'"];
+	
+	
+	//Open the expression
+	[description appendString:mIsDoConstruct? @"[" : @"("];
+	
+	
+	//Get the pretty description for each element in our contents
+	for (id expression in mContents)
+		[description appendFormat:@"%@ ", [expression prettyDescription]];
+	
+	
+	//Remove the trailing space if we're non-empty
+	if([mContents count] > 0)
+		[description deleteCharactersInRange:NSMakeRange([description length] - 1, 1)];
+	
+	
+	//Close the expression
+	[description appendString:mIsDoConstruct? @"]" : @")"];
+	
+	return description;
+}
+
 #pragma mark -
 #pragma mark Properties
 
@@ -226,6 +265,80 @@
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len
 {
 	return [mContents countByEnumeratingWithState:state objects:stackbuf count:len];
+}
+
+#pragma mark -
+
+- (id)foreach:(id < STFunction >)function
+{
+	for (id object in self)
+	{
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:object]);
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
+	}
+	
+	return self;
+}
+
+- (id)map:(id < STFunction >)function
+{
+	STList *mappedObjects = [STList list];
+	
+	for (id object in self)
+	{
+		@try
+		{
+			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			if(!mappedObject)
+				continue;
+			
+			[mappedObjects addObject:mappedObject];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
+	}
+	
+	return mappedObjects;
+}
+
+- (id)filter:(id < STFunction >)function
+{
+	STList *filteredObjects = [STList list];
+	
+	for (id object in self)
+	{
+		@try
+		{
+			if([STFunctionApply(function, [STList listWithObject:object]) isTrue])
+				[filteredObjects addObject:object];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
+	}
+	
+	return filteredObjects;
 }
 
 @end

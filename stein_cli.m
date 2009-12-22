@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <Stein/Stein.h>
+#import <Stein/NSObject+Stein.h>
 #import <readline/readline.h>
 
 #pragma mark Tools
@@ -105,7 +106,7 @@ static void RunREPL(STEvaluator *evaluator)
 			
 			//Parse and evaluate the data we just read in from the user, and print out the result.
 			id result = [evaluator parseAndEvaluateString:line];
-			fprintf(stdout, "=> %s\n", [[result description] UTF8String]);
+			fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
 		}
 		@catch (NSException *e)
 		{
@@ -255,12 +256,12 @@ int main (int argc, const char * argv[])
 				//
 				if(FLAG_IS_SET(options, kProgramOptionParseOnly))
 				{
-					fprintf(stdout, "%s => %s\n", [path UTF8String], [[expressions description] UTF8String]);
+					fprintf(stdout, "%s => %s\n", [path UTF8String], [[expressions prettyDescription] UTF8String]);
 				}
 				else
 				{
 					id result = [evaluator evaluateExpression:expressions inScope:nil];
-					fprintf(stdout, "%s => %s\n", [path UTF8String], [[result description] UTF8String]);
+					fprintf(stdout, "%s => %s\n", [path UTF8String], [[result prettyDescription] UTF8String]);
 				}
 				
 				//

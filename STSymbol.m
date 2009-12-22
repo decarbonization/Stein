@@ -72,4 +72,9 @@
 	return [NSString stringWithFormat:@"<%@:%p %@%@>", [self className], self, mIsQuoted? @"'" : @"", mString];
 }
 
+- (NSString *)prettyDescription
+{
+	return [NSString stringWithFormat:@"%@%@", mIsQuoted? @"'" : @"", mString];
+}
+
 @end

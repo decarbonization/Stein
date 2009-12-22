@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <Stein/STEnumerable.h>
 
 @class STEvaluator;
 
@@ -14,7 +15,7 @@
  @class
  @abstract	The STList class is used to represent s-expressions in the Stein language.
  */
-@interface STList : NSObject < NSFastEnumeration, NSCopying >
+@interface STList : NSObject < STEnumerable, NSFastEnumeration, NSCopying >
 {
 	/* owner */	NSMutableArray *mContents;
 	/* n/a */	BOOL mIsQuoted;
@@ -105,10 +106,17 @@
 
 /*!
  @method
- @abstract		Create a new autoreleased sublist with the contents of the receiver in the specifeid range.
+ @abstract		Create a new autoreleased sublist with the contents of the receiver in the specified range.
  @discussion	The list returned by this method inherits the receiver's evaluator, but does not inherit it's quote/do construct status.
  */
 - (STList *)sublistWithRange:(NSRange)range;
+
+/*!
+ @method
+ @abstract		Create a new autoreleased sublist with the contents of the receiver from a specified index to the end of the list.
+ @discussion	The list returned by this method inherits the receiver's evaluator, but does not inherit it's quote/do construct status.
+ */
+- (STList *)sublistFromIndex:(NSUInteger)index;
 
 #pragma mark -
 #pragma mark Modification

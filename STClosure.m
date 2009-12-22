@@ -107,10 +107,11 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	NSUInteger countOfArguments = [arguments count];
 	for (id name in mPrototype)
 	{
-		if(index++ >= countOfArguments)
+		if(index >= countOfArguments)
 			[scope setObject:STNull forKey:name];
 		else
 			[scope setObject:[arguments objectAtIndex:index] forKey:name];
+		index++;
 	}
 	
 	if(mSuperclass)

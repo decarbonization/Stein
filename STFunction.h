@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Stein/STEvaluator.h>
-#import <Stein/STList.h>
 
+@class STList;
 @protocol STFunction < NSObject >
 
 - (BOOL)evaluatesOwnArguments;

@@ -7,11 +7,16 @@
 //
 
 #import "NSObject+Stein.h"
+#import <objc/objc-runtime.h>
+#import "STTypeBridge.h"
+
 #import "STFunction.h"
 #import "STList.h"
 #import "STClosure.h"
 #import "STSymbol.h"
 #import "STEvaluator.h"
+
+static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalIvarsTable";
 
 @implementation NSObject (Stein)
 
@@ -121,6 +126,47 @@
 #pragma mark -
 #pragma mark Printing
 
+- (NSString *)prettyDescription
+{
+	return [@";" stringByAppendingString:[self description]];
+}
+
++ (NSString *)prettyDescription
+{
+	return [@";" stringByAppendingString:[self description]];
+}
+
+#pragma mark -
+
+- (NSString *)prettyPrint
+{
+	NSString *prettyDescription = [self prettyDescription];
+	
+	puts([prettyDescription UTF8String]);
+	
+	return prettyDescription;
+}
+
++ (NSString *)prettyPrint
+{
+	NSString *prettyDescription = [self prettyDescription];
+	
+	puts([prettyDescription UTF8String]);
+	
+	return prettyDescription;
+}
+
+#pragma mark -
+
++ (NSString *)print
+{
+	NSString *description = [self description];
+	
+	puts([description UTF8String]);
+	
+	return description;
+}
+
 - (NSString *)print
 {
 	NSString *description = [self description];
@@ -130,15 +176,111 @@
 	return description;
 }
 
+#pragma mark -
+#pragma mark Ivars
+
++ (void)setValue:(id)value forIvarNamed:(NSString *)name
+{
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	if(!ivarTable)
+	{
+		ivarTable = [NSMutableDictionary dictionary];
+		objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+	}
+	
+	if(value)
+		[ivarTable setObject:value forKey:name];
+	else
+		[ivarTable removeObjectForKey:value];
+}
+
++ (id)valueForIvarNamed:(NSString *)name
+{
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	return [ivarTable objectForKey:name];
+}
+
+#pragma mark -
+
+- (void)setValue:(id)value forIvarNamed:(NSString *)name
+{
+	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
+	if(!ivar)
+	{
+		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+		if(!ivarTable)
+		{
+			ivarTable = [NSMutableDictionary dictionary];
+			objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+		}
+		
+		if(value)
+			[ivarTable setObject:value forKey:name];
+		else
+			[ivarTable removeObjectForKey:value];
+		
+		return;
+	}
+	
+	const char *ivarTypeEncoding = ivar_getTypeEncoding(ivar);
+	Byte buffer[STTypeBridgeSizeofObjCType(ivarTypeEncoding)];
+	STTypeBridgeConvertObjectIntoType(value, ivarTypeEncoding, (void **)&buffer);
+	object_setIvar(self, ivar, (void *)buffer);
+}
+
+- (id)valueForIvarNamed:(NSString *)name
+{
+	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
+	if(!ivar)
+	{
+		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+		return [ivarTable objectForKey:name];
+	}
+	
+	void *location = object_getIvar(self, ivar);
+	return STTypeBridgeConvertValueOfTypeIntoObject(&location, ivar_getTypeEncoding(ivar));
+}
+
+#pragma mark -
+#pragma mark Extension
+
++ (Class)extend:(STClosure *)extensions
+{
+	STExtendClass(self, extensions.implementation);
+	return self;
+}
+
 @end
 
 #pragma mark -
 
 @implementation NSNumber (Stein)
 
+#pragma mark Truthiness
+
 - (BOOL)isTrue
 {
 	return [self boolValue];
+}
+
+#pragma mark -
+#pragma mark Printing
+
+- (NSString *)prettyDescription
+{
+	return [self description];
+}
+
+@end
+
+#pragma mark -
+
+@implementation NSString (Stein)
+
+- (NSString *)prettyDescription
+{
+	return [NSString stringWithFormat:@"\"%@\"", [self stringByReplacingOccurrencesOfString:@"\"" 
+																				 withString:@"\\\""]];
 }
 
 @end
@@ -146,6 +288,8 @@
 #pragma mark -
 
 @implementation NSNull (Stein)
+
+#pragma mark Truthiness
 
 + (BOOL)isTrue
 {
@@ -157,88 +301,300 @@
 	return NO;
 }
 
+#pragma mark -
+#pragma mark Printing
+
+- (NSString *)prettyDescription
+{
+	return @"null";
+}
+
 @end
 
 #pragma mark -
 
 @implementation NSArray (Stein)
 
-- (void)foreach:(STClosure *)closure
-{
-	for (id object in self)
-	{
-		STFunctionApply(closure, [STList listWithObject:object]);
-	}
-}
+#pragma mark Enumerable
 
-- (NSArray *)map:(STClosure *)closure
+- (id)foreach:(id < STFunction >)function
 {
-	NSMutableArray *objects = [NSMutableArray array];
-	
 	for (id object in self)
 	{
-		id mappedObject = STFunctionApply(closure, [STList listWithObject:object]);
-		if(!mappedObject)
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:object]);
+		}
+		@catch (STBreakException *e)
+		{
 			break;
-		
-		[objects addObject:mappedObject];
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
-	return objects;
+	return self;
 }
 
-- (NSArray *)filter:(STClosure *)closure
+- (id)map:(id < STFunction >)function
 {
-	NSMutableArray *objects = [NSMutableArray array];
+	NSMutableArray *mappedObjects = [NSMutableArray array];
 	
 	for (id object in self)
 	{
-		if([STFunctionApply(closure, [STList listWithObject:object]) isTrue])
-			[objects addObject:object];
+		@try
+		{
+			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			if(!mappedObject)
+				continue;
+			
+			[mappedObjects addObject:mappedObject];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
-	return objects;
+	return mappedObjects;
+}
+
+- (id)filter:(id < STFunction >)function
+{
+	NSMutableArray *filteredObjects = [NSMutableArray array];
+	
+	for (id object in self)
+	{
+		@try
+		{
+			if([STFunctionApply(function, [STList listWithObject:object]) isTrue])
+				[filteredObjects addObject:object];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
+	}
+	
+	return filteredObjects;
+}
+
+#pragma mark -
+#pragma mark Pretty Printing
+
+- (NSString *)prettyDescription
+{
+	NSMutableString *description = [NSMutableString stringWithString:@"{\n"];
+	
+	for (id object in self)
+	{
+		[description appendFormat:@"\t%@\n", [object prettyDescription]];
+	}
+	
+	[description appendString:@"}"];
+	
+	return description;
 }
 
 @end
 
+#pragma mark -
+
 @implementation NSSet (Stein)
 
-- (void)foreach:(STClosure *)closure
-{
-	for (id element in self)
-	{
-		STFunctionApply(closure, [STList listWithObject:element]);
-	}
-}
+#pragma mark Enumerable
 
-- (NSSet *)map:(STClosure *)closure
+- (id)foreach:(id < STFunction >)function
 {
-	NSMutableSet *objects = [NSMutableSet set];
-	
 	for (id object in self)
 	{
-		id mappedObject = STFunctionApply(closure, [STList listWithObject:object]);
-		if(!mappedObject)
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:object]);
+		}
+		@catch (STBreakException *e)
+		{
 			break;
-		
-		[objects addObject:mappedObject];
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
-	return objects;
+	return self;
 }
 
-- (NSSet *)filter:(STClosure *)closure
+- (id)map:(id < STFunction >)function
 {
-	NSMutableSet *objects = [NSMutableSet set];
+	NSMutableSet *mappedObjects = [NSMutableSet set];
 	
 	for (id object in self)
 	{
-		if([STFunctionApply(closure, [STList listWithObject:object]) isTrue])
-			[objects addObject:object];
+		@try
+		{
+			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			if(!mappedObject)
+				continue;
+			
+			[mappedObjects addObject:mappedObject];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
-	return objects;
+	return mappedObjects;
+}
+
+- (id)filter:(id < STFunction >)function
+{
+	NSMutableSet *filteredObjects = [NSMutableSet set];
+	
+	for (id object in self)
+	{
+		@try
+		{
+			if([STFunctionApply(function, [STList listWithObject:object]) isTrue])
+				[filteredObjects addObject:object];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
+	}
+	
+	return filteredObjects;
+}
+
+#pragma mark -
+#pragma mark Pretty Printing
+
+- (NSString *)prettyDescription
+{
+	NSMutableString *description = [NSMutableString stringWithString:@"{\n"];
+	
+	for (id object in self)
+	{
+		[description appendFormat:@"\t%@\n", [object prettyDescription]];
+	}
+	
+	[description appendString:@"}"];
+	
+	return description;
+}
+
+@end
+
+#pragma mark -
+
+@implementation NSDictionary (Stein)
+
+#pragma mark Enumerable
+
+- (id)foreach:(id < STFunction >)function
+{
+	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+		@try
+		{
+			STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
+	}];
+	
+	return self;
+}
+
+- (id)map:(id < STFunction >)function
+{
+	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
+	
+	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+		@try
+		{
+			id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+			if([mappedValue isTrue])
+				[result setObject:mappedValue forKey:key];
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
+	}];
+	
+	return result;
+}
+
+- (id)filter:(id < STFunction >)function
+{
+	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
+	
+	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+		@try
+		{
+			if([STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]) isTrue])
+				[result setObject:value forKey:key];
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
+	}];
+	
+	return result;
+}
+
+#pragma mark -
+#pragma mark Pretty Printing
+
+- (NSString *)prettyDescription
+{
+	NSMutableString *description = [NSMutableString stringWithString:@"{\n"];
+	
+	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+		[description appendFormat:@"\t%@ => %@\n", [key prettyDescription], [value prettyDescription]];
+	}];
+	
+	[description appendString:@"}"];
+	
+	return description;
 }
 
 @end

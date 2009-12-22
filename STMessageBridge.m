@@ -7,9 +7,16 @@
 //
 
 #import "STMessageBridge.h"
+
 #import "STTypeBridge.h"
 #import "STFunctionInvocation.h"
 #import <objc/objc-runtime.h>
+
+#import "STList.h"
+#import "STSymbol.h"
+
+#import "STClosure.h"
+#import "STEvaluatorInternal.h"
 
 /*!
  @function
@@ -123,4 +130,182 @@ id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *
 	[invocation getReturnValue:&returnValue];
 	
 	return STTypeBridgeConvertValueOfTypeIntoObject(returnValue, [functionSignature methodReturnType]);
+}
+
+#pragma mark -
+
+static CFMutableDictionaryRef _IMPToClosureMap = NULL;
+
+static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector, STList **outPrototype, NSString **outTypeSignature, STList **outImplementation)
+{
+	NSMutableString *selectorString = [NSMutableString string];
+	STList *prototype = [STList listWithArray:[NSArray arrayWithObjects:@"self", @"_cmd", nil]];
+	
+	NSString *returnType = [[[list head] head] string];
+	NSMutableString *typeSignature = [NSMutableString stringWithFormat:@"%@@:", STTypeBridgeGetObjCTypeForHumanReadableType(returnType)];
+	
+	STList *implementation = nil;
+	
+	enum {
+		kLookingForSelector = 0,
+		kLookingForType,
+		kLookingForPrototypePiece,
+	} whatWereLookingFor = kLookingForSelector;
+	for (id expression in [list tail])
+	{
+		if([expression isKindOfClass:[STList class]] && [expression isQuoted])
+		{
+			implementation = expression;
+			implementation.isDoConstruct = NO;
+			implementation.isQuoted = NO;
+			break;
+		}
+		
+		switch (whatWereLookingFor)
+		{
+			case kLookingForSelector:
+				[selectorString appendString:[expression string]];
+				break;
+				
+			case kLookingForType:
+				[typeSignature appendString:STTypeBridgeGetObjCTypeForHumanReadableType([[expression head] string])];
+				break;
+				
+			case kLookingForPrototypePiece:
+				[prototype addObject:[expression string]];
+				break;
+				
+			default:
+				break;
+		}
+		
+		whatWereLookingFor++;
+		if(whatWereLookingFor > kLookingForPrototypePiece)
+			whatWereLookingFor = kLookingForSelector;
+	}
+	
+	*outSelector = NSSelectorFromString(selectorString);
+	*outPrototype = prototype;
+	*outTypeSignature = typeSignature;
+	*outImplementation = implementation;
+}
+
+static void GetMethodDefinitionFromListWithoutTypes(STList *list, SEL *outSelector, STList **outPrototype, NSString **outTypeSignature, STList **outImplementation)
+{
+	NSMutableString *selectorString = [NSMutableString string];
+	STList *prototype = [STList listWithArray:[NSArray arrayWithObjects:@"self", @"_cmd", nil]];
+	NSMutableString *typeSignature = [NSMutableString stringWithString:@"@@:"];
+	STList *implementation = nil;
+	
+	NSUInteger index = 0;
+	for (id expression in list)
+	{
+		if([expression isKindOfClass:[STList class]])
+		{
+			implementation = expression;
+			implementation.isDoConstruct = NO;
+			implementation.isQuoted = NO;
+			break;
+		}
+		
+		if((index % 2) == 0)
+		{
+			[selectorString appendString:[expression string]];
+		}
+		else
+		{
+			[typeSignature appendString:@"@"];
+			[prototype addObject:[expression string]];
+		}
+		
+		index++;
+	}
+	
+	*outSelector = NSSelectorFromString(selectorString);
+	*outPrototype = prototype;
+	*outTypeSignature = typeSignature;
+	*outImplementation = implementation;
+}
+
+static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Class class)
+{
+	SEL selector = NULL;
+	STList *prototype = nil;
+	NSString *typeSignatureString = nil;
+	STList *implementation = nil;
+	
+	BOOL isTypeInformationIncluded = [[list head] isKindOfClass:[STList class]];
+	if(isTypeInformationIncluded)
+		GetMethodDefinitionFromListWithTypes(list, &selector, &prototype, &typeSignatureString, &implementation);
+	else
+		GetMethodDefinitionFromListWithoutTypes(list, &selector, &prototype, &typeSignatureString, &implementation);
+	
+	const char *typeSignature = [typeSignatureString UTF8String];
+	STClosure *closure = [[STClosure alloc] initWithPrototype:prototype 
+											forImplementation:implementation 
+												withSignature:[NSMethodSignature signatureWithObjCTypes:typeSignature] 
+												fromEvaluator:list.evaluator 
+													  inScope:nil];
+	closure.superclass = [class superclass];
+	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
+	
+	IMP implementationFunction = closure.functionPointer;
+	if(isInstanceMethod)
+		class_addMethod(class, selector, implementationFunction, typeSignature);
+	else
+		class_addMethod(objc_getMetaClass(class_getName(class)), selector, implementationFunction, typeSignature);
+	
+	if(!_IMPToClosureMap)
+		_IMPToClosureMap = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, &kCFTypeDictionaryValueCallBacks);
+	CFDictionarySetValue(_IMPToClosureMap, implementationFunction, closure);
+}
+
+#pragma mark -
+
+void STExtendClass(Class classToExtend, STList *expressions)
+{
+	NSCParameterAssert(classToExtend);
+	NSCParameterAssert(expressions);
+	
+	STEvaluator *evaluator = nil;
+	NSMutableDictionary *scope = nil;
+	for (id expression in expressions)
+	{
+		if([expression isKindOfClass:[STList class]])
+		{
+			id head = [expression head];
+			if([head isEqualTo:@"+"])
+			{
+				AddMethodFromClosureToClass([expression tail], NO, classToExtend);
+			}
+			else if([head isEqualTo:@"-"])
+			{
+				AddMethodFromClosureToClass([expression tail], YES, classToExtend);
+			}
+			else
+			{
+				if(!evaluator)
+					evaluator = expressions.evaluator;
+				
+				if(!scope)
+					scope = [evaluator scopeWithEnclosingScope:nil];
+				
+				__STSendMessageWithTargetAndArguments(evaluator, classToExtend, expression, scope);
+			}
+		}
+	}
+}
+
+Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions)
+{
+	NSCParameterAssert(subclassName);
+	NSCParameterAssert(superclass);
+	
+	Class newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
+	objc_registerClassPair(newClass);
+	
+	if(expressions)
+		STExtendClass(newClass, expressions);
+	
+	return newClass;
 }
