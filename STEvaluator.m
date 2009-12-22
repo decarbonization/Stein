@@ -91,7 +91,12 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 });
 
 STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSCAssert([arguments count] >= 1, @"# expected at least 1 argument, got 0.");
+	
 	id target = EvaluateExpression(evaluator, [arguments head], scope);
+	if([arguments count] == 1)
+		return target;
+	
 	return SendMessageWithTargetAndArguments(evaluator, target, [arguments tail], scope);
 });
 
