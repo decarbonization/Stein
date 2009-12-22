@@ -276,7 +276,7 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 {
 	if([name isEqualToString:@"_here"])
 		return scope;
-	else if([name isEqualToString:@"_interpreter"])
+	else if([name isEqualToString:@"_evaluator"])
 		return self;
 	
 	
@@ -371,6 +371,8 @@ static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDic
 										 inScope:scope] autorelease];
 }
 
+#pragma mark -
+
 id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 {
 	if(list.isDoConstruct)
@@ -384,7 +386,7 @@ id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 	
 	id target = __STEvaluateExpression(self, [list head], scope);
 	
-	if([target conformsToProtocol:@protocol(STFunction)])
+	if([target respondsToSelector:@selector(applyWithArguments:inScope:)])
 	{
 		NSObject < STFunction > *function = target;
 		if([function evaluatesOwnArguments])
