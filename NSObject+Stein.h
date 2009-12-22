@@ -66,3 +66,21 @@
 - (BOOL)isTrue;
 
 @end
+
+#pragma mark -
+
+@interface NSArray (Stein)
+
+- (void)foreach:(STClosure *)closure;
+- (NSArray *)map:(STClosure *)closure;
+- (NSArray *)filter:(STClosure *)closure;
+
+@end
+
+@interface NSSet (Stein)
+
+- (void)foreach:(STClosure *)closure;
+- (NSSet *)map:(STClosure *)closure;
+- (NSSet *)filter:(STClosure *)closure;
+
+@end

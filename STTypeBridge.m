@@ -799,7 +799,7 @@ NSString *STTypeBridgeGetObjCTypeForHumanReadableType(NSString *type)
 	if([type hasPrefix:@"^"])
 		return [@"^" stringByAppendingString:STTypeBridgeGetObjCTypeForHumanReadableType([type substringFromIndex:1])];
 	
-	if([type isEqualToString:@"char"])
+	if([type isEqualToString:@"char"] || [type isEqualToString:@"BOOL"])
 		return @"c";
 	else if([type isEqualToString:@"int"])
 		return @"i";

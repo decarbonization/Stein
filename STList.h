@@ -74,6 +74,11 @@
 + (STList *)listWithList:(STList *)list;
 
 #pragma mark -
+
+- (id)initWithObject:(id)object;
++ (STList *)listWithObject:(id)object;
+
+#pragma mark -
 #pragma mark Accessing objects
 
 /*!

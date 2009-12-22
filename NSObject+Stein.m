@@ -158,3 +158,87 @@
 }
 
 @end
+
+#pragma mark -
+
+@implementation NSArray (Stein)
+
+- (void)foreach:(STClosure *)closure
+{
+	for (id object in self)
+	{
+		STFunctionApply(closure, [STList listWithObject:object]);
+	}
+}
+
+- (NSArray *)map:(STClosure *)closure
+{
+	NSMutableArray *objects = [NSMutableArray array];
+	
+	for (id object in self)
+	{
+		id mappedObject = STFunctionApply(closure, [STList listWithObject:object]);
+		if(!mappedObject)
+			break;
+		
+		[objects addObject:mappedObject];
+	}
+	
+	return objects;
+}
+
+- (NSArray *)filter:(STClosure *)closure
+{
+	NSMutableArray *objects = [NSMutableArray array];
+	
+	for (id object in self)
+	{
+		if([STFunctionApply(closure, [STList listWithObject:object]) isTrue])
+			[objects addObject:object];
+	}
+	
+	return objects;
+}
+
+@end
+
+@implementation NSSet (Stein)
+
+- (void)foreach:(STClosure *)closure
+{
+	for (id element in self)
+	{
+		STFunctionApply(closure, [STList listWithObject:element]);
+	}
+}
+
+- (NSSet *)map:(STClosure *)closure
+{
+	NSMutableSet *objects = [NSMutableSet set];
+	
+	for (id object in self)
+	{
+		id mappedObject = STFunctionApply(closure, [STList listWithObject:object]);
+		if(!mappedObject)
+			break;
+		
+		[objects addObject:mappedObject];
+	}
+	
+	return objects;
+}
+
+- (NSSet *)filter:(STClosure *)closure
+{
+	NSMutableSet *objects = [NSMutableSet set];
+	
+	for (id object in self)
+	{
+		if([STFunctionApply(closure, [STList listWithObject:object]) isTrue])
+			[objects addObject:object];
+	}
+	
+	return objects;
+}
+
+@end

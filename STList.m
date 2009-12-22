@@ -84,6 +84,23 @@
 
 #pragma mark -
 
+- (id)initWithObject:(id)object
+{
+	if((self = [self init]))
+	{
+		[mContents addObject:object];
+		return self;
+	}
+	return nil;
+}
+
++ (STList *)listWithObject:(id)object
+{
+	return [[[self alloc] initWithObject:object] autorelease];
+}
+
+#pragma mark -
+
 - (id)copyWithZone:(NSZone *)zone
 {
 	return [[[self class] allocWithZone:zone] initWithList:self];
