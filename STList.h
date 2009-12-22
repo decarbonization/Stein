@@ -15,7 +15,7 @@
  @class
  @abstract	The STList class is used to represent s-expressions in the Stein language.
  */
-@interface STList : NSObject < STEnumerable, NSFastEnumeration, NSCopying >
+@interface STList : NSObject < STEnumerable, NSFastEnumeration, NSCopying, NSCoding >
 {
 	/* owner */	NSMutableArray *mContents;
 	/* n/a */	BOOL mIsQuoted;

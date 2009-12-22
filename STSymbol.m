@@ -49,6 +49,31 @@
 }
 
 #pragma mark -
+#pragma mark Coding
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+	NSAssert([decoder allowsKeyedCoding], @"Non-keyed coder (%@) given to -[STSymbol initWithCoder:].", decoder);
+	
+	if((self = [super init]))
+	{
+		mString = [[decoder decodeObjectForKey:@"mString"] retain];
+		mIsQuoted = [decoder decodeBoolForKey:@"mIsQuoted"];
+		
+		return self;
+	}
+	return nil;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+	NSAssert([encoder allowsKeyedCoding], @"Non-keyed coder (%@) given to -[STSymbol encodeWithCoder:].", encoder);
+	
+	[encoder encodeObject:mString forKey:@"mString"];
+	[encoder encodeBool:mIsQuoted forKey:@"mIsQuoted"];
+}
+
+#pragma mark -
 #pragma mark Properties
 
 @synthesize string = mString;

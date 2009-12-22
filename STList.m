@@ -108,6 +108,33 @@
 }
 
 #pragma mark -
+#pragma mark Coding
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+	NSAssert([decoder allowsKeyedCoding], @"Non-keyed coder (%@) given to -[STList initWithCoder:].", decoder);
+	
+	if((self = [self init]))
+	{
+		mContents = [[decoder decodeObjectForKey:@"mContents"] retain];
+		mIsQuoted = [decoder decodeBoolForKey:@"mIsQuoted"];
+		mIsDoConstruct = [decoder decodeBoolForKey:@"mIsDoConstruct"];
+		
+		return self;
+	}
+	return nil;
+}
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+	NSAssert([encoder allowsKeyedCoding], @"Non-keyed coder (%@) given to -[STList encodeWithCoder:].", encoder);
+	
+	[encoder encodeObject:mContents forKey:@"mContents"];
+	[encoder encodeBool:mIsQuoted forKey:@"mIsQuoted"];
+	[encoder encodeBool:mIsDoConstruct forKey:@"mIsDoConstruct"];
+}
+
+#pragma mark -
 #pragma mark Accessing Objects
 
 - (id)head
