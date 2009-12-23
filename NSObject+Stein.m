@@ -2,8 +2,8 @@
 //  NSObject+Stein.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 09/12/13.
-//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//  Created by Peter MacWhinnie on 2009/12/13.
+//  Copyright 2009 Stein Language. All rights reserved.
 //
 
 #import "NSObject+Stein.h"

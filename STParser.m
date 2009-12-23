@@ -2,8 +2,8 @@
 //  STParser.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 09/12/11.
-//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//  Created by Peter MacWhinnie on 2009/12/11.
+//  Copyright 2009 Stein Language. All rights reserved.
 //
 
 #import "STParser.h"
@@ -23,20 +23,22 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 #pragma mark -
 #pragma mark Character Definitions
 
-#define LIST_QUOTE_CHARACTER		'\''
+#define LIST_QUOTE_CHARACTER				'\''
 
-#define LIST_OPEN_CHARACTER			'('
-#define LIST_CLOSE_CHARACTER		')'
+#define LIST_OPEN_CHARACTER					'('
+#define LIST_CLOSE_CHARACTER				')'
 
-#define DO_OPEN_CHARACTER			'['
-#define DO_CLOSE_CHARACTER			']'
+#define DO_LIST_OPEN_CHARACTER				'['
+#define DO_LIST_CLOSE_CHARACTER				']'
 
-#define STRING_OPEN_CHARACTER		'"'
-#define STRING_CLOSE_CHARACTER		'"'
+#define STRING_OPEN_CHARACTER				'"'
+#define STRING_CLOSE_CHARACTER				'"'
 
-#define COMMENT_CHARACTER			';'
+#define SINGLELINE_COMMENT_CHARACTER		';'
+#define	MULTILINE_COMMENT_OPEN_CHARACTER	'`'
+#define	MULTILINE_COMMENT_CLOSE_CHARACTER	'`'
 
-#define UNBORDERED_CLOSE_CHARACTER	','
+#define UNBORDERED_LIST_CLOSE_CHARACTER		','
 
 #pragma mark -
 #pragma mark Checkers
@@ -61,9 +63,9 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 	return (character != LIST_QUOTE_CHARACTER && 
 			character != LIST_OPEN_CHARACTER && 
 			character != LIST_CLOSE_CHARACTER &&
-			character != DO_OPEN_CHARACTER &&
-			character != DO_CLOSE_CHARACTER &&
-			character != UNBORDERED_CLOSE_CHARACTER &&
+			character != DO_LIST_OPEN_CHARACTER &&
+			character != DO_LIST_CLOSE_CHARACTER &&
+			character != UNBORDERED_LIST_CLOSE_CHARACTER &&
 			!IsCharacterWhitespace(character) && 
 			(isFirstCharacter || !IsCharacterPartOfNumber(character, NO)));
 }
@@ -71,15 +73,28 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 #pragma mark -
 #pragma mark Parsers
 
-static void IgnoreCommentAt(NSUInteger *ioIndex, NSString *string)
+static void IgnoreCommentAt(NSUInteger *ioIndex, NSString *string, BOOL isMultiline)
 {
+	//If we're skipping a multi-line comment, we need to ignore the
+	//opening character or we'll end up causing an infinite loop.
+	if(isMultiline)
+		(*ioIndex)++;
+	
 	NSUInteger stringLength = [string length];
 	for (NSUInteger index = *ioIndex; index < stringLength; index++)
 	{
 		unichar character = [string characterAtIndex:index];
-		if(IsCharacterNewline(character))
+		if(character == '\\')
 		{
-			*ioIndex = index - 1;
+			continue;
+		}
+		else if((isMultiline && character == MULTILINE_COMMENT_CLOSE_CHARACTER) || 
+				(!isMultiline && IsCharacterNewline(character)))
+		{
+			if(isMultiline)
+				*ioIndex = index;
+			else
+				*ioIndex = index - 1;
 			
 			return;
 		}
@@ -259,7 +274,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 	{
 		unichar character = [string characterAtIndex:index];
 		
-		if(character == DO_CLOSE_CHARACTER)
+		if(character == DO_LIST_CLOSE_CHARACTER)
 		{
 			//If we're unbordered then we need to move back one character
 			//so that any containing do-dot statement will see it's closing
@@ -272,7 +287,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 		}
 		
 		//If we're unbordered and we've encountered a newline, our expression is done.
-		if(isUnbordered && (character == UNBORDERED_CLOSE_CHARACTER || IsCharacterNewline(character)))
+		if(isUnbordered && (character == UNBORDERED_LIST_CLOSE_CHARACTER || IsCharacterNewline(character)))
 		{
 			break;
 		}
@@ -288,12 +303,12 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 			continue;
 		}
 		//If we encounter a comment, we just move to the end of it, ignoring it's contents.
-		else if(character == COMMENT_CHARACTER)
+		else if(character == SINGLELINE_COMMENT_CHARACTER || character == MULTILINE_COMMENT_OPEN_CHARACTER)
 		{
-			IgnoreCommentAt(&index, string);
+			IgnoreCommentAt(&index, string, (character == MULTILINE_COMMENT_OPEN_CHARACTER));
 		}
 		//If we encounter the word 'do' at the end of a line, we start do-notation expression parsing.
-		else if(character == DO_OPEN_CHARACTER)
+		else if(character == DO_LIST_OPEN_CHARACTER)
 		{
 			[expression addObject:GetExpressionAt(&index, string, YES, NO, targetEvaluator)];
 		}
@@ -385,9 +400,9 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 			continue;
 		}
 		//When we encounter comments, we move to the end of them and ignore their contents.
-		else if(character == COMMENT_CHARACTER)
+		else if(character == SINGLELINE_COMMENT_CHARACTER || character == MULTILINE_COMMENT_OPEN_CHARACTER)
 		{
-			IgnoreCommentAt(&index, string);
+			IgnoreCommentAt(&index, string, (character == MULTILINE_COMMENT_OPEN_CHARACTER));
 		}
 		//When we reach this clause it's time to start parsing the line as though it's an expression.
 		else

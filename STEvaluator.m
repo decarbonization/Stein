@@ -2,8 +2,8 @@
 //  STEvaluator.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 09/12/11.
-//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//  Created by Peter MacWhinnie on 2009/12/11.
+//  Copyright 2009 Stein Language. All rights reserved.
 //
 
 #import "STEvaluator.h"
@@ -165,6 +165,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 {
 	if((self = [super init]))
 	{
+		//Setup the root scope, and expose our built in functions and constants.
 		mRootScope = [NSMutableDictionary new];
 		
 		//Built in Math Functions
@@ -205,6 +206,34 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STTrue forKey:@"true"];
 		[mRootScope setObject:STFalse forKey:@"false"];
 		[mRootScope setObject:STNull forKey:@"null"];
+		
+		
+		//Load and run the Prelude file.
+		NSURL *preludeLocation = [[NSBundle bundleForClass:[self class]] URLForResource:@"Prelude" withExtension:@"st"];
+		if(preludeLocation)
+		{
+			NSError *error = nil;
+			NSString *preludeSource = [NSString stringWithContentsOfURL:preludeLocation encoding:NSUTF8StringEncoding error:&error];
+			if(preludeSource)
+			{
+				@try
+				{
+					[self parseAndEvaluateString:preludeSource];
+				}
+				@catch (NSException *e)
+				{
+					fprintf(stderr, "*** STEvaluator could not load Prelude, got error {%s}.\n", [[e reason] UTF8String]);
+				}
+			}
+			else
+			{
+				fprintf(stderr, "*** STEvaluator could not load Prelude, got error {%s}.\n", [[error localizedDescription] UTF8String]);
+			}
+		}
+		else
+		{
+			fprintf(stderr, "*** STEvaluator could not find Prelude, continuing without it.\n");
+		}
 		
 		return self;
 	}
