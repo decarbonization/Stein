@@ -95,6 +95,7 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 		
 		signature = signatureInProgress;
 	}
+	[parameterList replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
 	implementation.isQuoted = NO;
 	
 	STClosure *closure = [[[STClosure alloc] initWithPrototype:parameterList
