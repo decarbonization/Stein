@@ -122,6 +122,12 @@ static NSNumber *GetNumberAt(NSUInteger *ioIndex, NSString *string)
 	for (NSUInteger index = *ioIndex; index < stringLength; index++)
 	{
 		unichar character = [string characterAtIndex:index];
+		
+		//If we're at the beginning of the number, and there's a
+		//minus sign, we just add that to our range and continue.
+		if(character == '-' && index == *ioIndex)
+			continue;
+		
 		if(!IsCharacterPartOfNumber(character, (index == *ioIndex)))
 		{
 			numberRange.length = (index - numberRange.location);
@@ -371,7 +377,8 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 			[expression addObject:GetExpressionAt(&index, string, NO, YES, targetEvaluator)];
 		}
 		//If we find part of a number, we read it and add it to our expression.
-		else if(IsCharacterPartOfNumber(character, YES))
+		else if(IsCharacterPartOfNumber(character, YES) || 
+				(character == '-' && IsCharacterPartOfNumber(SafelyGetCharacterAtIndex(string, index + 1), YES)))
 		{
 			[expression addObject:GetNumberAt(&index, string)];
 		}
