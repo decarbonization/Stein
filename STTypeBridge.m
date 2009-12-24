@@ -844,7 +844,7 @@ NSString *STTypeBridgeGetObjCTypeForHumanReadableType(NSString *type)
 		return @"d";
 	else if([type isEqualToString:@"_bool"])
 		return @"B";
-	else if([type isEqualToString:@"void"])
+	else if([type isEqualToString:@"void"] || [type isEqualToString:@"IBAction"]) //IBAction is just an alias for void.
 		return @"v";
 	else if([type isEqualToString:@"Class"])
 		return @"#";

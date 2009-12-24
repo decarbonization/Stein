@@ -62,6 +62,12 @@ id SynthesizedGet(id self, SEL _cmd)
 						method_getImplementation(synthesizeWriteOnlyMethod), 
 						method_getTypeEncoding(synthesizeWriteOnlyMethod));
 		
+		//IBOutlet is provided as an alias for synthesize-writeonly. This will eventually make Interface Builder support considerably easier.
+		class_addMethod(self, 
+						sel_registerName("IBOutlet"), 
+						method_getImplementation(synthesizeWriteOnlyMethod), 
+						method_getTypeEncoding(synthesizeWriteOnlyMethod));
+		
 		
 		hasAddedAliases = YES;
 	}
