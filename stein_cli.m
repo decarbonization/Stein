@@ -1,13 +1,33 @@
+//
+//  stein_cli.m
+//  stein
+//
+//  Created by Peter MacWhinnie on 2009/12/11.
+//  Copyright 2009 Stein Language. All rights reserved.
+//
+
 #import <Foundation/Foundation.h>
-#import <Stein/Stein.h>
-#import <Stein/NSObject+Stein.h>
-#import <Stein/STPointer.h>
 #import <readline/readline.h>
+
+#import <Stein/Stein.h>
+#import <Stein/NSObject+Stein.h> //For -[NSObject prettyDescription]
 
 #pragma mark Tools
 
-#define FLAG_IS_SET(options, flag) ((options & flag) == flag)
+/*!
+ @defined
+ @abstract	Indicate whether or not a flag is set in an options bit-field.
+ */
+#define FlagIsSet(options, flag) ((options & flag) == flag)
 
+/*!
+ @function
+ @abstract		Analyze a string read from the REPL, and indicate the number of unbalanced parentheses and unbalanced brackets found.
+ @param			numberOfUnbalancedParentheses	On return, an integer describing the number of unbalanced parentheses in the specified string.
+ @param			numberOfUnbalancedBrackets		On return, an integer describing the number of unbalanced brackets in the specified string.
+ @param			string							The string to analyze.
+ @discussion	All parameters are required.
+ */
 static void FindUnbalancedExpressions(NSInteger *numberOfUnbalancedParentheses, NSInteger *numberOfUnbalancedBrackets, NSString *string)
 {
 	NSCParameterAssert(numberOfUnbalancedParentheses);
@@ -44,6 +64,10 @@ static void FindUnbalancedExpressions(NSInteger *numberOfUnbalancedParentheses, 
 #pragma mark -
 #pragma mark Implementation
 
+/*!
+ @function
+ @abstract	Run a read-evaluate-print loop (REPL) with a specified evaluator until the user asks to exit.
+ */
 static void RunREPL(STEvaluator *evaluator)
 {
 	//Initialize readline so we get history.
@@ -123,11 +147,32 @@ static void RunREPL(STEvaluator *evaluator)
 #pragma mark -
 
 typedef enum ProgramOptions {
+	/*!
+	 @enum		ProgramOptions
+	 @abstract	Enumerations describing each of the options a user can specify in the Stein CLI.
+	 
+	 @constant	kProgramOptionSandboxEachFile
+					This field is set when the user has asked for each file to be run in its own interpreter.
+	 
+	 @constant	kProgramOptionSandboxEachFile
+					This field is set when the user has indicated they want each file to be compiled and printed, but not interpreted.
+	 
+	 @constant	kProgramOptionRunREPLInBackground
+					This field is set when the user has indicated they want to run the REPL loop in a background thread, while the files they specified run in the main thread.
+	 */
 	kProgramOptionSandboxEachFile = (1 << 0),
 	kProgramOptionParseOnly = (1 << 1),
 	kProgramOptionRunREPLInBackground = (1 << 2),
 } ProgramOptions;
 
+/*!
+ @function
+ @abstract	Analyze the arguments given to the CLI when it was called from the command prompt, reporting the paths and options that were specified by the user in easily processable forms.
+ @param		argc		The length of the arguments given.
+ @param		argv		The arguments given. May not be NULL.
+ @param		outPaths	On return, will contain an array describing the paths the user specified.
+ @param		outOptions	On return, will contain a bit-or combined value describing the options the user specified.
+ */
 static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outPaths, ProgramOptions *outOptions)
 {
 	NSCParameterAssert(argv);
@@ -183,6 +228,10 @@ static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outP
 
 #pragma mark -
 
+/*!
+ @function
+ @abstract	Print the usage information for the Stein command line interface.
+ */
 static void Help()
 {
 	fprintf(stdout, "stein [-spr] [paths...]\n\n");
@@ -219,10 +268,10 @@ int main (int argc, const char * argv[])
 		AnalyzeProgramArguments(argc, argv, &paths, &options);
 		
 		STEvaluator *evaluator = [STEvaluator new];
-		if(FLAG_IS_SET(options, kProgramOptionRunREPLInBackground))
+		if(FlagIsSet(options, kProgramOptionRunREPLInBackground))
 		{
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				if(FLAG_IS_SET(options, kProgramOptionSandboxEachFile))
+				if(FlagIsSet(options, kProgramOptionSandboxEachFile))
 				{
 					STEvaluator *replEvaluator = [STEvaluator new];
 					RunREPL(replEvaluator);
@@ -255,7 +304,7 @@ int main (int argc, const char * argv[])
 				//	If we're in parse only mode, we simply print the
 				//	data we parsed and go along our merry way.
 				//
-				if(FLAG_IS_SET(options, kProgramOptionParseOnly))
+				if(FlagIsSet(options, kProgramOptionParseOnly))
 				{
 					fprintf(stdout, "%s => %s\n", [path UTF8String], [[expressions prettyDescription] UTF8String]);
 				}
@@ -274,7 +323,7 @@ int main (int argc, const char * argv[])
 				//	around if there are any valid closures or classes that were created
 				//	through it.
 				//
-				if(FLAG_IS_SET(options, kProgramOptionSandboxEachFile))
+				if(FlagIsSet(options, kProgramOptionSandboxEachFile))
 				{
 					[evaluator release];
 					evaluator = [STEvaluator new];

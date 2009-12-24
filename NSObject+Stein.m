@@ -33,17 +33,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 }
 
 #pragma mark -
-#pragma mark Control Flow
-
-+ (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
-{
-	if([self isTrue])
-	{
-		return STFunctionApply(thenClause, [STList list]);
-	}
-	
-	return STFunctionApply(elseClause, [STList list]);
-}
+#pragma mark If Statements
 
 - (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
 {
@@ -55,53 +45,42 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return STFunctionApply(elseClause, [STList list]);
 }
 
-#pragma mark -
-
-+ (id)ifTrue:(id < STFunction >)thenClause
++ (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
 {
-	return [self ifTrue:thenClause ifFalse:nil];
+	if([self isTrue])
+	{
+		return STFunctionApply(thenClause, [STList list]);
+	}
+	
+	return STFunctionApply(elseClause, [STList list]);
 }
+
+#pragma mark -
 
 - (id)ifTrue:(id < STFunction >)thenClause
 {
 	return [self ifTrue:thenClause ifFalse:nil];
 }
 
-#pragma mark -
-
-+ (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause
++ (id)ifTrue:(id < STFunction >)thenClause
 {
-	if(![self isTrue])
-	{
-		return STFunctionApply(thenClause, [STList list]);
-	}
-	
-	return STFunctionApply(elseClause, [STList list]);
-}
-
-- (id)ifFalse:(id < STFunction >)thenClause ifTrue:(id < STFunction >)elseClause
-{
-	if(![self isTrue])
-	{
-		return STFunctionApply(thenClause, [STList list]);
-	}
-	
-	return STFunctionApply(elseClause, [STList list]);
+	return [self ifTrue:thenClause ifFalse:nil];
 }
 
 #pragma mark -
-
-+ (id)ifFalse:(id < STFunction >)thenClause
-{
-	return [self ifFalse:thenClause ifTrue:nil];
-}
 
 - (id)ifFalse:(id < STFunction >)thenClause
 {
-	return [self ifFalse:thenClause ifTrue:nil];
+	return [self ifTrue:nil ifFalse:thenClause];
+}
+
++ (id)ifFalse:(id < STFunction >)thenClause
+{
+	return [self ifTrue:nil ifFalse:thenClause];
 }
 
 #pragma mark -
+#pragma mark Matching
 
 - (id)match:(STClosure *)matchers
 {
@@ -123,17 +102,39 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return nil;
 }
 
++ (id)match:(STClosure *)matchers
+{
+	STEvaluator *evaluator = matchers.evaluator;
+	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
+	for (id pair in matchers.implementation)
+	{
+		if(![pair isKindOfClass:[STList class]])
+			continue;
+		
+		id unevaluatedObjectToMatch = [pair head];
+		if([unevaluatedObjectToMatch isEqualTo:[STSymbol symbolWithString:@"_"]])
+			return [evaluator evaluateExpression:[pair tail] inScope:scope];
+		
+		if([self isEqualTo:[evaluator evaluateExpression:unevaluatedObjectToMatch inScope:scope]])
+			return [evaluator evaluateExpression:[pair tail] inScope:scope];
+	}
+	
+	return nil;
+}
+
 #pragma mark -
 #pragma mark Printing
 
 - (NSString *)prettyDescription
 {
-	return [@";" stringByAppendingString:[self description]];
+	return [NSString stringWithFormat:@"`%@`", [[self description] stringByReplacingOccurrencesOfString:@"`" 
+																							 withString:@"\\`"]];
 }
 
 + (NSString *)prettyDescription
 {
-	return [@";" stringByAppendingString:[self description]];
+	return [NSString stringWithFormat:@"`%@`", [[self description] stringByReplacingOccurrencesOfString:@"`" 
+																							 withString:@"\\`"]];
 }
 
 #pragma mark -
@@ -158,7 +159,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 #pragma mark -
 
-+ (NSString *)print
+- (NSString *)print
 {
 	NSString *description = [self description];
 	
@@ -167,7 +168,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return description;
 }
 
-- (NSString *)print
++ (NSString *)print
 {
 	NSString *description = [self description];
 	
@@ -178,29 +179,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 #pragma mark -
 #pragma mark Ivars
-
-+ (void)setValue:(id)value forIvarNamed:(NSString *)name
-{
-	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
-	if(!ivarTable)
-	{
-		ivarTable = [NSMutableDictionary dictionary];
-		objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
-	}
-	
-	if(value)
-		[ivarTable setObject:value forKey:name];
-	else
-		[ivarTable removeObjectForKey:value];
-}
-
-+ (id)valueForIvarNamed:(NSString *)name
-{
-	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
-	return [ivarTable objectForKey:name];
-}
-
-#pragma mark -
 
 - (void)setValue:(id)value forIvarNamed:(NSString *)name
 {
@@ -242,6 +220,29 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 }
 
 #pragma mark -
+
++ (void)setValue:(id)value forIvarNamed:(NSString *)name
+{
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	if(!ivarTable)
+	{
+		ivarTable = [NSMutableDictionary dictionary];
+		objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+	}
+	
+	if(value)
+		[ivarTable setObject:value forKey:name];
+	else
+		[ivarTable removeObjectForKey:value];
+}
+
++ (id)valueForIvarNamed:(NSString *)name
+{
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	return [ivarTable objectForKey:name];
+}
+
+#pragma mark -
 #pragma mark Extension
 
 + (Class)extend:(STClosure *)extensions
@@ -256,15 +257,10 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 @implementation NSNumber (Stein)
 
-#pragma mark Truthiness
-
 - (BOOL)isTrue
 {
 	return [self boolValue];
 }
-
-#pragma mark -
-#pragma mark Printing
 
 - (NSString *)prettyDescription
 {
@@ -289,8 +285,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 @implementation NSNull (Stein)
 
-#pragma mark Truthiness
-
 + (BOOL)isTrue
 {
 	return NO;
@@ -300,9 +294,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 {
 	return NO;
 }
-
-#pragma mark -
-#pragma mark Printing
 
 - (NSString *)prettyDescription
 {

@@ -12,26 +12,46 @@
 
 #pragma mark Control Flow Exceptions
 
+/*!
+ @class
+ @abstract	This exception is raised when the break built in function is called in Stein.
+ */
 @interface STBreakException : NSException
 {
 }
 
+/*!
+ @method
+ @abstract		Create a break exception, ready for raising.
+ @discussion	This is the only way you should create a break exception.
+ */
 + (STBreakException *)breakException;
 
 @end
 
+//The implementation of the 'break' operator.
 STBuiltInFunctionExport(Break);
 
 #pragma mark -
 
+/*!
+ @class
+ @abstract	This exception is raised when the continue built in function is called in Stein.
+ */
 @interface STContinueException : NSException
 {
 }
 
+/*!
+ @method
+ @abstract		Create a continue exception, ready for raising.
+ @discussion	This is the only way you should create a continue exception.
+ */
 + (STContinueException *)continueException;
 
 @end
 
+//The implementation of the 'continue' operator.
 STBuiltInFunctionExport(Continue);
 
 #pragma mark -

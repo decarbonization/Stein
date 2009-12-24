@@ -29,8 +29,19 @@
 #pragma mark -
 #pragma mark Creation
 
+- (id)init
+{
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
+#pragma mark -
+
 - (id)initWithImplementation:(STBuiltInFunctionImplementation)implementation evaluatesOwnArguments:(BOOL)evaluatesOwnArguments evaluator:(STEvaluator *)evaluator
 {
+	NSParameterAssert(implementation);
+	NSParameterAssert(evaluator);
+	
 	if((self = [super init]))
 	{
 		mImplementation = [implementation copy];
