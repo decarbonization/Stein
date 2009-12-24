@@ -21,6 +21,7 @@
 	/* weak */		STEvaluator *mEvaluator;
 	/* strong */	NSMutableDictionary *mSuperscope;
 	/* weak */		Class mSuperclass;
+	/* owner */		NSString *mName;
 	
 	//Closure Description
 	/* strong */	NSMethodSignature *mClosureSignature;
@@ -33,7 +34,7 @@
 	/* weak */		ffi_type *mFFIReturnType;
 	/* auto */		ffi_type **mFFIArgumentTypes;
 	
-	/* owner*/		ffi_closure *mFFIClosure;
+	/* owner */		ffi_closure *mFFIClosure;
 }
 
 /*!
@@ -80,6 +81,13 @@
 				in it's scope. This allows the super function to be used.
  */
 @property (assign) Class superclass;
+
+/*!
+ @property
+ @abstract		The name of the closure.
+ @discussion	This is typically set by the function operator.
+ */
+@property (copy) NSString *name;
 
 #pragma mark -
 

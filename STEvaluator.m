@@ -13,6 +13,7 @@
 
 #import "STSymbol.h"
 #import "STList.h"
+#import "STStringWithCode.h"
 
 #import "STFunction.h"
 #import "STClosure.h"
@@ -105,6 +106,8 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 													   inScope:scope] autorelease];
 	NSString *functionName = [[arguments objectAtIndex:0] string];
 	[scope setObject:closure forKey:functionName];
+	
+	closure.name = functionName;
 	
 	return closure;
 });
@@ -460,6 +463,10 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 			return expression;
 		
 		return [self objectForVariableNamed:[expression string] inScope:scope] ?: STNull;
+	}
+	else if([expression isKindOfClass:[STStringWithCode class]])
+	{
+		return [expression applyWithEvaluator:self scope:scope];
 	}
 	
 	return expression;

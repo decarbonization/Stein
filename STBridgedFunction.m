@@ -20,6 +20,9 @@
 	[mInvocation release];
 	mInvocation = nil;
 	
+	[mFunctionName release];
+	mFunctionName = nil;
+	
 	[super dealloc];
 }
 
@@ -48,8 +51,27 @@
 	void *function = dlsym(RTLD_DEFAULT, [symbolName UTF8String]);
 	NSAssert((function != NULL), @"Could not resolve function for %@.", symbolName);
 	
-	return [self initWithSymbol:function signature:signature];
+	if((self = [self initWithSymbol:function signature:signature]))
+	{
+		self.functionName = symbolName;
+		
+		return self;
+	}
+	return nil;
 }
+
+#pragma mark -
+#pragma mark Descriptions
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@:%p %@>", [self className], self, mFunctionName ?: @"[Anonymous]"];
+}
+
+#pragma mark -
+#pragma mark Properties
+
+@synthesize functionName = mFunctionName;
 
 #pragma mark -
 #pragma mark STFunction
@@ -67,6 +89,9 @@
 - (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope
 {
 	NSMethodSignature *functionSignature = mInvocation.functionSignature;
+	NSAssert(([arguments count] == [functionSignature numberOfArguments]), 
+			 @"Wrong number of arguments given to %@. Expected %ld, got %ld", self, [functionSignature numberOfArguments], [arguments count]);
+	
 	for (NSUInteger index = 0; index < [functionSignature numberOfArguments]; index++)
 	{
 		const char *argumentSignature = [functionSignature getArgumentTypeAtIndex:index];

@@ -13,7 +13,16 @@
 @interface STBridgedFunction : NSObject < STFunction >
 {
 	STFunctionInvocation *mInvocation;
+	NSString *mFunctionName;
 }
+#pragma mark Initialization
+
 - (id)initWithSymbol:(void *)symbol signature:(NSMethodSignature *)signature;
 - (id)initWithSymbolNamed:(NSString *)symbolName signature:(NSMethodSignature *)signature;
+
+#pragma mark -
+#pragma mark Properties
+
+@property (copy) NSString *functionName;
+
 @end

@@ -9,7 +9,13 @@
 #import "STParser.h"
 #import "STSymbol.h"
 #import "STList.h"
+#import "STStringWithCode.h"
 
+#pragma mark Forward Declarations
+
+static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL usingDoNotation, BOOL isUnbordered, STEvaluator *targetEvaluator);
+
+#pragma mark -
 #pragma mark Tools
 
 static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger index)
@@ -133,9 +139,10 @@ static NSNumber *GetNumberAt(NSUInteger *ioIndex, NSString *string)
 	return [NSNumber numberWithDouble:[[string substringWithRange:numberRange] doubleValue]];
 }
 
-static NSString *GetStringAt(NSUInteger *ioIndex, NSString *string)
+static id GetStringAt(NSUInteger *ioIndex, NSString *string, STEvaluator *evaluator)
 {
 	NSMutableString *resultString = [NSMutableString string];
+	STStringWithCode *resultStringWithCode = nil;
 	
 	NSUInteger stringLength = [string length];
 	for (NSUInteger index = (*ioIndex) + 1; index < stringLength; index++)
@@ -199,6 +206,10 @@ static NSString *GetStringAt(NSUInteger *ioIndex, NSString *string)
 					[resultString appendString:@"\?"];
 					break;
 				
+				case '%':
+					[resultString appendString:@"%"];
+					break;
+					
 				default:
 					break;
 			}
@@ -206,10 +217,52 @@ static NSString *GetStringAt(NSUInteger *ioIndex, NSString *string)
 			//Move past the escape sequence
 			index++;
 		}
+		else if(character == '%' && SafelyGetCharacterAtIndex(string, index + 1) == '{')
+		{
+			//Find the closing bracket.
+			NSRange codeRange = NSMakeRange(index - 1, 0);
+			NSUInteger numberOfNestedBrackets = 0;
+			for (NSUInteger bracketSearchIndex = index; bracketSearchIndex < stringLength; bracketSearchIndex++)
+			{
+				unichar innerCharacter = [string characterAtIndex:bracketSearchIndex];
+				[resultString appendFormat:@"%C", innerCharacter];
+				
+				if(innerCharacter == '{')
+				{
+					numberOfNestedBrackets++;
+				}
+				else if(innerCharacter == '}')
+				{
+					numberOfNestedBrackets--;
+					if(numberOfNestedBrackets == 0)
+					{
+						codeRange.length = bracketSearchIndex - codeRange.location;
+						index = bracketSearchIndex;
+						
+						break;
+					}
+				}
+			}
+			
+			NSString *expressionString = [string substringWithRange:NSMakeRange(codeRange.location + 3, 
+																				codeRange.length - 3)];
+			NSUInteger expressionStringIndex = 0;
+			id expression = GetExpressionAt(&expressionStringIndex, expressionString, NO, YES, evaluator);
+			if(!resultStringWithCode)
+				resultStringWithCode = [STStringWithCode new];
+			
+			[resultStringWithCode addExpression:expression inRange:NSMakeRange(codeRange.location, codeRange.length)];
+		}
 		else
 		{
 			[resultString appendFormat:@"%C", character];
 		}
+	}
+	
+	if(resultStringWithCode)
+	{
+		resultStringWithCode.string = resultString;
+		return resultStringWithCode;
 	}
 	
 	return resultString;
@@ -325,7 +378,7 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 		//If we find a string, we read it and add it to our expression.
 		else if(character == STRING_OPEN_CHARACTER)
 		{
-			[expression addObject:GetStringAt(&index, string)];
+			[expression addObject:GetStringAt(&index, string, targetEvaluator)];
 		}
 		//If we find part of an identifier, we read it and add it to our expression.
 		else if(IsCharacterPartOfIdentifier(character, YES))

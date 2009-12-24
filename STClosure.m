@@ -51,6 +51,9 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	[mSuperscope release];
 	mSuperscope = nil;
 	
+	[mName release];
+	mName = nil;
+	
 	[super dealloc];
 }
 
@@ -203,6 +206,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 @synthesize evaluator = mEvaluator;
 @synthesize superscope = mSuperscope;
 @synthesize superclass = mSuperclass;
+@synthesize name = mName;
 
 #pragma mark -
 
@@ -223,6 +227,11 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	}
 	
 	return [super isEqualTo:object];
+}
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@:%p %@ (%@)>", [self className], self, mName ?: @"[Anonymous]", [mPrototype.allObjects componentsJoinedByString:@" "]];
 }
 
 #pragma mark -
