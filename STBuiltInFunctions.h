@@ -171,3 +171,15 @@ STBuiltInFunctionExport(BridgeConstant);
 
 //The implementation of the 'ref' operator.
 STBuiltInFunctionExport(MakeObjectReference);
+
+#pragma mark -
+#pragma mark Collection Creation
+
+//The implementation of the array function.
+STBuiltInFunctionExport(Array);
+
+//The implementation of the list function.
+STBuiltInFunctionExport(List);
+
+//The implementation of the dict function.
+STBuiltInFunctionExport(Dictionary);

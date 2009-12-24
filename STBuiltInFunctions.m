@@ -273,3 +273,34 @@ STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, ST
 	
 	return pointer;
 });
+
+#pragma mark -
+#pragma mark Collection Creation
+
+STBuiltInFunctionDefine(Array, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	return [NSMutableArray arrayWithArray:arguments.allObjects];
+});
+
+STBuiltInFunctionDefine(List, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	return [STList listWithList:arguments];
+});
+
+STBuiltInFunctionDefine(Dictionary, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+	
+	id key = nil;
+	for (id argument in arguments)
+	{
+		if(!key)
+		{
+			key = argument;
+		}
+		else
+		{
+			[dictionary setObject:argument forKey:key];
+			key = nil;
+		}
+	}
+	
+	return dictionary;
+});

@@ -206,6 +206,11 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(MakeObjectReference, self) forKey:@"ref"];
 		
+		//Collection creation
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Array, self) forKey:@"array"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(List, self) forKey:@"list"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Dictionary, self) forKey:@"dict"];
+		
 		//Constants
 		[mRootScope setObject:STTrue forKey:@"true"];
 		[mRootScope setObject:STFalse forKey:@"false"];
