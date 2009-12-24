@@ -152,6 +152,13 @@
  */
 @interface NSString (Stein)
 
+/*!
+ @method
+ @abstract		Returns the receiver.
+ @discussion	This method exists to allow NSString to be interchangable with STSymbol in some contexts.
+ */
+- (NSString *)string;
+
 - (NSString *)prettyDescription;
 
 @end

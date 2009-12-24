@@ -272,6 +272,11 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 @implementation NSString (Stein)
 
+- (NSString *)string
+{
+	return self;
+}
+
 - (NSString *)prettyDescription
 {
 	return [NSString stringWithFormat:@"\"%@\"", [self stringByReplacingOccurrencesOfString:@"\"" 

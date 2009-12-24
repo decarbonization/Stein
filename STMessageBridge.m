@@ -251,9 +251,21 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 	
 	IMP implementationFunction = closure.functionPointer;
 	if(isInstanceMethod)
-		class_addMethod(class, selector, implementationFunction, typeSignature);
+	{
+		if(!class_addMethod(class, selector, implementationFunction, typeSignature))
+		{
+			Method existingMethod = class_getInstanceMethod(class, selector);
+			method_setImplementation(existingMethod, implementationFunction);
+		}
+	}
 	else
-		class_addMethod(objc_getMetaClass(class_getName(class)), selector, implementationFunction, typeSignature);
+	{
+		if(!class_addMethod(objc_getMetaClass(class_getName(class)), selector, implementationFunction, typeSignature))
+		{
+			Method existingMethod = class_getClassMethod(class, selector);
+			method_setImplementation(existingMethod, implementationFunction);
+		}
+	}
 	
 	if(!_IMPToClosureMap)
 		_IMPToClosureMap = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, &kCFTypeDictionaryValueCallBacks);
@@ -302,7 +314,10 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 	NSCParameterAssert(superclass);
 	
 	Class newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
-	objc_registerClassPair(newClass);
+	if(newClass)
+		objc_registerClassPair(newClass);
+	else
+		newClass = objc_getClass([subclassName UTF8String]);
 	
 	if(expressions)
 		STExtendClass(newClass, expressions);
