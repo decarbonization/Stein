@@ -133,8 +133,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 + (NSString *)prettyDescription
 {
-	return [NSString stringWithFormat:@"`%@`", [[self description] stringByReplacingOccurrencesOfString:@"`" 
-																							 withString:@"\\`"]];
+	return NSStringFromClass(self);
 }
 
 #pragma mark -

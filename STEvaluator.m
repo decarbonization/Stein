@@ -26,9 +26,20 @@
 
 NSString *const kSTEvaluatorEnclosingScopeKey = @"$__enclosingScope";
 NSString *const kSTEvaluatorSuperclassKey = @"$__superclass";
+NSString *const kSTBundleIsPureSteinKey = @"STBundleIsPureSteinKey";
 
 #pragma mark -
 #pragma mark Environment Built Ins
+
+STBuiltInFunctionDefine(Import, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	BOOL success = YES;
+	for (NSString *argument in arguments)
+	{
+		success = success && [evaluator import:argument];
+	}
+	
+	return [NSNumber numberWithBool:success];
+});
 
 STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	NSUInteger numberOfArguments = [arguments count];
@@ -158,6 +169,9 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 	[mRootScope release];
 	mRootScope = nil;
 	
+	[mSearchPaths release];
+	mSearchPaths = nil;
+	
 	[super dealloc];
 }
 
@@ -201,6 +215,8 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Break, self) forKey:@"break"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Continue, self) forKey:@"continue"];
 		
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Import, self) forKey:@"import"];
+		
 		//Bridging
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
@@ -216,9 +232,14 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STFalse forKey:@"false"];
 		[mRootScope setObject:STNull forKey:@"null"];
 		
+		//Globals
+		[mRootScope setObject:[[NSProcessInfo processInfo] arguments] forKey:@"Args"];
+		[mRootScope setObject:[[NSProcessInfo processInfo] environment] forKey:@"Env"];
+		
 		
 		//Load and run the Prelude file.
-		NSURL *preludeLocation = [[NSBundle bundleForClass:[self class]] URLForResource:@"Prelude" withExtension:@"st"];
+		NSBundle *evaluatorBundle = [NSBundle bundleForClass:[self class]];
+		NSURL *preludeLocation = [evaluatorBundle URLForResource:@"Prelude" withExtension:@"st"];
 		if(preludeLocation)
 		{
 			NSError *error = nil;
@@ -243,6 +264,17 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		{
 			fprintf(stderr, "*** STEvaluator could not find Prelude, continuing without it.\n");
 		}
+		
+		mSearchPaths = [[NSMutableArray alloc] initWithObjects:
+						@"/", 
+						[evaluatorBundle resourcePath], 
+						[evaluatorBundle sharedFrameworksPath], 
+						[evaluatorBundle privateFrameworksPath], 
+						[[NSFileManager defaultManager] currentDirectoryPath], 
+						@"/Library/Frameworks",
+						@"/System/Library/Frameworks",
+						[@"~/Library/Frameworks" stringByExpandingTildeInPath],
+						nil];
 		
 		return self;
 	}
@@ -491,6 +523,86 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 - (id)parseAndEvaluateString:(NSString *)string
 {
 	return [self evaluateExpression:[self parseString:string] inScope:mRootScope];
+}
+
+#pragma mark -
+#pragma mark Importing
+
+@synthesize searchPaths = mSearchPaths;
+
+#pragma mark -
+
+- (void)addSearchPath:(NSString *)searchPath
+{
+	NSParameterAssert(searchPath);
+	
+	if(![mSearchPaths containsObject:searchPath])
+		[mSearchPaths addObject:searchPath];
+}
+
+- (void)removeSearchPath:(NSString *)searchPath
+{
+	NSParameterAssert(searchPath);
+	
+	if([mSearchPaths containsObject:searchPath])
+		[mSearchPaths removeObject:searchPath];
+}
+
+#pragma mark -
+
+- (BOOL)_importFileAtPath:(NSString *)location
+{
+	NSError *error = nil;
+	NSString *fileContents = [NSString stringWithContentsOfFile:location encoding:NSUTF8StringEncoding error:&error];
+	if(!fileContents)
+	{
+		fprintf(stderr, "Could not load file at location «%s». Error {%s}.\n", [location UTF8String], [[error description] UTF8String]);
+		return NO;
+	}
+	
+	[self parseAndEvaluateString:fileContents];
+	
+	return YES;
+}
+
+- (BOOL)_importBundleAtPath:(NSString *)location
+{
+	NSBundle *bundle = [NSBundle bundleWithPath:location];
+	if(!bundle)
+		return NO;
+	
+	if(![[bundle objectForInfoDictionaryKey:kSTBundleIsPureSteinKey] boolValue])
+	{
+		if(![bundle load])
+			return NO;
+	}
+	
+	NSString *preludeLocation = [bundle pathForResource:@"Prelude" ofType:@"st"];
+	if(preludeLocation)
+		return [self _importFileAtPath:preludeLocation];
+	
+	return YES;
+}
+
+- (BOOL)import:(NSString *)location
+{
+	if(!location)
+		return NO;
+	
+	BOOL isDirectory = NO;
+	for (NSString *searchPath in mSearchPaths)
+	{
+		NSString *fullPath = [searchPath stringByAppendingPathComponent:location];
+		if([[NSFileManager defaultManager] fileExistsAtPath:fullPath isDirectory:&isDirectory])
+		{
+			if(isDirectory)
+				return [self _importBundleAtPath:fullPath];
+			else
+				return [self _importFileAtPath:fullPath];
+		}
+	}
+	
+	return NO;
 }
 
 @end

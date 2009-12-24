@@ -395,6 +395,18 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 		//If we find a quote character we scan the next subexpression as a quoted list.
 		else if(character == LIST_QUOTE_CHARACTER)
 		{
+			//If there's another quote two characters away, we assume we're looking at a character literal.
+			//Character literals can only be one character long, we do not support the weirdness that is 'abcd'.
+			if(SafelyGetCharacterAtIndex(string, index + 2) == LIST_QUOTE_CHARACTER)
+			{
+				[expression addObject:[NSNumber numberWithLong:SafelyGetCharacterAtIndex(string, index + 1)]];
+				
+				//Move past the character and the closing quote.
+				index += 2;
+				
+				continue;
+			}
+			
 			unichar secondCharacter = SafelyGetCharacterAtIndex(string, index + 1);
 			NSCAssert((secondCharacter != 0), 
 					  @"Unexpected quote token at the end of a file.");

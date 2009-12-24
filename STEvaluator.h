@@ -22,12 +22,20 @@ ST_EXTERN NSString *const kSTEvaluatorSuperclassKey;
 
 
 /*!
+ @const
+ @abstract	The bundle Info.plist key used to specify that a bundle is pure Stein, and contains no native code.
+ */
+ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
+
+
+/*!
  @class
  @abstract	The STEvaluator class serves as the interpreter portion of the Stein programming language.
  */
 @interface STEvaluator : NSObject
 {
 	/* owner */	NSMutableDictionary *mRootScope;
+	/* owner */	NSMutableArray *mSearchPaths;
 }
 
 #pragma mark Scoping
@@ -84,5 +92,39 @@ ST_EXTERN NSString *const kSTEvaluatorSuperclassKey;
  @abstract	Parse a string and evaluate the resulting compiled expressions, returning the result of the last expression.
  */
 - (id)parseAndEvaluateString:(NSString *)string;
+
+#pragma mark -
+#pragma mark Importing
+
+/*!
+ @property
+ @abstract	The paths the evaluator searches when it is attempting to import a file, or bundle.
+ */
+@property (readonly) NSArray *searchPaths;
+
+#pragma mark -
+
+/*!
+ @method
+ @abstract	Add a new search path to the receiver.
+ @param		searchPath	May not be nil.
+ */
+- (void)addSearchPath:(NSString *)searchPath;
+
+/*!
+ @method
+ @abstract		Remove a search path from the receiver.
+ @param			searchPath	May not be nil.
+ @discussion	This method does nothing if the receiver does not contain the search path.
+ */
+- (void)removeSearchPath:(NSString *)searchPath;
+
+#pragma mark -
+
+/*!
+ @method
+ @abstract	Import the contents of a string into the evaluator.
+ */
+- (BOOL)import:(NSString *)location;
 
 @end
