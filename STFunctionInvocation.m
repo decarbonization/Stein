@@ -85,7 +85,10 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 			return nil;
 		}
 		
-		mResultBuffer = NSAllocateCollectable(STTypeBridgeSizeofObjCType([signature methodReturnType]), 0);
+		size_t sizeOfReturnValue = STTypeBridgeGetSizeOfObjCType([signature methodReturnType]);
+		mResultBuffer = NSAllocateCollectable(sizeOfReturnValue, 0);
+		bzero(mResultBuffer, sizeOfReturnValue);
+		
 		mArgumentValues = NSAllocateCollectable(sizeof(void *) * argumentCount, 0);
 		
 		mFunctionSignature = [signature retain];
@@ -131,7 +134,7 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 #pragma mark -
 #pragma mark Invocation
 
-- (void)invoke
+- (void)apply
 {
 	ffi_call(mClosureInformation, FFI_FN(mFunctionPointer), mResultBuffer, mArgumentValues);
 }

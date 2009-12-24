@@ -80,6 +80,10 @@
 @synthesize isQuoted = mIsQuoted;
 
 #pragma mark -
+
+@synthesize creationLocation = mCreationLocation;
+
+#pragma mark -
 #pragma mark Identity
 
 - (BOOL)isEqualTo:(id)object

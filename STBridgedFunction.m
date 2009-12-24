@@ -97,14 +97,14 @@
 		const char *argumentSignature = [functionSignature getArgumentTypeAtIndex:index];
 		
 		//We use alloca so that the buffer is automatically freed when this function returns.
-		void *buffer = alloca(STTypeBridgeSizeofObjCType(argumentSignature));
+		void *buffer = alloca(STTypeBridgeGetSizeOfObjCType(argumentSignature));
 		
 		STTypeBridgeConvertObjectIntoType([arguments objectAtIndex:index], argumentSignature, buffer);
 		
 		[mInvocation setArgument:buffer atIndex:index];
 	}
 	
-	[mInvocation invoke];
+	[mInvocation apply];
 	
 	//If it returns void, it should be nil
 	if([functionSignature methodReturnType][0] == 'v')

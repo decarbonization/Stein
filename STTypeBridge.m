@@ -11,8 +11,12 @@
 #import <libkern/OSAtomic.h>
 #import <ffi/ffi.h>
 
+#import "STPointer.h"
+
 #pragma mark Tools
 
+//The below enumerations are provided to improve code readability, and to potentially
+//allow support for other Objective-C runtimes with unique type signature patterns. 
 enum ObjectiveCTypeModifier {
 	kObjectiveCTypeModifierConst = 'r',
 	kObjectiveCTypeModifierIn = 'n',
@@ -55,8 +59,17 @@ ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType);
 
 #pragma mark -
 
+/*!
+ @function
+ @abstract		Return the relevant type for a specified Objective-C type string
+ @param			objcType	May not be NULL.
+ @discussion	Objective-C type strings can contain remote-messaging modifiers. We don't care
+				about those. This function simply returns a string without those modifiers.
+ */
 static const char *GetRelevantTypeForObjCType(const char *objcType)
 {
+	NSCParameterAssert(objcType);
+	
 	char firstCharacterOfType = objcType[0];
 	if(firstCharacterOfType == kObjectiveCTypeModifierConst || firstCharacterOfType == kObjectiveCTypeModifierIn ||
 	   firstCharacterOfType == kObjectiveCTypeModifierInout || firstCharacterOfType == kObjectiveCTypeModifierOut ||
@@ -72,7 +85,7 @@ static const char *GetRelevantTypeForObjCType(const char *objcType)
 #pragma mark -
 #pragma mark Size look up
 
-size_t STTypeBridgeSizeofObjCType(const char *objcType)
+size_t STTypeBridgeGetSizeOfObjCType(const char *objcType)
 {
 	const char *type = GetRelevantTypeForObjCType(objcType);
 	
@@ -208,8 +221,14 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 			return [NSString stringWithUTF8String:*(const char **)value];
 			
 		case kObjectiveCTypeCArray:
-		case kObjectiveCTypePointer:
-			return STNull;
+		case kObjectiveCTypePointer: {
+			//Skip the initial ^ so the pointer knows what it actually contains.
+			const char *pointerType = objcType + 1;
+			STPointer *pointer = [STPointer pointerWithType:pointerType];
+			memcpy(pointer.bytes, *(void **)value, pointer.length);
+			
+			return pointer;
+		}
 			
 		case kObjectiveCTypeClass:
 		case kObjectiveCTypeObject:
@@ -303,7 +322,7 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 			
 		case kObjectiveCTypeCArray:
 		case kObjectiveCTypePointer:
-			*(void **)value = NULL;
+			*(Byte **)value = (Byte *)([object bytes]);
 			break;
 			
 		case kObjectiveCTypeClass:
@@ -406,7 +425,7 @@ static STPrimitiveValueWrapperDescriptor const kGenericStructWrapperDescriptor =
 	
 	if((self = [super init]))
 	{
-		mSizeOfValue = STTypeBridgeSizeofObjCType(objcType);
+		mSizeOfValue = STTypeBridgeGetSizeOfObjCType(objcType);
 		NSAssert((mSizeOfValue > 0), @"Could not get size of struct with type %s, oh dear.", objcType);
 		
 		mValue = NSAllocateCollectable(mSizeOfValue, 0);
@@ -423,7 +442,7 @@ static STPrimitiveValueWrapperDescriptor const kGenericStructWrapperDescriptor =
 
 - (void)getValue:(void **)buffer forType:(const char *)objcType
 {
-	size_t sizeOfBuffer = STTypeBridgeSizeofObjCType(objcType);
+	size_t sizeOfBuffer = STTypeBridgeGetSizeOfObjCType(objcType);
 	NSAssert((sizeOfBuffer == mSizeOfValue), 
 			 @"Buffer given to generic struct descriptor is %ld bytes, but the generic struct descriptor's buffer is %ld bytes.", sizeOfBuffer, mSizeOfValue);
 	

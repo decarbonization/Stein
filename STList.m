@@ -271,6 +271,7 @@
 @synthesize isQuoted = mIsQuoted;
 @synthesize isDoConstruct = mIsDoConstruct;
 @synthesize evaluator = mEvaluator;
+@synthesize creationLocation = mCreationLocation;
 
 #pragma mark -
 

@@ -223,7 +223,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	}
 	
 	const char *ivarTypeEncoding = ivar_getTypeEncoding(ivar);
-	Byte buffer[STTypeBridgeSizeofObjCType(ivarTypeEncoding)];
+	Byte buffer[STTypeBridgeGetSizeOfObjCType(ivarTypeEncoding)];
 	STTypeBridgeConvertObjectIntoType(value, ivarTypeEncoding, (void **)&buffer);
 	object_setIvar(self, ivar, (void *)buffer);
 }

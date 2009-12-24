@@ -53,7 +53,7 @@ id STMessageBridgeSend(id target, SEL selector, NSArray *arguments)
 	for (NSUInteger index = 2; index < numberOfArguments; index++)
 	{
 		const char *argumentType = [targetMethodSignature getArgumentTypeAtIndex:index];
-		Byte argumentBuffer[STTypeBridgeSizeofObjCType(argumentType)];
+		Byte argumentBuffer[STTypeBridgeGetSizeOfObjCType(argumentType)];
 		
 		STTypeBridgeConvertObjectIntoType([arguments objectAtIndex:index - 2], 
 										  argumentType, 
@@ -70,7 +70,7 @@ id STMessageBridgeSend(id target, SEL selector, NSArray *arguments)
 	if(returnType[0] == 'v')
 		return target;
 	
-	Byte returnBuffer[STTypeBridgeSizeofObjCType(returnType)];
+	Byte returnBuffer[STTypeBridgeGetSizeOfObjCType(returnType)];
 	[invocation getReturnValue:returnBuffer];
 	
 	return STTypeBridgeConvertValueOfTypeIntoObject(returnBuffer, returnType);
@@ -109,7 +109,7 @@ id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *
 	for (NSUInteger index = 2; index < numberOfArguments; index++)
 	{
 		const char *argumentType = [functionSignature getArgumentTypeAtIndex:index];
-		Byte argumentBuffer[STTypeBridgeSizeofObjCType(argumentType)];
+		Byte argumentBuffer[STTypeBridgeGetSizeOfObjCType(argumentType)];
 		
 		STTypeBridgeConvertObjectIntoType([arguments objectAtIndex:index - 2], 
 										  argumentType, 
@@ -118,7 +118,7 @@ id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *
 		[invocation setArgument:argumentBuffer atIndex:index];
 	}
 	
-	[invocation invoke];
+	[invocation apply];
 	
 	const char *returnType = [functionSignature methodReturnType];
 	

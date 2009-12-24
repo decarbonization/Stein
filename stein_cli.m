@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <Stein/Stein.h>
 #import <Stein/NSObject+Stein.h>
+#import <Stein/STPointer.h>
 #import <readline/readline.h>
 
 #pragma mark Tools

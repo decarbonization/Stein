@@ -84,6 +84,8 @@
 
 - (void)addExpression:(id)expression inRange:(NSRange)range
 {
+	NSParameterAssert(expression);
+	
 	[mCodeExpressions addObject:expression];
 	[mCodeRanges addObject:[NSValue valueWithRange:range]];
 }
@@ -93,15 +95,18 @@
 
 - (id)applyWithEvaluator:(STEvaluator *)evaluator scope:(NSMutableDictionary *)scope
 {
+	NSParameterAssert(evaluator);
+	
 	NSMutableString *evaluatedString = [NSMutableString stringWithString:mString];
 	
+	NSMutableDictionary *evaluationScope = [evaluator scopeWithEnclosingScope:scope];
 	for (NSInteger index = [mCodeRanges count] - 1; index >= 0; index--)
 	{
 		NSRange range = [[mCodeRanges objectAtIndex:index] rangeValue];
 		id expression = [mCodeExpressions objectAtIndex:index];
 		
-		id result = [evaluator evaluateExpression:expression inScope:scope];
-		[evaluatedString replaceCharactersInRange:range withString:[result description]];
+		id resultOfExpression = [evaluator evaluateExpression:expression inScope:evaluationScope];
+		[evaluatedString replaceCharactersInRange:range withString:[resultOfExpression description]];
 	}
 	
 	return evaluatedString;

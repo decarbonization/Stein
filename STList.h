@@ -21,6 +21,7 @@
 	/* n/a */	BOOL mIsQuoted;
 	/* n/a */	BOOL mIsDoConstruct;
 	/* weak */	STEvaluator *mEvaluator;
+	/* n/a */	STCreationLocation mCreationLocation;
 }
 #pragma mark Creation
 
@@ -188,6 +189,12 @@
  @abstract	The evaluator the list is bound to.
  */
 @property (assign) STEvaluator *evaluator;
+
+/*!
+ @property
+ @abstract	The location at which the list was created.
+ */
+@property STCreationLocation creationLocation;
 
 #pragma mark -
 

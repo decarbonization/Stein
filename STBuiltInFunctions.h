@@ -67,3 +67,4 @@ STBuiltInFunctionExport(Not);
 
 STBuiltInFunctionExport(BridgeFunction);
 STBuiltInFunctionExport(BridgeConstant);
+STBuiltInFunctionExport(MakeObjectReference);

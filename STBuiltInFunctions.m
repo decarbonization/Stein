@@ -13,6 +13,7 @@
 #import "STBridgedFunction.h"
 
 #import "STTypeBridge.h"
+#import "STPointer.h"
 #import <dlfcn.h>
 
 @implementation STBuiltInFunction
@@ -252,4 +253,12 @@ STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList 
 	NSCAssert((value != NULL), @"Could not find constant named %@.", symbolName);
 	
 	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
+});
+STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	NSCAssert([arguments count] >= 1, @"Expected one arguments got, %ld", [arguments count]);
+	
+	STPointer *pointer = [STPointer pointerWithType:@encode(id)];
+	[scope setObject:pointer forKey:[[arguments head] string]];
+	
+	return pointer;
 });
