@@ -134,8 +134,6 @@ id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *
 
 #pragma mark -
 
-static CFMutableDictionaryRef _IMPToClosureMap = NULL;
-
 static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector, STList **outPrototype, NSString **outTypeSignature, STList **outImplementation)
 {
 	NSMutableString *selectorString = [NSMutableString string];
@@ -247,7 +245,6 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 												fromEvaluator:list.evaluator 
 													  inScope:nil];
 	closure.superclass = [class superclass];
-	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
 	
 	IMP implementationFunction = closure.functionPointer;
 	if(isInstanceMethod)
@@ -267,9 +264,7 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 		}
 	}
 	
-	if(!_IMPToClosureMap)
-		_IMPToClosureMap = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, &kCFTypeDictionaryValueCallBacks);
-	CFDictionarySetValue(_IMPToClosureMap, implementationFunction, closure);
+	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
 }
 
 #pragma mark -

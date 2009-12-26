@@ -322,7 +322,11 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 			
 		case kObjectiveCTypeCArray:
 		case kObjectiveCTypePointer:
-			*(Byte **)value = (Byte *)([object bytes]);
+			if(object && object != STNull)
+				*(Byte **)value = (Byte *)([object bytes]);
+			else
+				*(void **)value = NULL;
+			
 			break;
 			
 		case kObjectiveCTypeClass:

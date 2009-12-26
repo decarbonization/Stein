@@ -64,6 +64,18 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 		NSLog(@"uh oh, munmap failed with error %d", errno);
 	}
 	
+	if(mFFIArgumentTypes)
+	{
+		free(mFFIArgumentTypes);
+		mFFIArgumentTypes = NULL;
+	}
+	
+	if(mFFIClosureInformation)
+	{
+		free(mFFIClosureInformation);
+		mFFIClosureInformation = NULL;
+	}
+	
 	[super finalize];
 }
 
@@ -162,7 +174,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 		NSUInteger numberOfArguments = [mClosureSignature numberOfArguments];
 		
 		//Resolve the argument types
-		mFFIArgumentTypes = NSAllocateCollectable((sizeof(ffi_type *) * numberOfArguments), 0);
+		mFFIArgumentTypes = calloc(sizeof(ffi_type *), numberOfArguments);
 		
 		for (NSUInteger index = 0; index < numberOfArguments; index++)
 			mFFIArgumentTypes[index] = STTypeBridgeConvertObjCTypeToFFIType([mClosureSignature getArgumentTypeAtIndex:index]);
@@ -170,7 +182,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 		mFFIReturnType = STTypeBridgeConvertObjCTypeToFFIType([mClosureSignature methodReturnType]);
 		
 		//Create the closure
-		mFFIClosureInformation = NSAllocateCollectable(sizeof(ffi_cif), 0);
+		mFFIClosureInformation = malloc(sizeof(ffi_cif));
 		
 		if((mFFIClosure = mmap(NULL, sizeof(ffi_closure), PROT_READ | PROT_WRITE,
 							   MAP_ANON | MAP_PRIVATE, -1, 0)) == MAP_FAILED)

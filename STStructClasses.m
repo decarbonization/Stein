@@ -394,12 +394,12 @@ static BOOL STSizeCanWrapValueWithSignature(const STPrimitiveValueWrapperDescrip
 
 static id < STPrimitiveValueWrapper > STSizeWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
-	return [[[STSize alloc] initWithSize:*(CGSize *)data] autorelease];
+	return [[[STSize alloc] initWithSize:*(NSSize *)data] autorelease];
 }
 
 static size_t STSizeSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
-	return sizeof(CGSize);
+	return sizeof(NSSize);
 }
 
 static const char *STSizeObjCType(const STPrimitiveValueWrapperDescriptor *descriptor)
