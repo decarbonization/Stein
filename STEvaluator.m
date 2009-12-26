@@ -321,14 +321,14 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	if(firstCharacterInName == '$')
 	{
 		if(object)
-			[mRootScope setObject:object forKey:name];
+			[mRootScope setObject:object forKey:[name substringFromIndex:1]];
 		else
-			[mRootScope removeObjectForKey:name];
+			[mRootScope removeObjectForKey:[name substringFromIndex:1]];
 	}
 	else if(firstCharacterInName == '@')
 	{
 		id target = [self objectForVariableNamed:@"self" inScope:scope];
-		[target setValue:object forIvarNamed:name];
+		[target setValue:object forIvarNamed:[name substringFromIndex:1]];
 	}
 	else
 	{
@@ -354,12 +354,12 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	unichar firstCharacterInName = [name characterAtIndex:0];
 	if(firstCharacterInName == '$')
 	{
-		return [mRootScope objectForKey:name];
+		return [mRootScope objectForKey:[name substringFromIndex:1]];
 	}
 	else if(firstCharacterInName == '@')
 	{
 		id target = [self objectForVariableNamed:@"self" inScope:scope];
-		return [target valueForIvarNamed:name];
+		return [target valueForIvarNamed:[name substringFromIndex:1]];
 	}
 	
 	
