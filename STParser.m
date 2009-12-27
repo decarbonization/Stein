@@ -13,7 +13,17 @@
 
 #pragma mark Forward Declarations
 
-static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL usingDoNotation, BOOL isUnbordered, STEvaluator *targetEvaluator);
+typedef struct STParserState {
+	NSString *string;
+	NSUInteger stringLength;
+	
+	STCreationLocation creationLocation;
+	NSUInteger index;
+	
+	STEvaluator *evaluator;
+} STParserState;
+
+static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation, BOOL isUnbordered);
 
 #pragma mark -
 #pragma mark Tools
@@ -49,22 +59,22 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 #pragma mark -
 #pragma mark Checkers
 
-static inline BOOL IsCharacterWhitespace(unichar character)
+ST_INLINE BOOL IsCharacterWhitespace(unichar character)
 {
 	return (character == ' ' || character == '\t' || character == '\n' || character == '\r');
 }
 
-static inline BOOL IsCharacterNewline(unichar character)
+ST_INLINE BOOL IsCharacterNewline(unichar character)
 {
 	return (character == '\n' || character == '\r');
 }
 
-static inline BOOL IsCharacterPartOfNumber(unichar character, BOOL isFirstCharacter)
+ST_INLINE BOOL IsCharacterPartOfNumber(unichar character, BOOL isFirstCharacter)
 {
 	return isnumber(character) || (!isFirstCharacter && character == '.');
 }
 
-static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCharacter)
+ST_INLINE BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCharacter)
 {
 	return (character != LIST_QUOTE_CHARACTER && 
 			character != LIST_OPEN_CHARACTER && 
@@ -77,19 +87,37 @@ static inline BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCh
 }
 
 #pragma mark -
+
+ST_INLINE void STParserStateUpdateCreationLocation(STParserState *parserState, unichar character)
+{
+	if(IsCharacterNewline(character))
+	{
+		parserState->creationLocation.offset = 1;
+		parserState->creationLocation.line++;
+	}
+	else
+	{
+		parserState->creationLocation.offset++;
+	}
+}
+
+#pragma mark -
 #pragma mark Parsers
 
-static void IgnoreCommentAt(NSUInteger *ioIndex, NSString *string, BOOL isMultiline)
+static void IgnoreCommentAt(STParserState *parserState, BOOL isMultiline)
 {
 	//If we're skipping a multi-line comment, we need to ignore the
 	//opening character or we'll end up causing an infinite loop.
 	if(isMultiline)
-		(*ioIndex)++;
-	
-	NSUInteger stringLength = [string length];
-	for (NSUInteger index = *ioIndex; index < stringLength; index++)
 	{
-		unichar character = [string characterAtIndex:index];
+		parserState->index++;
+		STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
+	}
+	
+	for (NSUInteger index = parserState->index; index < parserState->stringLength; index++)
+	{
+		unichar character = [parserState->string characterAtIndex:index];
+		
 		if(character == '\\')
 		{
 			continue;
@@ -98,72 +126,83 @@ static void IgnoreCommentAt(NSUInteger *ioIndex, NSString *string, BOOL isMultil
 				(!isMultiline && IsCharacterNewline(character)))
 		{
 			if(isMultiline)
-				*ioIndex = index;
+				parserState->index = index;
 			else
-				*ioIndex = index - 1;
+				parserState->index = index - 1;
 			
 			return;
 		}
+		
+		STParserStateUpdateCreationLocation(parserState, character);
 	}
 	
 	//We only reach here if we EOF without finding a newline.
-	*ioIndex = stringLength - 1;
+	parserState->index = parserState->stringLength - 1;
 }
 
 #pragma mark -
 
-static NSNumber *GetNumberAt(NSUInteger *ioIndex, NSString *string)
+static NSNumber *GetNumberAt(STParserState *parserState)
 {
 	NSRange numberRange;
-	numberRange.location = *ioIndex;
+	numberRange.location = parserState->index;
 	numberRange.length = NSNotFound;
 	
-	NSUInteger stringLength = [string length];
-	for (NSUInteger index = *ioIndex; index < stringLength; index++)
+	for (NSUInteger index = parserState->index; index < parserState->stringLength; index++)
 	{
-		unichar character = [string characterAtIndex:index];
+		unichar character = [parserState->string characterAtIndex:index];
 		
 		//If we're at the beginning of the number, and there's a
 		//minus sign, we just add that to our range and continue.
-		if(character == '-' && index == *ioIndex)
+		if(character == '-' && index == parserState->index)
+		{
+			STParserStateUpdateCreationLocation(parserState, character);
 			continue;
+		}
 		
-		if(!IsCharacterPartOfNumber(character, (index == *ioIndex)))
+		if(!IsCharacterPartOfNumber(character, (index == parserState->index)))
 		{
 			numberRange.length = (index - numberRange.location);
-			*ioIndex = index - 1;
+			parserState->index = index - 1;
 			
 			break;
 		}
+		
+		STParserStateUpdateCreationLocation(parserState, character);
 	}
 	if(numberRange.length == NSNotFound)
 	{
-		numberRange.length = ([string length] - *ioIndex);
-		*ioIndex = [string length];
+		numberRange.length = ([parserState->string length] - parserState->index);
+		parserState->index = [parserState->string length];
 	}
 	
-	return [NSNumber numberWithDouble:[[string substringWithRange:numberRange] doubleValue]];
+	return [NSNumber numberWithDouble:[[parserState->string substringWithRange:numberRange] doubleValue]];
 }
 
-static id GetStringAt(NSUInteger *ioIndex, NSString *string, STEvaluator *evaluator)
+static id GetStringAt(STParserState *parserState)
 {
 	NSMutableString *resultString = [NSMutableString string];
 	STStringWithCode *resultStringWithCode = nil;
 	
-	NSUInteger stringLength = [string length];
-	for (NSUInteger index = (*ioIndex) + 1; index < stringLength; index++)
+	parserState->index++;
+	STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
+	
+	for (NSUInteger index = parserState->index; index < parserState->stringLength; index++)
 	{
-		unichar character = [string characterAtIndex:index];
+		unichar character = [parserState->string characterAtIndex:index];
+		
 		if(character == STRING_CLOSE_CHARACTER)
 		{
-			*ioIndex = index;
+			parserState->index = index;
 			
 			break;
 		}
 		
+		STParserStateUpdateCreationLocation(parserState, character);
+		
 		if(character == '\\')
 		{
-			unichar escapeCharacter = SafelyGetCharacterAtIndex(string, index + 1);
+			unichar escapeCharacter = SafelyGetCharacterAtIndex(parserState->string, index + 1);
 			NSCAssert((escapeCharacter != 0), @"Escape token found at end of file.");
 			
 			switch (escapeCharacter)
@@ -223,14 +262,14 @@ static id GetStringAt(NSUInteger *ioIndex, NSString *string, STEvaluator *evalua
 			//Move past the escape sequence
 			index++;
 		}
-		else if(character == '%' && SafelyGetCharacterAtIndex(string, index + 1) == '{')
+		else if(character == '%' && SafelyGetCharacterAtIndex(parserState->string, index + 1) == '{')
 		{
 			//Find the closing bracket.
 			NSRange codeRange = NSMakeRange(index - 1, 0);
 			NSUInteger numberOfNestedBrackets = 0;
-			for (NSUInteger bracketSearchIndex = index; bracketSearchIndex < stringLength; bracketSearchIndex++)
+			for (NSUInteger bracketSearchIndex = index; bracketSearchIndex < parserState->stringLength; bracketSearchIndex++)
 			{
-				unichar innerCharacter = [string characterAtIndex:bracketSearchIndex];
+				unichar innerCharacter = [parserState->string characterAtIndex:bracketSearchIndex];
 				[resultString appendFormat:@"%C", innerCharacter];
 				
 				if(innerCharacter == '{')
@@ -248,12 +287,21 @@ static id GetStringAt(NSUInteger *ioIndex, NSString *string, STEvaluator *evalua
 						break;
 					}
 				}
+				
+				STParserStateUpdateCreationLocation(parserState, innerCharacter);
 			}
 			
-			NSString *expressionString = [string substringWithRange:NSMakeRange(codeRange.location + 3, 
-																				codeRange.length - 3)];
+			NSString *expressionString = [parserState->string substringWithRange:NSMakeRange(codeRange.location + 3, 
+																							 codeRange.length - 3)];
 			NSUInteger expressionStringIndex = 0;
-			id expression = GetExpressionAt(&expressionStringIndex, expressionString, NO, YES, evaluator);
+			STParserState expressionState = {
+				.string = parserState->string,
+				.stringLength = parserState->stringLength,
+				.creationLocation = {0, 0},
+				.index = 0,
+				.evaluator = parserState->evaluator,
+			};
+			id expression = GetExpressionAt(&expressionState, NO, YES);
 			if(!resultStringWithCode)
 				resultStringWithCode = [STStringWithCode new];
 			
@@ -274,64 +322,71 @@ static id GetStringAt(NSUInteger *ioIndex, NSString *string, STEvaluator *evalua
 	return resultString;
 }
 
-static STSymbol *GetIdentifierAt(NSUInteger *ioIndex, NSString *string)
+static STSymbol *GetIdentifierAt(STParserState *parserState)
 {
+	STCreationLocation symbolCreationLocation = parserState->creationLocation;
+	
 	NSRange identifierRange;
-	identifierRange.location = *ioIndex;
+	identifierRange.location = parserState->index;
 	identifierRange.length = NSNotFound;
 	
-	NSUInteger stringLength = [string length];
-	for (NSUInteger index = *ioIndex; index < stringLength; index++)
+	for (NSUInteger index = parserState->index; index < parserState->stringLength; index++)
 	{
-		unichar character = [string characterAtIndex:index];
-		if(!IsCharacterPartOfIdentifier(character, (index == *ioIndex)) || (character == ':'))
+		unichar character = [parserState->string characterAtIndex:index];
+		
+		if(!IsCharacterPartOfIdentifier(character, (index == parserState->index)) || (character == ':'))
 		{
 			if(character == ':')
 				index++;
 			
 			identifierRange.length = (index - identifierRange.location);
-			*ioIndex = index - 1;
+			parserState->index = index - 1;
 			
 			break;
 		}
+		
+		STParserStateUpdateCreationLocation(parserState, character);
 	}
 	if(identifierRange.length == NSNotFound)
 	{
-		identifierRange.length = ([string length] - *ioIndex);
-		*ioIndex = [string length];
+		identifierRange.length = ([parserState->string length] - parserState->index);
+		parserState->index = parserState->stringLength;
 	}
 	
-	return [STSymbol symbolWithString:[string substringWithRange:identifierRange]];
+	STSymbol *symbol = [STSymbol symbolWithString:[parserState->string substringWithRange:identifierRange]];
+	symbol.creationLocation = symbolCreationLocation;
+	return symbol;
 }
 
-static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL usingDoNotation, BOOL isUnbordered, STEvaluator *targetEvaluator)
+static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation, BOOL isUnbordered)
 {
 	STList *expression = [STList list];
-	expression.evaluator = targetEvaluator;
+	expression.evaluator = parserState->evaluator;
+	expression.creationLocation = parserState->creationLocation;
 	
-	NSUInteger index = *ioIndex;
 	if(usingDoNotation)
 	{
-		index++;
+		parserState->index++;
 		
 		expression.isQuoted = YES;
 		expression.isDoConstruct = YES;
 	}
 	else if(!isUnbordered)
 	{
-		index++;
+		parserState->index++;
 		
-		if([string characterAtIndex:*ioIndex] == LIST_QUOTE_CHARACTER)
+		if([parserState->string characterAtIndex:parserState->index] == LIST_QUOTE_CHARACTER)
 		{
-			index++;
+			parserState->index++;
+			STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
+			
 			expression.isQuoted = YES;
 		}
 	}
 	
-	NSUInteger stringLength = [string length];
-	for (; index < stringLength; index++)
+	for (; parserState->index < parserState->stringLength; parserState->index++)
 	{
-		unichar character = [string characterAtIndex:index];
+		unichar character = [parserState->string characterAtIndex:parserState->index];
 		
 		if(character == DO_LIST_CLOSE_CHARACTER)
 		{
@@ -340,7 +395,10 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 			//character. This will also result in error reporting when a
 			//dot is used outside of a do-dot statement.
 			if(isUnbordered)
-				index--;
+			{
+				parserState->index--;
+				STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
+			}
 			
 			break;
 		}
@@ -348,79 +406,84 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 		//If we're unbordered and we've encountered a newline, our expression is done.
 		if(isUnbordered && (character == UNBORDERED_LIST_CLOSE_CHARACTER || IsCharacterNewline(character)))
 		{
+			STParserStateUpdateCreationLocation(parserState, character);
 			break;
 		}
 		//If we encounter whitespace we just ignore it.
 		else if(IsCharacterWhitespace(character))
 		{
+			STParserStateUpdateCreationLocation(parserState, character);
 			continue;
 		}
 		//If we encounter a backslash, we skip the next character
 		else if(character == '\\')
 		{
-			index++;
+			parserState->index++;
+			
 			continue;
 		}
 		//If we encounter a comment, we just move to the end of it, ignoring it's contents.
 		else if(character == SINGLELINE_COMMENT_CHARACTER || character == MULTILINE_COMMENT_OPEN_CHARACTER)
 		{
-			IgnoreCommentAt(&index, string, (character == MULTILINE_COMMENT_OPEN_CHARACTER));
+			IgnoreCommentAt(parserState, (character == MULTILINE_COMMENT_OPEN_CHARACTER));
 		}
 		//If we encounter the word 'do' at the end of a line, we start do-notation expression parsing.
 		else if(character == DO_LIST_OPEN_CHARACTER)
 		{
-			[expression addObject:GetExpressionAt(&index, string, YES, NO, targetEvaluator)];
+			[expression addObject:GetExpressionAt(parserState, YES, NO)];
 		}
 		//If we're in do-notation, and we've gotten this far, we're looking for subexpressions.
 		else if(usingDoNotation)
 		{
-			[expression addObject:GetExpressionAt(&index, string, NO, YES, targetEvaluator)];
+			[expression addObject:GetExpressionAt(parserState, NO, YES)];
 		}
 		//If we find part of a number, we read it and add it to our expression.
 		else if(IsCharacterPartOfNumber(character, YES) || 
-				(character == '-' && IsCharacterPartOfNumber(SafelyGetCharacterAtIndex(string, index + 1), YES)))
+				(character == '-' && IsCharacterPartOfNumber(SafelyGetCharacterAtIndex(parserState->string, parserState->index + 1), YES)))
 		{
-			[expression addObject:GetNumberAt(&index, string)];
+			[expression addObject:GetNumberAt(parserState)];
 		}
 		//If we find a string, we read it and add it to our expression.
 		else if(character == STRING_OPEN_CHARACTER)
 		{
-			[expression addObject:GetStringAt(&index, string, targetEvaluator)];
+			[expression addObject:GetStringAt(parserState)];
 		}
 		//If we find part of an identifier, we read it and add it to our expression.
 		else if(IsCharacterPartOfIdentifier(character, YES))
 		{
-			[expression addObject:GetIdentifierAt(&index, string)];
+			[expression addObject:GetIdentifierAt(parserState)];
 		}
 		//If we find a quote character we scan the next subexpression as a quoted list.
 		else if(character == LIST_QUOTE_CHARACTER)
 		{
 			//If there's another quote two characters away, we assume we're looking at a character literal.
 			//Character literals can only be one character long, we do not support the weirdness that is 'abcd'.
-			if(SafelyGetCharacterAtIndex(string, index + 2) == LIST_QUOTE_CHARACTER)
+			if(SafelyGetCharacterAtIndex(parserState->string, parserState->index + 2) == LIST_QUOTE_CHARACTER)
 			{
-				[expression addObject:[NSNumber numberWithLong:SafelyGetCharacterAtIndex(string, index + 1)]];
+				[expression addObject:[NSNumber numberWithLong:SafelyGetCharacterAtIndex(parserState->string, parserState->index + 1)]];
 				
 				//Move past the character and the closing quote.
-				index += 2;
+				parserState->index += 2;
+				STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
 				
 				continue;
 			}
 			
-			unichar secondCharacter = SafelyGetCharacterAtIndex(string, index + 1);
+			unichar secondCharacter = SafelyGetCharacterAtIndex(parserState->string, parserState->index + 1);
 			NSCAssert((secondCharacter != 0), 
 					  @"Unexpected quote token at the end of a file.");
 			
 			if(secondCharacter == LIST_OPEN_CHARACTER)
 			{
-				[expression addObject:GetExpressionAt(&index, string, NO, NO, targetEvaluator)];
+				[expression addObject:GetExpressionAt(parserState, NO, NO)];
 			}
 			else
 			{
 				//Move past the opening quote.
-				index++;
+				parserState->index++;
+				STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
 				
-				STSymbol *identifier = GetIdentifierAt(&index, string);
+				STSymbol *identifier = GetIdentifierAt(parserState);
 				identifier.isQuoted = YES;
 				[expression addObject:identifier];
 			}
@@ -428,20 +491,20 @@ static STList *GetExpressionAt(NSUInteger *ioIndex, NSString *string, BOOL using
 		//If we encounter the list open character we scan the next subexpression.
 		else if(character == LIST_OPEN_CHARACTER)
 		{
-			[expression addObject:GetExpressionAt(&index, string, NO, NO, targetEvaluator)];
+			[expression addObject:GetExpressionAt(parserState, NO, NO)];
 		}
 		//If we encounter the list close character, we're done this expression and return.
 		else if(character == LIST_CLOSE_CHARACTER)
 		{
+			STParserStateUpdateCreationLocation(parserState, character);
 			break;
 		}
 		//If we reach here, we've encountered an unexpected token.
 		else
 		{
-			NSCAssert(0, @"Unexpected token '%C'.", character);
+			STRaiseIssue(parserState->creationLocation, @"Unexpected token «%C» when parsing.", character);
 		}
 	}
-	*ioIndex = index;
 	
 	return expression;
 }
@@ -455,10 +518,19 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 	
 	NSMutableArray *expressions = [NSMutableArray array];
 	
-	NSUInteger stringLength = [string length];
-	for (NSUInteger index = 0; index < stringLength; index++)
+	STParserState parserState = {
+		.string = string,
+		.stringLength = [string length],
+		
+		.index = 0,
+		
+		.creationLocation = { .line = 1, .offset = 1 },
+		.evaluator = targetEvaluator,
+	};
+	for (; parserState.index < parserState.stringLength; parserState.index++)
 	{
-		unichar character = [string characterAtIndex:index];
+		unichar character = [parserState.string characterAtIndex:parserState.index];
+		STParserStateUpdateCreationLocation(&parserState, character);
 		
 		//We ignore whitespace, it doesn't really do anything.
 		if(IsCharacterWhitespace(character))
@@ -468,18 +540,19 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 		//If we encounter a backslash, we skip the next character
 		else if(character == '\\')
 		{
-			index++;
+			parserState.index++;
+			
 			continue;
 		}
 		//When we encounter comments, we move to the end of them and ignore their contents.
 		else if(character == SINGLELINE_COMMENT_CHARACTER || character == MULTILINE_COMMENT_OPEN_CHARACTER)
 		{
-			IgnoreCommentAt(&index, string, (character == MULTILINE_COMMENT_OPEN_CHARACTER));
+			IgnoreCommentAt(&parserState, (character == MULTILINE_COMMENT_OPEN_CHARACTER));
 		}
 		//When we reach this clause it's time to start parsing the line as though it's an expression.
 		else
 		{
-			[expressions addObject:GetExpressionAt(&index, string, NO, YES, targetEvaluator)];
+			[expressions addObject:GetExpressionAt(&parserState, NO, YES)];
 		}
 	}
 	

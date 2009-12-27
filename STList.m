@@ -71,6 +71,7 @@
 		mEvaluator = list->mEvaluator;
 		mIsQuoted = list->mIsQuoted;
 		mIsDoConstruct = list->mIsDoConstruct;
+		mCreationLocation = list ->mCreationLocation;
 		[mContents setArray:list->mContents];
 		
 		return self;
@@ -158,6 +159,7 @@
 {
 	STList *sublist = [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
 	sublist.evaluator = mEvaluator;
+	sublist.creationLocation = mCreationLocation;
 	return sublist;
 }
 

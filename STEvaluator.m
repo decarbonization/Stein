@@ -24,9 +24,9 @@
 
 #import "NSObject+Stein.h"
 
-NSString *const kSTEvaluatorEnclosingScopeKey = @"$__enclosingScope";
-NSString *const kSTEvaluatorSuperclassKey = @"$__superclass";
-NSString *const kSTBundleIsPureSteinKey = @"STBundleIsPureSteinKey";
+NSString *const kSTEvaluatorEnclosingScopeKey = @"\\__enclosingScope";
+NSString *const kSTEvaluatorSuperclassKey = @"\\__superclass";
+NSString *const kSTBundleIsPureSteinKey = @"STBundleIsPureStein";
 
 #pragma mark -
 #pragma mark Environment Built Ins
@@ -43,8 +43,8 @@ STBuiltInFunctionDefine(Import, NO, ^id(STEvaluator *evaluator, STList *argument
 
 STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	NSUInteger numberOfArguments = [arguments count];
-	NSCAssert(numberOfArguments >= 1, 
-			  @"Expected at least one argument for let statement, got 0.");
+	if(numberOfArguments < 1)
+		STRaiseIssue(arguments.creationLocation, @"let statement expected identifier, and didn't get one.");
 	
 	NSString *name = [[arguments objectAtIndex:0] string];
 	if(numberOfArguments == 1)
@@ -72,7 +72,7 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 		}
 		else
 		{
-			NSCAssert(0, @"let statement does not understand what the %@ directive means.", directive);
+			STRaiseIssue(arguments.creationLocation, @"Malformed let statement, directive {%@} is undefined.", [directive string]);
 		}
 	}
 	
@@ -82,8 +82,8 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 #pragma mark -
 
 STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	NSCAssert(([arguments count] >= 3), 
-			  @"Wrong number of arguments given to lambda, expected at least 3, got %ld.", [arguments count]);
+	if([arguments count] < 3)
+		STRaiseIssue(arguments.creationLocation, @"function requires 3 arguments, was given %ld.", [arguments count]);
 	
 	NSString *signature = nil;
 	STList *parameterList = nil;
@@ -127,7 +127,8 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 #pragma mark Messaging Built Ins
 
 STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	NSCAssert([arguments count] >= 1, @"# expected at least 1 argument, got 0.");
+	if([arguments count] < 1)
+		STRaiseIssue(arguments.creationLocation, @"# expected function or complete message, neither was provided.");
 	
 	id target = __STEvaluateExpression(evaluator, [arguments head], scope);
 	if([arguments count] == 1)

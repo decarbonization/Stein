@@ -69,4 +69,9 @@ typedef struct STCreationLocation {
 	NSUInteger offset;
 } STCreationLocation;
 
+#pragma mark -
+#pragma mark Errors
+
+ST_EXTERN void STRaiseIssue(STCreationLocation expressionLocation, NSString *format, ...);
+
 #endif /* __OBJC__ */

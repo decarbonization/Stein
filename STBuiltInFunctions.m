@@ -245,7 +245,8 @@ STBuiltInFunctionDefine(Not, NO, ^id(STEvaluator *evaluator, STList *arguments, 
 #pragma mark Bridging
 
 STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	NSCAssert(([arguments count] >= 2), @"Expected at least two arguments, got %ld.", [arguments count]);
+	if([arguments count] < 2)
+		STRaiseIssue(arguments.creationLocation, @"bridge-function requires two arguments.");
 	
 	NSString *symbolName = [[arguments objectAtIndex:0] string];
 	NSString *signature = [arguments objectAtIndex:1];
@@ -255,7 +256,8 @@ STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList 
 });
 
 STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	NSCAssert(([arguments count] >= 2), @"Expected at least two arguments, got %ld.", [arguments count]);
+	if([arguments count] < 2)
+		STRaiseIssue(arguments.creationLocation, @"bridge-constant requires two arguments.");
 	
 	NSString *symbolName = [[arguments objectAtIndex:0] string];
 	NSString *signature = [arguments objectAtIndex:1];
@@ -266,7 +268,8 @@ STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList 
 	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
 });
 STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	NSCAssert([arguments count] >= 1, @"Expected one arguments got, %ld", [arguments count]);
+	if([arguments count] < 2)
+		STRaiseIssue(arguments.creationLocation, @"ref requires an argument.");
 	
 	STPointer *pointer = [STPointer pointerWithType:@encode(id)];
 	[scope setObject:pointer forKey:[[arguments head] string]];

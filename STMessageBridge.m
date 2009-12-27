@@ -303,6 +303,23 @@ void STExtendClass(Class classToExtend, STList *expressions)
 	}
 }
 
+#pragma mark -
+
+BOOL STUndefineClass(Class classToUndefine)
+{
+	NSCParameterAssert(classToUndefine);
+	
+	objc_disposeClassPair(classToUndefine);
+	
+	return YES;
+}
+
+BOOL STResetClass(Class classToReset)
+{
+	//TODO: Implement.
+	return NO;
+}
+
 Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions)
 {
 	NSCParameterAssert(subclassName);

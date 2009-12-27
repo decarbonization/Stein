@@ -36,15 +36,29 @@ ST_EXTERN id STMessageBridgeSendSuper(id target, Class superclass, SEL selector,
 #pragma mark -
 
 /*!
- @method
+ @function
  @abstract	Extend an existing class with a specified list of expressions.
  @param		classToExtend	The class to extend. May not be nil. Should implement the NSObject protocol.
  @param		expressions		A list of expressions consisting of method declarations, and decorators. May not be nil.
  */
 ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions);
 
+#pragma mark -
+
 /*!
- @method
+ @function
+ @abstract	Undefine a class in the ObjC runtime.
+ */
+ST_EXTERN BOOL STUndefineClass(Class classToUndefine);
+
+/*!
+ @function
+ @abstract	Remove a classes method, protocol, and property information. This effectively returns a class to a blank-slate like condition.
+ */
+ST_EXTERN BOOL STResetClass(Class classToReset);
+
+/*!
+ @function
  @abstract	Define a new class with a specified superclass, and a specified list of expressions.
  @param		subclassName	The name of the subclass to create. May not be nil.
  @param		superclass		The superclass of the new clas. May not be nil. Should be a decendent of NSObject.

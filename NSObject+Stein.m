@@ -9,6 +9,7 @@
 #import "NSObject+Stein.h"
 #import <objc/objc-runtime.h>
 #import "STTypeBridge.h"
+#import "STStructClasses.h"
 
 #import "STFunction.h"
 #import "STList.h"
@@ -256,6 +257,30 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 @implementation NSNumber (Stein)
 
++ (void)load
+{
+	static BOOL hasAddedPrettyMethods = NO;
+	if(!hasAddedPrettyMethods)
+	{
+		//Add support for the @selector(to) method.
+#if __LP64__
+		class_addMethod(self, 
+						@selector(to), 
+						[self instanceMethodForSelector:@selector(rangeWithLength:)], 
+						"@@:L");
+#else
+		class_addMethod(self, 
+						@selector(to), 
+						[self instanceMethodForSelector:@selector(rangeWithLength:)], 
+						"@@:I");
+#endif
+		
+		hasAddedPrettyMethods = YES;
+	}
+}
+
+#pragma mark -
+
 - (BOOL)isTrue
 {
 	return [self boolValue];
@@ -264,6 +289,11 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 - (NSString *)prettyDescription
 {
 	return [self description];
+}
+
+- (STRange *)rangeWithLength:(NSUInteger)length
+{
+	return [[[STRange alloc] initWithLocation:[self unsignedIntegerValue] length:length] autorelease];
 }
 
 @end

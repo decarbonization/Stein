@@ -21,6 +21,7 @@
 		C83EF1E610D877300037A956 /* STBridgedFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1E410D877300037A956 /* STBridgedFunction.m */; };
 		C83EF1F710D877960037A956 /* STFunctionInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1F510D877960037A956 /* STFunctionInvocation.h */; };
 		C83EF1F810D877960037A956 /* STFunctionInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1F610D877960037A956 /* STFunctionInvocation.m */; };
+		C863D20110E7F00D00387729 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E165B410D584F5003F45A9 /* SteinDefines.m */; };
 		C8B3187C10E15E860086468F /* STEnumerable.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3187A10E15E860086468F /* STEnumerable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8B3187D10E15E860086468F /* STEnumerable.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B3187B10E15E860086468F /* STEnumerable.m */; };
 		C8B3199410E16B740086468F /* STEvaluatorInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3199310E16B740086468F /* STEvaluatorInternal.h */; };
@@ -53,7 +54,6 @@
 		C8E164DD10D57D80003F45A9 /* Stein.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E164DB10D57D5A003F45A9 /* Stein.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1650610D57E6A003F45A9 /* libreadline.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1650510D57E6A003F45A9 /* libreadline.dylib */; };
 		C8E1657410D58458003F45A9 /* SteinDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E1656D10D58415003F45A9 /* SteinDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C8E165B510D584F5003F45A9 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E165B410D584F5003F45A9 /* SteinDefines.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -445,7 +445,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */,
-				C8E165B510D584F5003F45A9 /* SteinDefines.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,6 +468,7 @@
 				C808865410E2E00000632257 /* STStringWithCode.m in Sources */,
 				C808882010E3037B00632257 /* STPointer.m in Sources */,
 				C8088ABE10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m in Sources */,
+				C863D20110E7F00D00387729 /* SteinDefines.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

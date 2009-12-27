@@ -10,7 +10,7 @@
 #import <Stein/STEnumerable.h>
 
 @protocol STFunction;
-@class STClosure;
+@class STClosure, STRange;
 
 /*!
  @category
@@ -143,6 +143,8 @@
 
 - (BOOL)isTrue;
 - (NSString *)prettyDescription;
+
+- (STRange *)rangeWithLength:(NSUInteger)length;
 
 @end
 

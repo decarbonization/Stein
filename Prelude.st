@@ -1,12 +1,12 @@
-`
-	Prelude.st
-	stein
-	
-	Created by Peter MacWhinnie on 2009/12/23.
-	Copyright 2009 Stein Language. All rights reserved.
-`
+;;
+;;	Prelude.st
+;;	stein
+;;	
+;;	Created by Peter MacWhinnie on 2009/12/23.
+;;	Copyright 2009 Stein Language. All rights reserved.
+;;
 
-`!
+`
 	\function	make-size
 	\intent		To create a new size object with specified width, and height values.
 	\param		w	The width of the size object.
@@ -17,7 +17,7 @@ function make-size (w h) [
 	(STSize alloc) initWithWidth:w height:h
 ]
 
-`!
+`
 	\function	make-point
 	\intent		To create a new point object with specified x, and y values.
 	\param		x	The x offset of the point object.
@@ -28,7 +28,7 @@ function make-point (x y) [
 	(STPoint alloc) initWithX:x y:y
 ]
 
-`!
+`
 	\function	make-point
 	\intent		To create a new point object with specified x, y, width, and height values.
 	\param		x	The x origin of the rect object.
