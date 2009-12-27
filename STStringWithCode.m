@@ -97,19 +97,23 @@
 {
 	NSParameterAssert(evaluator);
 	
-	NSMutableString *evaluatedString = [NSMutableString stringWithString:mString];
+	NSMutableDictionary *expressionEvaluationScope = [evaluator scopeWithEnclosingScope:scope];
 	
-	NSMutableDictionary *evaluationScope = [evaluator scopeWithEnclosingScope:scope];
-	for (NSInteger index = [mCodeRanges count] - 1; index >= 0; index--)
+	NSMutableArray *evaluatedExpressionStrings = [NSMutableArray array];
+	for (id expression in mCodeExpressions)
 	{
-		NSRange range = [[mCodeRanges objectAtIndex:index] rangeValue];
-		id expression = [mCodeExpressions objectAtIndex:index];
-		
-		id resultOfExpression = [evaluator evaluateExpression:expression inScope:evaluationScope];
-		[evaluatedString replaceCharactersInRange:range withString:[resultOfExpression description]];
+		id resultOfExpression = [evaluator evaluateExpression:expression inScope:expressionEvaluationScope];
+		[evaluatedExpressionStrings addObject:[resultOfExpression description]];
 	}
 	
-	return evaluatedString;
+	NSMutableString *resultString = [NSMutableString stringWithString:mString];
+	[mCodeRanges enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NSValue *value, NSUInteger index, BOOL *stop) {
+		NSRange range = [value rangeValue];
+		[resultString replaceCharactersInRange:range 
+									withString:[evaluatedExpressionStrings objectAtIndex:index]];
+	}];
+	
+	return resultString;
 }
 
 @end

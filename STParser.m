@@ -293,11 +293,10 @@ static id GetStringAt(STParserState *parserState)
 			
 			NSString *expressionString = [parserState->string substringWithRange:NSMakeRange(codeRange.location + 3, 
 																							 codeRange.length - 3)];
-			NSUInteger expressionStringIndex = 0;
 			STParserState expressionState = {
-				.string = parserState->string,
-				.stringLength = parserState->stringLength,
-				.creationLocation = {0, 0},
+				.string = expressionString,
+				.stringLength = [expressionString length],
+				.creationLocation = {1, 1},
 				.index = 0,
 				.evaluator = parserState->evaluator,
 			};
