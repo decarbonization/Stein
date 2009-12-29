@@ -76,14 +76,14 @@ ST_INLINE BOOL IsCharacterPartOfNumber(unichar character, BOOL isFirstCharacter)
 
 ST_INLINE BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCharacter)
 {
-	return (character != LIST_QUOTE_CHARACTER && 
+	return ((character != LIST_QUOTE_CHARACTER && 
 			character != LIST_OPEN_CHARACTER && 
 			character != LIST_CLOSE_CHARACTER &&
 			character != DO_LIST_OPEN_CHARACTER &&
 			character != DO_LIST_CLOSE_CHARACTER &&
 			character != UNBORDERED_LIST_CLOSE_CHARACTER &&
-			!IsCharacterWhitespace(character) && 
-			(isFirstCharacter || !IsCharacterPartOfNumber(character, NO)));
+			!IsCharacterWhitespace(character)) ||
+			(!isFirstCharacter && IsCharacterPartOfNumber(character, NO)));
 }
 
 #pragma mark -
@@ -333,10 +333,13 @@ static STSymbol *GetIdentifierAt(STParserState *parserState)
 	{
 		unichar character = [parserState->string characterAtIndex:index];
 		
-		if(!IsCharacterPartOfIdentifier(character, (index == parserState->index)) || (character == ':'))
+		if(!IsCharacterPartOfIdentifier(character, (index == identifierRange.location)) || (character == ':'))
 		{
 			if(character == ':')
+			{
 				index++;
+				STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:index]);
+			}
 			
 			identifierRange.length = (index - identifierRange.location);
 			parserState->index = index - 1;
