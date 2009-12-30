@@ -213,6 +213,51 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 }
 
 #pragma mark -
+#pragma mark Block Support
+
+- (id)blockWithSignature:(NSMethodSignature *)signature
+{
+	return [[^id(void *first, ...) {
+		//Read the varadic arguments passed into this block, converting them all into objects.
+		va_list args;
+		va_start(args, first);
+		
+		STList *arguments = [STList list];
+		
+		NSUInteger numberOfArguments = [signature numberOfArguments];
+		if(numberOfArguments > 0)
+		{
+			const char *argument = [signature getArgumentTypeAtIndex:0];
+			[arguments addObject:STTypeBridgeConvertValueOfTypeIntoObject(&first, argument)];
+			
+			for (NSUInteger index = 1; index < numberOfArguments; index++)
+			{
+				argument = [signature getArgumentTypeAtIndex:index];
+				
+				void *argumentAddress = va_arg(args, Byte *);
+				[arguments addObject:STTypeBridgeConvertValueOfTypeIntoObject(&argumentAddress, argument)];
+			}
+		}
+		
+		va_end(args);
+		
+		//Apply the closure (self) with the arguments passed in in the scope in which it was created.
+		id result = [self applyWithArguments:arguments inScope:mSuperscope];
+		
+		//If the result type is non-void, we return something.
+		if(![signature isOneway] && [signature methodReturnType][0] != 'v')
+		{
+			//MARK: This is a leak in No-GC mode.
+			Byte *primitiveResultBuffer = NSAllocateCollectable([signature methodReturnLength], 0);
+			STTypeBridgeConvertObjectIntoType(result, [signature methodReturnType], (void **)&primitiveResultBuffer);
+			
+			return (id)(primitiveResultBuffer);
+		}
+		
+	} copy] autorelease];
+}
+
+#pragma mark -
 #pragma mark Properties
 
 @synthesize evaluator = mEvaluator;

@@ -60,6 +60,12 @@
  */
 @property (readonly) void *functionPointer;
 
+/*!
+ @method
+ @abstract	Return a block object adapted to a specified signature that will forward to the receiver.
+ */
+- (id)blockWithSignature:(NSMethodSignature *)signature;
+
 #pragma mark -
 
 /*!

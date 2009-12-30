@@ -268,7 +268,7 @@ STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList 
 	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
 });
 STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	if([arguments count] < 2)
+	if([arguments count] < 1)
 		STRaiseIssue(arguments.creationLocation, @"ref requires an argument.");
 	
 	STPointer *pointer = [STPointer pointerWithType:@encode(id)];
