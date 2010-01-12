@@ -262,27 +262,27 @@ static id GetStringAt(STParserState *parserState)
 			//Move past the escape sequence
 			index++;
 		}
-		else if(character == '%' && SafelyGetCharacterAtIndex(parserState->string, index + 1) == '{')
+		else if(character == '%' && SafelyGetCharacterAtIndex(parserState->string, index + 1) == '(')
 		{
 			//Find the closing bracket.
 			NSRange codeRange = NSMakeRange(index - 1, 0);
-			NSUInteger numberOfNestedBrackets = 0;
-			for (NSUInteger bracketSearchIndex = index; bracketSearchIndex < parserState->stringLength; bracketSearchIndex++)
+			NSUInteger numberOfNestedParentheses = 0;
+			for (NSUInteger parentheseSearchIndex = index; parentheseSearchIndex < parserState->stringLength; parentheseSearchIndex++)
 			{
-				unichar innerCharacter = [parserState->string characterAtIndex:bracketSearchIndex];
+				unichar innerCharacter = [parserState->string characterAtIndex:parentheseSearchIndex];
 				[resultString appendFormat:@"%C", innerCharacter];
 				
-				if(innerCharacter == '{')
+				if(innerCharacter == '(')
 				{
-					numberOfNestedBrackets++;
+					numberOfNestedParentheses++;
 				}
-				else if(innerCharacter == '}')
+				else if(innerCharacter == ')')
 				{
-					numberOfNestedBrackets--;
-					if(numberOfNestedBrackets == 0)
+					numberOfNestedParentheses--;
+					if(numberOfNestedParentheses == 0)
 					{
-						codeRange.length = bracketSearchIndex - codeRange.location;
-						index = bracketSearchIndex;
+						codeRange.length = parentheseSearchIndex - codeRange.location;
+						index = parentheseSearchIndex;
 						
 						break;
 					}

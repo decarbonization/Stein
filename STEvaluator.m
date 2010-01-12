@@ -28,6 +28,37 @@ NSString *const kSTEvaluatorEnclosingScopeKey = @"\\__enclosingScope";
 NSString *const kSTEvaluatorSuperclassKey = @"\\__superclass";
 NSString *const kSTBundleIsPureSteinKey = @"STBundleIsPureStein";
 
+#pragma mark Tools
+
+static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDictionary *scope)
+{
+	STList *arguments = nil;
+	STList *implementation = nil;
+	
+	id head = [doList head];
+	if([head isKindOfClass:[STList class]] && [[head head] isEqualTo:@":"])
+	{
+		arguments = [head tail];
+		[arguments replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
+		
+		implementation = [doList tail];
+	}
+	else
+	{
+		arguments = [STList list];
+		implementation = doList;
+	}
+	
+	implementation.isDoConstruct = NO;
+	implementation.isQuoted = NO;
+	
+	return [[[STClosure alloc] initWithPrototype:arguments 
+							   forImplementation:implementation 
+								   withSignature:nil 
+								   fromEvaluator:self 
+										 inScope:scope] autorelease];
+}
+
 #pragma mark -
 #pragma mark Environment Built Ins
 
@@ -134,7 +165,11 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 	if([arguments count] == 1)
 		return target;
 	
-	return __STSendMessageWithTargetAndArguments(evaluator, target, [arguments tail], scope);
+	SEL selector = NULL;
+	NSArray *argumentsArray = nil;
+	MessageListGetSelectorAndArguments(evaluator, scope, [arguments tail], &selector, &argumentsArray);
+	
+	return STMessageBridgeSend(target, selector, argumentsArray);
 });
 
 STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
@@ -394,57 +429,6 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 #pragma mark -
 #pragma mark Evaluation
 
-id __STSendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments, NSMutableDictionary *scope)
-{
-	NSMutableString *selectorString = [NSMutableString string];
-	NSMutableArray *evaluatedArguments = [NSMutableArray array];
-	
-	NSUInteger index = 0;
-	for (id expression in arguments)
-	{
-		//If it's even, it's part of the selector
-		if((index % 2) == 0)
-			[selectorString appendString:[expression string]];
-		else
-			[evaluatedArguments addObject:__STEvaluateExpression(self, expression, scope)];
-		
-		index++;
-	}
-	
-	return STMessageBridgeSend(target, NSSelectorFromString(selectorString), evaluatedArguments);
-}
-
-static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDictionary *scope)
-{
-	STList *arguments = nil;
-	STList *implementation = nil;
-	
-	id head = [doList head];
-	if([head isKindOfClass:[STList class]] && [[head head] isEqualTo:@":"])
-	{
-		arguments = [head tail];
-		[arguments replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
-		
-		implementation = [doList tail];
-	}
-	else
-	{
-		arguments = [STList list];
-		implementation = doList;
-	}
-	
-	implementation.isDoConstruct = NO;
-	implementation.isQuoted = NO;
-	
-	return [[[STClosure alloc] initWithPrototype:arguments 
-							   forImplementation:implementation 
-								   withSignature:nil 
-								   fromEvaluator:self 
-										 inScope:scope] autorelease];
-}
-
-#pragma mark -
-
 id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 {
 	if(list.isDoConstruct)
@@ -477,7 +461,11 @@ id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 	if([list count] == 1)
 		return target;
 	
-	return __STSendMessageWithTargetAndArguments(self, target, [list tail], scope);
+	SEL selector = NULL;
+	NSArray *arguments = nil;
+	MessageListGetSelectorAndArguments(self, scope, [list tail], &selector, &arguments);
+	
+	return STMessageBridgeSend(target, selector, arguments);
 }
 
 #pragma mark -

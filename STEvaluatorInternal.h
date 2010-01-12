@@ -16,19 +16,6 @@
 
 /*!
  @function
- @abstract		Send a message with a specified target, and a specified arguments list, within the context of a specified scope.
- @param			self		The evaluator that is sending the message.
- @param			target		The target of the message.
- @param			arguments	A list whose even values are selector labels, and whose odd values are expressions suitable
-							for passing along with the message described by the selector labels. May not be nil.
- @param			scope		The scope to evaluate the message in.
- @result		The result of sending the message.
- @discussion	This function is effectively a method on STEvaluator, it is simply in the form of a function because it is called very often and the overhead of messaging can be quite fatiguing.
- */
-ST_EXTERN id __STSendMessageWithTargetAndArguments(STEvaluator *self, id target, STList *arguments, NSMutableDictionary *scope);
-
-/*!
- @function
  @abstract		Evaluate a specified list with a specified evaluator within a specified scope.
  @param			self	The evaluator to evaluate the list with.
  @param			list	The list to evaluate.
@@ -44,3 +31,37 @@ ST_EXTERN id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictiona
  @discussion	This function is effectively a method on STEvaluator, it is simply in the form of a function because it is called very often and the overhead of messaging can be quite fatiguing.
  */
 ST_EXTERN id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary *scope);
+
+#pragma mark -
+
+/*!
+ @function
+ @abstract		Get the selector and arguments for a list describing a message.
+ @discussion	All parameters are required.
+ */
+ST_INLINE void MessageListGetSelectorAndArguments(STEvaluator *evaluator, NSMutableDictionary *scope, STList *list, SEL *outSelector, NSArray **outArguments)
+{
+	NSCParameterAssert(evaluator);
+	NSCParameterAssert(scope);
+	
+	if(!outSelector && !outArguments)
+		return;
+	
+	NSMutableString *selectorString = [NSMutableString string];
+	NSMutableArray *evaluatedArguments = [NSMutableArray array];
+	
+	NSUInteger index = 0;
+	for (id expression in list)
+	{
+		//If it's even, it's part of the selector
+		if((index % 2) == 0)
+			[selectorString appendString:[expression string]];
+		else
+			[evaluatedArguments addObject:__STEvaluateExpression(evaluator, expression, scope)];
+		
+		index++;
+	}
+	
+	if(outSelector) *outSelector = NSSelectorFromString(selectorString);
+	if(outArguments) *outArguments = evaluatedArguments;
+}

@@ -297,7 +297,10 @@ void STExtendClass(Class classToExtend, STList *expressions)
 				if(!scope)
 					scope = [evaluator scopeWithEnclosingScope:nil];
 				
-				__STSendMessageWithTargetAndArguments(evaluator, classToExtend, expression, scope);
+				SEL selector = nil;
+				NSArray *arguments = nil;
+				MessageListGetSelectorAndArguments(evaluator, scope, expression, &selector, &arguments);
+				STMessageBridgeSend(classToExtend, selector, arguments);
 			}
 		}
 	}

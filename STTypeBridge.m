@@ -87,83 +87,10 @@ static const char *GetRelevantTypeForObjCType(const char *objcType)
 
 size_t STTypeBridgeGetSizeOfObjCType(const char *objcType)
 {
-	const char *type = GetRelevantTypeForObjCType(objcType);
+	NSUInteger size = 0, align = 0;
+	NSGetSizeAndAlignment(objcType, &size, &align);
 	
-	switch (type[0])
-	{
-		case kObjectiveCTypeChar:
-			return sizeof(char);
-			
-		case kObjectiveCTypeInt:
-			return sizeof(int);
-			
-		case kObjectiveCTypeShort:
-			return sizeof(short);
-			
-		case kObjectiveCTypeLong:
-			return sizeof(long);
-			
-		case kObjectiveCTypeLongLong:
-			return sizeof(long long);
-			
-		case kObjectiveCTypeUnsignedChar:
-			return sizeof(unsigned char);
-			
-		case kObjectiveCTypeUnsignedInt:
-			return sizeof(unsigned int);
-			
-		case kObjectiveCTypeUnsignedShort:
-			return sizeof(unsigned short);
-			
-		case kObjectiveCTypeUnsignedLong:
-			return sizeof(unsigned long);
-			
-		case kObjectiveCTypeUnsignedLongLong:
-			return sizeof(unsigned long long);
-			
-		case kObjectiveCTypeFloat:
-			return sizeof(float);
-			
-		case kObjectiveCTypeDouble:
-			return sizeof(double);
-			
-		case kObjectiveCTypeBool:
-			return sizeof(_Bool);
-			
-		case kObjectiveCTypeVoid:
-			return sizeof(void);
-			
-		case kObjectiveCTypeCString:
-			return sizeof(const char *);
-			
-		case kObjectiveCTypePointer:
-			return sizeof(void *);
-			
-		case kObjectiveCTypeClass:
-			return sizeof(Class);
-			
-		case kObjectiveCTypeObject:
-			return sizeof(id);
-			
-		case kObjectiveCTypeSelector:
-			return sizeof(SEL);
-			
-		case kObjectiveCTypeStruct: {
-			const STPrimitiveValueWrapperDescriptor *wrapperDescriptor = STTypeBridgeGetWrapperForType(type);
-			return wrapperDescriptor->SizeOfPrimitiveValue(wrapperDescriptor, type);
-		}
-			
-		case kObjectiveCTypeCArray:
-		case kObjectiveCTypeUnion:
-		case kObjectiveCTypeBitfield:
-		case kObjectiveCTypeUnknown:
-			NSCAssert(0, @"Type %s cannot be handled by the stein type bridge.", objcType);
-			
-		default:
-			break;
-	}
-	
-	return 0;
+	return size;
 }
 
 #pragma mark -
@@ -381,7 +308,7 @@ static id < STPrimitiveValueWrapper > GenericStructWrapDataWithSignature(const S
 
 static size_t GenericStructSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
 {
-	return sizeof(void *);
+	return STTypeBridgeGetSizeOfObjCType(objcType);
 }
 
 static STPrimitiveValueWrapperDescriptor const kGenericStructWrapperDescriptor = {
