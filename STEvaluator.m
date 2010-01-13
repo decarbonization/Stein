@@ -315,6 +315,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 						[evaluatorBundle sharedFrameworksPath], 
 						[evaluatorBundle privateFrameworksPath], 
 						[[NSFileManager defaultManager] currentDirectoryPath], 
+						[[[[NSProcessInfo processInfo] arguments] objectAtIndex:0] stringByDeletingLastPathComponent],
 						@"/Library/Frameworks",
 						@"/System/Library/Frameworks",
 						[@"~/Library/Frameworks" stringByExpandingTildeInPath],

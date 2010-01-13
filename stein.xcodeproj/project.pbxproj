@@ -22,6 +22,7 @@
 		C83EF1F710D877960037A956 /* STFunctionInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1F510D877960037A956 /* STFunctionInvocation.h */; };
 		C83EF1F810D877960037A956 /* STFunctionInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1F610D877960037A956 /* STFunctionInvocation.m */; };
 		C863D20110E7F00D00387729 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E165B410D584F5003F45A9 /* SteinDefines.m */; };
+		C883A31810FD68B400C32F06 /* ImageScripting.st in Resources */ = {isa = PBXBuildFile; fileRef = C883A31710FD68B400C32F06 /* ImageScripting.st */; };
 		C8B3187C10E15E860086468F /* STEnumerable.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3187A10E15E860086468F /* STEnumerable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8B3187D10E15E860086468F /* STEnumerable.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B3187B10E15E860086468F /* STEnumerable.m */; };
 		C8B3199410E16B740086468F /* STEvaluatorInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3199310E16B740086468F /* STEvaluatorInternal.h */; };
@@ -137,6 +138,7 @@
 		C83EF1F610D877960037A956 /* STFunctionInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFunctionInvocation.m; sourceTree = "<group>"; };
 		C8791F2C10D2AF8C00EB5D17 /* STParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STParser.h; sourceTree = "<group>"; };
 		C8791F2D10D2AF8C00EB5D17 /* STParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STParser.m; sourceTree = "<group>"; };
+		C883A31710FD68B400C32F06 /* ImageScripting.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ImageScripting.st; sourceTree = "<group>"; };
 		C8B3187A10E15E860086468F /* STEnumerable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEnumerable.h; sourceTree = "<group>"; };
 		C8B3187B10E15E860086468F /* STEnumerable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STEnumerable.m; sourceTree = "<group>"; };
 		C8B3199310E16B740086468F /* STEvaluatorInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEvaluatorInternal.h; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 		C8E164BE10D57CD3003F45A9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C883A31710FD68B400C32F06 /* ImageScripting.st */,
 				C808860E10E2D10800632257 /* Prelude.st */,
 				C8E1640B10D57C0E003F45A9 /* Stein-Info.plist */,
 			);
@@ -434,6 +437,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C808860F10E2D10800632257 /* Prelude.st in Resources */,
+				C883A31810FD68B400C32F06 /* ImageScripting.st in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

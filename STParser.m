@@ -304,7 +304,8 @@ static id GetStringAt(STParserState *parserState)
 			if(!resultStringWithCode)
 				resultStringWithCode = [STStringWithCode new];
 			
-			[resultStringWithCode addExpression:expression inRange:NSMakeRange(codeRange.location, codeRange.length)];
+			[resultStringWithCode addExpression:expression 
+										inRange:NSMakeRange([resultString length] - [expressionString length] - 3, [expressionString length] + 3)];
 		}
 		else
 		{

@@ -773,6 +773,21 @@ NSString *STTypeBridgeGetObjCTypeForHumanReadableType(NSString *type)
 		return @"f";
 	else if([type isEqualToString:@"double"])
 		return @"d";
+#if __LP64__
+	else if([type isEqualToString:@"Integer"])
+		return @"l";
+	else if([type isEqualToString:@"UInteger"])
+		return @"L";
+	else if([type isEqualToString:@"Real"])
+		return @"d";
+#else
+	else if([type isEqualToString:@"Integer"])
+		return @"i";
+	else if([type isEqualToString:@"UInteger"])
+		return @"I";
+	else if([type isEqualToString:@"Real"])
+		return @"f";
+#endif /* __LP64__ */
 	else if([type isEqualToString:@"_bool"])
 		return @"B";
 	else if([type isEqualToString:@"void"] || [type isEqualToString:@"IBAction"]) //IBAction is just an alias for void.
