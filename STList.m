@@ -160,6 +160,8 @@
 	STList *sublist = [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
 	sublist.evaluator = mEvaluator;
 	sublist.creationLocation = mCreationLocation;
+	sublist.isDoConstruct = mIsDoConstruct;
+	sublist.isQuoted = mIsQuoted;
 	return sublist;
 }
 
@@ -272,6 +274,11 @@
 
 @synthesize isQuoted = mIsQuoted;
 @synthesize isDoConstruct = mIsDoConstruct;
+- (void)setIsDoConstruct:(BOOL)isDoConstruct
+{
+	mIsDoConstruct = isDoConstruct;
+}
+
 @synthesize evaluator = mEvaluator;
 @synthesize creationLocation = mCreationLocation;
 

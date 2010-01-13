@@ -300,7 +300,9 @@ STBuiltInFunctionDefine(Dictionary, NO, ^id(STEvaluator *evaluator, STList *argu
 		}
 		else
 		{
-			[dictionary setObject:argument forKey:key];
+			if(argument != STNull)
+				[dictionary setObject:argument forKey:key];
+			
 			key = nil;
 		}
 	}

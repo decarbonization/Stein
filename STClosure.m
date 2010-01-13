@@ -8,6 +8,7 @@
 
 #import "STClosure.h"
 #import "STEvaluator.h"
+#import "STEvaluatorInternal.h"
 #import "STList.h"
 #import "STTypeBridge.h"
 #import <sys/mman.h>
@@ -132,9 +133,12 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	if(mSuperclass)
 		[scope setObject:mSuperclass forKey:kSTEvaluatorSuperclassKey];
 	
+	if(arguments.count > 0)
+		[scope setObject:arguments.allObjects forKey:@"_arguments"];
+	
 	id result = nil;
 	for (id expression in mImplementation)
-		result = [mEvaluator evaluateExpression:expression inScope:scope];
+		result = __STEvaluateExpression(mEvaluator, expression, scope);
 	
 	return result;
 }

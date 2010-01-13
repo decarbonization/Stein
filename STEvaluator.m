@@ -46,7 +46,7 @@ static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDic
 	else
 	{
 		arguments = [STList list];
-		implementation = doList;
+		implementation = [STList listWithList:doList];
 	}
 	
 	implementation.isDoConstruct = NO;
@@ -87,7 +87,15 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 		STSymbol *directive = [arguments objectAtIndex:1];
 		if([directive isEqualTo:@"="])
 		{
-			id value = __STEvaluateExpression(evaluator, [arguments sublistFromIndex:2], scope);
+			id expression = [arguments sublistFromIndex:2];
+			if([expression count] == 1 && 
+			   [[expression head] isKindOfClass:[STList class]] && 
+			   [[expression head] isDoConstruct])
+			{
+				expression = [expression head];
+			}
+			
+			id value = __STEvaluateExpression(evaluator, expression, scope);
 			[evaluator setObject:value forVariableNamed:name inScope:scope];
 			return value;
 		}
