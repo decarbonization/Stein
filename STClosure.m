@@ -10,77 +10,9 @@
 #import "STEvaluator.h"
 #import "STEvaluatorInternal.h"
 #import "STList.h"
-#import "STTypeBridge.h"
-#import <sys/mman.h>
-
-ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //from STTypeBridge.m
-
-#pragma mark -
 
 @implementation STClosure
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	if(munmap(mFFIClosure, sizeof(mFFIClosure)) == -1)
-	{
-		NSLog(@"uh oh, munmap failed with error %d", errno);
-	}
-	
-	if(mFFIClosureInformation)
-	{
-		free(mFFIClosureInformation);
-		mFFIClosureInformation = NULL;
-	}
-	
-	if(mFFIArgumentTypes)
-	{
-		free(mFFIArgumentTypes);
-		mFFIArgumentTypes = NULL;
-	}
-	
-	[mClosureSignature release];
-	mClosureSignature = nil;
-	
-	[mPrototype release];
-	mPrototype = nil;
-	
-	[mImplementation release];
-	mImplementation = nil;
-	
-	[mSuperscope release];
-	mSuperscope = nil;
-	
-	[mName release];
-	mName = nil;
-	
-	[super dealloc];
-}
-
-- (void)finalize
-{
-	if(munmap(mFFIClosure, sizeof(mFFIClosure)) == -1)
-	{
-		NSLog(@"uh oh, munmap failed with error %d", errno);
-	}
-	
-	if(mFFIArgumentTypes)
-	{
-		free(mFFIArgumentTypes);
-		mFFIArgumentTypes = NULL;
-	}
-	
-	if(mFFIClosureInformation)
-	{
-		free(mFFIClosureInformation);
-		mFFIClosureInformation = NULL;
-	}
-	
-	[super finalize];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 - (id)init
@@ -89,7 +21,7 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	return nil;
 }
 
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation withSignature:(NSMethodSignature *)signature fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope
 {
 	NSParameterAssert(prototype);
 	NSParameterAssert(implementation);
@@ -97,11 +29,10 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 	
 	if((self = [super init]))
 	{
-		mPrototype = [prototype retain];
-		mImplementation = [implementation retain];
-		mClosureSignature = [signature retain];
+		mPrototype = prototype;
+		mImplementation = implementation;
 		mEvaluator = evaluator;
-		mSuperscope = [superscope retain];
+		mSuperscope = superscope;
 		
 		return self;
 	}
@@ -141,124 +72,6 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 		result = __STEvaluateExpression(mEvaluator, expression, scope);
 	
 	return result;
-}
-
-#pragma mark -
-#pragma mark Native Function
-
-/*!
- @function
- @abstract	This function serves as the bridge between libFFI and STClosure.
- */
-static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, void **arguments, void *userData)
-{
-	STClosure *self = (STClosure *)userData;
-	STEvaluator *evaluator = self->mEvaluator;
-	
-	STList *argumentsAsObjects = [[STList new] autorelease];
-	NSUInteger numberOfArguments = [self->mClosureSignature numberOfArguments];
-	for (NSUInteger index = 0; index < numberOfArguments; index++)
-		[argumentsAsObjects addObject:STTypeBridgeConvertValueOfTypeIntoObject(arguments[index], [self->mClosureSignature getArgumentTypeAtIndex:index])];
-	
-	id resultObject = [self applyWithArguments:argumentsAsObjects inScope:self->mSuperscope];
-	STTypeBridgeConvertObjectIntoType(resultObject, [self->mClosureSignature methodReturnType], returnBuffer);
-}
-
-@dynamic functionPointer;
-- (void *)functionPointer
-{
-	if(!mClosureSignature)
-		return NULL;
-	
-	//Creation of the libffi closure is deferred
-	//until it is actually needed. This way we
-	//don't waste resources when we don't have to.
-	if(!mFFIArgumentTypes)
-	{
-		NSUInteger numberOfArguments = [mClosureSignature numberOfArguments];
-		
-		//Resolve the argument types
-		mFFIArgumentTypes = calloc(sizeof(ffi_type *), numberOfArguments);
-		
-		for (NSUInteger index = 0; index < numberOfArguments; index++)
-			mFFIArgumentTypes[index] = STTypeBridgeConvertObjCTypeToFFIType([mClosureSignature getArgumentTypeAtIndex:index]);
-		
-		mFFIReturnType = STTypeBridgeConvertObjCTypeToFFIType([mClosureSignature methodReturnType]);
-		
-		//Create the closure
-		mFFIClosureInformation = malloc(sizeof(ffi_cif));
-		
-		if((mFFIClosure = mmap(NULL, sizeof(ffi_closure), PROT_READ | PROT_WRITE,
-							   MAP_ANON | MAP_PRIVATE, -1, 0)) == MAP_FAILED)
-		{
-			[NSException raise:NSInternalInconsistencyException format:@"mmap failed with error %d.", errno];
-		}
-		
-		//Prep the CIF
-		if(ffi_prep_cif(mFFIClosureInformation, FFI_DEFAULT_ABI, (int)[mClosureSignature numberOfArguments], mFFIReturnType, mFFIArgumentTypes) != FFI_OK)
-		{
-			[NSException raise:NSInternalInconsistencyException format:@"ffi_prep_cif failed with error."];
-		}
-		
-		//Prep the closure
-		if(ffi_prep_closure(mFFIClosure, mFFIClosureInformation, &FunctionBridge, self) != FFI_OK)
-		{
-			[NSException raise:NSInternalInconsistencyException format:@"ffi_prep_closure failed with error."];
-		}
-		
-		//Ensure execution on all platforms
-		if(mprotect(mFFIClosure, sizeof(mFFIClosure), PROT_READ | PROT_EXEC) == -1)
-		{
-			[NSException raise:NSInternalInconsistencyException format:@"mprotect failed with error %d.", errno];
-		}
-	}
-	
-	return mFFIClosure;
-}
-
-#pragma mark -
-#pragma mark Block Support
-
-- (id)blockWithSignature:(NSMethodSignature *)signature
-{
-	return [[^id(void *first, ...) {
-		//Read the varadic arguments passed into this block, converting them all into objects.
-		va_list args;
-		va_start(args, first);
-		
-		STList *arguments = [STList list];
-		
-		NSUInteger numberOfArguments = [signature numberOfArguments];
-		if(numberOfArguments > 0)
-		{
-			const char *argument = [signature getArgumentTypeAtIndex:0];
-			[arguments addObject:STTypeBridgeConvertValueOfTypeIntoObject(&first, argument)];
-			
-			for (NSUInteger index = 1; index < numberOfArguments; index++)
-			{
-				argument = [signature getArgumentTypeAtIndex:index];
-				
-				void *argumentAddress = va_arg(args, Byte *);
-				[arguments addObject:STTypeBridgeConvertValueOfTypeIntoObject(&argumentAddress, argument)];
-			}
-		}
-		
-		va_end(args);
-		
-		//Apply the closure (self) with the arguments passed in in the scope in which it was created.
-		id result = [self applyWithArguments:arguments inScope:mSuperscope];
-		
-		//If the result type is non-void, we return something.
-		if(![signature isOneway] && [signature methodReturnType][0] != 'v')
-		{
-			//MARK: This is a leak in No-GC mode.
-			Byte *primitiveResultBuffer = NSAllocateCollectable([signature methodReturnLength], 0);
-			STTypeBridgeConvertObjectIntoType(result, [signature methodReturnType], (void **)&primitiveResultBuffer);
-			
-			return (id)(primitiveResultBuffer);
-		}
-		
-	} copy] autorelease];
 }
 
 #pragma mark -

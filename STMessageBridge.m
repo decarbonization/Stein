@@ -16,6 +16,7 @@
 #import "STSymbol.h"
 
 #import "STClosure.h"
+#import "STNativeFunctionWrapper.h"
 #import "STEvaluatorInternal.h"
 
 /*!
@@ -134,6 +135,49 @@ id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *
 
 #pragma mark -
 
+NSString *const kSTClassTrackedFunctionsKey = @"STClassTrackedFunctions";
+
+void STClassBeginTrackingFunctionWrapperForSelector(Class class, STNativeFunctionWrapper *wrapper, SEL selector)
+{
+	NSCParameterAssert(class);
+	NSCParameterAssert(wrapper);
+	
+	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, kSTClassTrackedFunctionsKey);
+	if(!trackedFunctions)
+	{
+		trackedFunctions = [NSMutableDictionary new];
+		objc_setAssociatedObject(class, kSTClassTrackedFunctionsKey, trackedFunctions, OBJC_ASSOCIATION_RETAIN);
+	}
+	
+	[trackedFunctions setObject:wrapper forKey:NSStringFromSelector(selector)];
+}
+
+void STClassStopTrackingFunctionWrapperForSelector(Class class, SEL selector)
+{
+	NSCParameterAssert(class);
+	NSCParameterAssert(selector);
+	
+	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, kSTClassTrackedFunctionsKey);
+	if(!trackedFunctions)
+		return;
+	
+	[trackedFunctions removeObjectForKey:NSStringFromSelector(selector)];
+}
+
+BOOL STClassIsTrackingFunctionWrapperForSelector(Class class, SEL selector)
+{
+	NSCParameterAssert(class);
+	NSCParameterAssert(selector);
+	
+	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, kSTClassTrackedFunctionsKey);
+	if(!trackedFunctions)
+		return NO;
+	
+	return [[trackedFunctions allKeys] containsObject:NSStringFromSelector(selector)];
+}
+
+#pragma mark -
+
 static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector, STList **outPrototype, NSString **outTypeSignature, STList **outImplementation)
 {
 	NSMutableString *selectorString = [NSMutableString string];
@@ -238,15 +282,18 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 	else
 		GetMethodDefinitionFromListWithoutTypes(list, &selector, &prototype, &typeSignatureString, &implementation);
 	
-	const char *typeSignature = [typeSignatureString UTF8String];
+	
+	STEvaluator *evaluator = list.evaluator;
 	STClosure *closure = [[STClosure alloc] initWithPrototype:prototype 
 											forImplementation:implementation 
-												withSignature:[NSMethodSignature signatureWithObjCTypes:typeSignature] 
-												fromEvaluator:list.evaluator 
+												fromEvaluator:evaluator 
 													  inScope:nil];
 	closure.superclass = [class superclass];
 	
-	IMP implementationFunction = closure.functionPointer;
+	const char *typeSignature = [typeSignatureString UTF8String];
+	STNativeFunctionWrapper *nativeFunction = [[STNativeFunctionWrapper alloc] initWithFunction:closure 
+																					  signature:[NSMethodSignature signatureWithObjCTypes:typeSignature]];
+	IMP implementationFunction = nativeFunction.functionPointer;
 	if(isInstanceMethod)
 	{
 		if(!class_addMethod(class, selector, implementationFunction, typeSignature))
@@ -264,7 +311,7 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 		}
 	}
 	
-	[[NSGarbageCollector defaultCollector] disableCollectorForPointer:closure];
+	STClassBeginTrackingFunctionWrapperForSelector(class, nativeFunction, selector);
 }
 
 #pragma mark -

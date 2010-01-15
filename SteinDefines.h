@@ -72,6 +72,8 @@ typedef struct STCreationLocation {
 #pragma mark -
 #pragma mark Errors
 
+ST_EXTERN NSString *const SteinException;
+
 ST_EXTERN void STRaiseIssue(STCreationLocation expressionLocation, NSString *format, ...);
 
 #endif /* __OBJC__ */

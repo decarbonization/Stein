@@ -7,6 +7,30 @@
 //
 
 #import "STSymbol.h"
+#import <libkern/OSAtomic.h>
+
+STSymbol *STSymbolCachedSymbolWithName(NSString *name)
+{
+	NSCParameterAssert(name);
+	
+	@synchronized(@"mutex")
+	{
+		static NSMutableDictionary *symbolCache = nil;
+		if(!symbolCache)
+			symbolCache = [NSMutableDictionary new];
+		
+		
+		STSymbol *cachedSymbol = [symbolCache objectForKey:name];
+		if(cachedSymbol)
+			return cachedSymbol;
+		
+		
+		STSymbol *newSymbol = [STSymbol symbolWithString:name];
+		[symbolCache setObject:newSymbol forKey:name];
+		
+		return newSymbol;
+	}
+}
 
 @implementation STSymbol
 
@@ -90,11 +114,21 @@
 {
 	if([object respondsToSelector:@selector(string)])
 		return [mString isEqualToString:[object string]];
-	else if([object isKindOfClass:[NSString class]])
-		return [mString isEqualToString:object];
 	
 	return [super isEqualTo:object];
 }
+
+- (BOOL)isEqualToSymbol:(STSymbol *)symbol
+{
+	return [mString isEqualToString:symbol.string];
+}
+
+- (BOOL)isEqualToString:(NSString *)string
+{
+	return [mString isEqualToString:string];
+}
+
+#pragma mark -
 
 - (NSString *)description
 {

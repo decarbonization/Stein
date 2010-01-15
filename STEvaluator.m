@@ -54,7 +54,6 @@ static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDic
 	
 	return [[[STClosure alloc] initWithPrototype:arguments 
 							   forImplementation:implementation 
-								   withSignature:nil 
 								   fromEvaluator:self 
 										 inScope:scope] autorelease];
 }
@@ -77,7 +76,7 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 	if(numberOfArguments < 1)
 		STRaiseIssue(arguments.creationLocation, @"let statement expected identifier, and didn't get one.");
 	
-	NSString *name = [[arguments objectAtIndex:0] string];
+	STSymbol *name = [arguments objectAtIndex:0];
 	if(numberOfArguments == 1)
 	{
 		[evaluator setObject:nil forVariableNamed:name inScope:scope];
@@ -107,7 +106,7 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 			Class superclass = __STEvaluateExpression(evaluator, [arguments objectAtIndex:2], scope);
 			STList *declarations = [arguments objectAtIndex:3];
 			
-			return STDefineClass(name, superclass, declarations);
+			return STDefineClass(name.string, superclass, declarations);
 		}
 		else
 		{
@@ -124,34 +123,14 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 	if([arguments count] < 3)
 		STRaiseIssue(arguments.creationLocation, @"function requires 3 arguments, was given %ld.", [arguments count]);
 	
-	NSString *signature = nil;
-	STList *parameterList = nil;
-	STList *implementation = nil;
-	
-	id firstValueInDefinition = [arguments objectAtIndex:1];
-	if([firstValueInDefinition isKindOfClass:[NSString class]])
-	{
-		signature = firstValueInDefinition;
-		parameterList = [arguments objectAtIndex:2];
-		implementation = [STList listWithList:[arguments objectAtIndex:3]];
-	}
-	else
-	{
-		parameterList = firstValueInDefinition;
-		implementation = [STList listWithList:[arguments objectAtIndex:2]];
+	STList *parameterList = [arguments objectAtIndex:1];
+	STList *implementation = [STList listWithList:[arguments objectAtIndex:2]];
 		
-		NSMutableString *signatureInProgress = [NSMutableString stringWithString:@"@"];
-		for (NSUInteger index = 0; index < [parameterList count]; index++)
-			[signatureInProgress appendString:@"@"];
-		
-		signature = signatureInProgress;
-	}
 	[parameterList replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
 	implementation.isQuoted = NO;
 	
 	STClosure *closure = [[[STClosure alloc] initWithPrototype:parameterList
 											 forImplementation:implementation
-												 withSignature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]
 												 fromEvaluator:evaluator 
 													   inScope:scope] autorelease];
 	NSString *functionName = [[arguments objectAtIndex:0] string];
@@ -238,12 +217,12 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Power, self) forKey:@"**"];
 		
 		//Built in Comparison Functions
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Equal, self) forKey:@"="];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(NotEqual, self) forKey:@"≠"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Equal, self) forKey:@"=="];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(NotEqual, self) forKey:@"!="];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThan, self) forKey:@"<"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThanOrEqual, self) forKey:@"≤"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThanOrEqual, self) forKey:@"<="];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThan, self) forKey:@">"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThanOrEqual, self) forKey:@"≥"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThanOrEqual, self) forKey:@">="];
 		
 		//Built in Boolean Operators
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Or, self) forKey:@"or"];
@@ -355,40 +334,55 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	return nil;
 }
 
-- (void)setObject:(id)object forVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope
+- (void)setObject:(id)object forVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope
 {
 	if([name isEqualToString:@"_here"] || [name isEqualToString:@"_interpreter"])
-		[NSException raise:NSInternalInconsistencyException 
-					format:@"You cannot set the variable %@, it is read only.", name];
+		STRaiseIssue(name.creationLocation, @"Attempting to set readonly variable '%@'.", [name prettyDescription]);
 	
-	
-	unichar firstCharacterInName = [name characterAtIndex:0];
+	NSString *nameString = name.string;
+	unichar firstCharacterInName = [nameString characterAtIndex:0];
 	if(firstCharacterInName == '$')
 	{
 		if(object)
-			[mRootScope setObject:object forKey:[name substringFromIndex:1]];
+			[mRootScope setObject:object forKey:[nameString substringFromIndex:1]];
 		else
-			[mRootScope removeObjectForKey:[name substringFromIndex:1]];
+			[mRootScope removeObjectForKey:[nameString substringFromIndex:1]];
 	}
 	else if(firstCharacterInName == '@')
 	{
-		id target = [self objectForVariableNamed:@"self" inScope:scope];
-		[target setValue:object forIvarNamed:[name substringFromIndex:1]];
+		id target = nil;
+		@try
+		{
+			target = [self objectForVariableNamed:ST_SYM(@"self") inScope:scope];
+		}
+		@catch (NSException *e)
+		{
+			if([[e name] isEqualToString:SteinException])
+			{
+				STRaiseIssue(name.creationLocation, @"Attempting to set instance variable %@ outside of class.", [name prettyDescription]);
+			}
+			else
+			{
+				@throw;
+			}
+		}
+		
+		[target setValue:object forIvarNamed:[nameString substringFromIndex:1]];
 	}
 	else
 	{
-		NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, name);
+		NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, nameString);
 		if(!targetScope)
 			targetScope = scope;
 		
 		if(object)
-			[targetScope setObject:object forKey:name];
+			[targetScope setObject:object forKey:nameString];
 		else
-			[targetScope removeObjectForKey:name];
+			[targetScope removeObjectForKey:nameString];
 	}
 }
 
-- (id)objectForVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope
+- (id)objectForVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope
 {
 	if([name isEqualToString:@"_here"])
 		return scope;
@@ -396,29 +390,47 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 		return self;
 	
 	
-	unichar firstCharacterInName = [name characterAtIndex:0];
+	NSString *nameString = name.string;
+	unichar firstCharacterInName = [nameString characterAtIndex:0];
 	if(firstCharacterInName == '$')
 	{
-		return [mRootScope objectForKey:[name substringFromIndex:1]];
+		return [mRootScope objectForKey:[nameString substringFromIndex:1]];
 	}
 	else if(firstCharacterInName == '@')
 	{
-		id target = [self objectForVariableNamed:@"self" inScope:scope];
-		return [target valueForIvarNamed:[name substringFromIndex:1]];
+		id target = nil;
+		@try
+		{
+			target = [self objectForVariableNamed:ST_SYM(@"self") inScope:scope];
+		}
+		@catch (NSException *e)
+		{
+			if([[e name] isEqualToString:SteinException])
+			{
+				STRaiseIssue(name.creationLocation, @"Attempting to accces instance variable %@ outside of class.", [name prettyDescription]);
+			}
+			else
+			{
+				@throw;
+			}
+		}
+		
+		return [target valueForIvarNamed:[nameString substringFromIndex:1]];
 	}
 	
 	
-	NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, name);
+	NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, nameString);
 	if(targetScope)
 	{
-		id value = [targetScope objectForKey:name];
+		id value = [targetScope objectForKey:nameString];
 		if(value)
 			return value;
 	}
 	
 	
-	Class class = NSClassFromString(name);
-	NSAssert((class != nil), @"Could not find a value for the variable '%@'.", name);
+	Class class = NSClassFromString(nameString);
+	if(!class)
+		STRaiseIssue(name.creationLocation, @"Could not find a value for '%@'.", [name prettyDescription]);
 	
 	return class;
 }
@@ -498,7 +510,7 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 		if([expression isQuoted])
 			return expression;
 		
-		return [self objectForVariableNamed:[expression string] inScope:scope] ?: STNull;
+		return [self objectForVariableNamed:expression inScope:scope] ?: STNull;
 	}
 	else if([expression isKindOfClass:[STStringWithCode class]])
 	{

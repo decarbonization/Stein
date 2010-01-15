@@ -7,7 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <ffi/ffi.h>
 #import <Stein/STFunction.h>
 
 @class STEvaluator, STList;
@@ -18,23 +17,14 @@
  */
 @interface STClosure : NSObject < STFunction >
 {
-	/* weak */		STEvaluator *mEvaluator;
-	/* strong */	NSMutableDictionary *mSuperscope;
-	/* weak */		Class mSuperclass;
-	/* owner */		NSString *mName;
+	STEvaluator *mEvaluator;
+	NSMutableDictionary *mSuperscope;
+	Class mSuperclass;
+	NSString *mName;
 	
 	//Closure Description
-	/* strong */	NSMethodSignature *mClosureSignature;
-	/* strong */	STList *mPrototype;
-	/* strong */	STList *mImplementation;
-	
-	//Foreign Function Interface
-	/* auto */		ffi_cif *mFFIClosureInformation;
-	
-	/* weak */		ffi_type *mFFIReturnType;
-	/* auto */		ffi_type **mFFIArgumentTypes;
-	
-	/* owner */		ffi_closure *mFFIClosure;
+	STList *mPrototype;
+	STList *mImplementation;
 }
 
 /*!
@@ -42,31 +32,15 @@
  @abstract		Initialize a Stein closure with a prototype, implementation, a signature describing it's prototype, and an evaluator to apply it with.
  @param			prototype		The prototype of the closure in the form of an STList of symbols. May not be nil.
  @param			implementation	The implementation of the closure in the form of an STList of Stein expressions. May not be nil.
- @param			signature		A method signature object describing the types of the names in prototype as well as the return type of the closure.
  @param			evaluator		The evaluator to use when applying the closure.
  @param			superscope		The scope that encloses the closure being created.
  @result		A fully initialized Stein closure object ready for use.
  @discussion	This is the designated initializer of STClosure.
  */
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation withSignature:(NSMethodSignature *)signature fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope;
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope;
 
 #pragma mark -
 #pragma mark Properties
-
-/*!
- @property
- @abstract		The closure's native function pointer suitable for use anywhere a function pointer is expected.
- @discussion	Only closure's who have had type signature's specified can produce a valid function pointer.
- */
-@property (readonly) void *functionPointer;
-
-/*!
- @method
- @abstract	Return a block object adapted to a specified signature that will forward to the receiver.
- */
-- (id)blockWithSignature:(NSMethodSignature *)signature;
-
-#pragma mark -
 
 /*!
  @property

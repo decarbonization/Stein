@@ -17,6 +17,8 @@
 		C808882010E3037B00632257 /* STPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = C808881E10E3037B00632257 /* STPointer.m */; };
 		C8088ABD10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h in Headers */ = {isa = PBXBuildFile; fileRef = C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */; };
 		C8088ABE10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m in Sources */ = {isa = PBXBuildFile; fileRef = C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */; };
+		C83BD4F610FFC8740005462D /* STNativeFunctionWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */; };
+		C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */; };
 		C83EF1E510D877300037A956 /* STBridgedFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1E310D877300037A956 /* STBridgedFunction.h */; };
 		C83EF1E610D877300037A956 /* STBridgedFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1E410D877300037A956 /* STBridgedFunction.m */; };
 		C83EF1F710D877960037A956 /* STFunctionInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1F510D877960037A956 /* STFunctionInvocation.h */; };
@@ -132,6 +134,8 @@
 		C808881E10E3037B00632257 /* STPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPointer.m; sourceTree = "<group>"; };
 		C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinBuiltInDecorators.h"; sourceTree = "<group>"; };
 		C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinBuiltInDecorators.m"; sourceTree = "<group>"; };
+		C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeFunctionWrapper.h; sourceTree = "<group>"; };
+		C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeFunctionWrapper.m; sourceTree = "<group>"; };
 		C83EF1E310D877300037A956 /* STBridgedFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STBridgedFunction.h; sourceTree = "<group>"; };
 		C83EF1E410D877300037A956 /* STBridgedFunction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STBridgedFunction.m; sourceTree = "<group>"; };
 		C83EF1F510D877960037A956 /* STFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFunctionInvocation.h; sourceTree = "<group>"; };
@@ -262,6 +266,8 @@
 				C808881E10E3037B00632257 /* STPointer.m */,
 				C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */,
 				C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */,
+				C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */,
+				C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */,
 			);
 			name = Bridge;
 			sourceTree = "<group>";
@@ -363,6 +369,7 @@
 				C808865310E2E00000632257 /* STStringWithCode.h in Headers */,
 				C808881F10E3037B00632257 /* STPointer.h in Headers */,
 				C8088ABD10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h in Headers */,
+				C83BD4F610FFC8740005462D /* STNativeFunctionWrapper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,6 +480,7 @@
 				C808882010E3037B00632257 /* STPointer.m in Sources */,
 				C8088ABE10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m in Sources */,
 				C863D20110E7F00D00387729 /* SteinDefines.m in Sources */,
+				C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,7 +569,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_OBJC_GC = required;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -591,7 +599,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_OBJC_GC = required;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Stein_Prefix.pch;

@@ -28,14 +28,16 @@ ST_EXTERN NSString *const kSTEvaluatorSuperclassKey;
 ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
 
 
+@class STSymbol;
+
 /*!
  @class
  @abstract	The STEvaluator class serves as the interpreter portion of the Stein programming language.
  */
 @interface STEvaluator : NSObject
 {
-	/* owner */	NSMutableDictionary *mRootScope;
-	/* owner */	NSMutableArray *mSearchPaths;
+	NSMutableDictionary *mRootScope;
+	NSMutableArray *mSearchPaths;
 }
 
 #pragma mark Scoping
@@ -54,13 +56,13 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  @method
  @abstract	Set the value for a variable with a specified name in a specified scope.
  */
-- (void)setObject:(id)object forVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope;
+- (void)setObject:(id)object forVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope;
 
 /*!
  @method
  @abstract	Look up the value for a variable with a specified name in a specified scope.
  */
-- (id)objectForVariableNamed:(NSString *)name inScope:(NSMutableDictionary *)scope;
+- (id)objectForVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope;
 
 #pragma mark -
 
