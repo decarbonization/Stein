@@ -64,8 +64,7 @@
 	if(mSuperclass)
 		[scope setObject:mSuperclass forKey:kSTEvaluatorSuperclassKey];
 	
-	if(arguments.count > 0)
-		[scope setObject:arguments.allObjects forKey:@"_arguments"];
+	[scope setObject:arguments.allObjects forKey:@"_arguments"];
 	
 	id result = nil;
 	for (id expression in mImplementation)

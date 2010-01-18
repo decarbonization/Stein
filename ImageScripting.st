@@ -232,7 +232,7 @@ function text (string x y font color shadow additionalAttributes) [
 		NSFontAttributeName font
 	
 	additionalAttributes ifTrue:[
-		attributes addEntriesFromDictionary:(_arguments objectAtIndex:6)
+		attributes addEntriesFromDictionary:additionalAttributes
 	]
 	
 	string drawAtPoint:(make-point x y) withAttributes:attributes
