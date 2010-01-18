@@ -1,5 +1,5 @@
 //
-//  STMessageBridge.h
+//  STObjectBridge.h
 //  stein
 //
 //  Created by Peter MacWhinnie on 2009/12/11.
@@ -20,7 +20,7 @@
  @param			arguments	The arguments to send along with the message. May not be nil.
  @discussion	If target is nil or NSNull then this method returns NSNull immediately.
  */
-ST_EXTERN id STMessageBridgeSend(id target, SEL selector, NSArray *arguments);
+ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments);
 
 /*!
  @function
@@ -31,7 +31,7 @@ ST_EXTERN id STMessageBridgeSend(id target, SEL selector, NSArray *arguments);
  @param			arguments	The arguments to send along with the message. May not be nil.
  @discussion	If the target is nil or NSNull then this method returns NSNull immediately.
  */
-ST_EXTERN id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments);
+ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments);
 
 #pragma mark -
 

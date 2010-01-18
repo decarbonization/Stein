@@ -10,8 +10,10 @@
 
 #import "STEvaluator.h"
 #import "STList.h"
+#import "STSymbol.h"
 #import "STBridgedFunction.h"
 
+#import "STNativeFunctionWrapper.h"
 #import "STTypeBridge.h"
 #import "STPointer.h"
 #import <dlfcn.h>
@@ -72,6 +74,13 @@
 @synthesize implementation = mImplementation;
 @synthesize evaluator = mEvaluator;
 @synthesize evaluatesOwnArguments = mEvaluatesOwnArguments;
+
+#pragma mark -
+
+- (NSMutableDictionary *)superscope
+{
+	return nil;
+}
 
 @end
 
@@ -267,6 +276,7 @@ STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList 
 	
 	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
 });
+
 STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
 	if([arguments count] < 1)
 		STRaiseIssue(arguments.creationLocation, @"ref requires an argument.");
@@ -275,6 +285,20 @@ STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, ST
 	[scope setObject:pointer forKey:[[arguments head] string]];
 	
 	return pointer;
+});
+
+STBuiltInFunctionDefine(FunctionWrapper, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	if([arguments count] < 3)
+		STRaiseIssue(arguments.creationLocation, @"function-wrapper requires 3 arguments.");
+	
+	NSMutableString *typeString = [NSMutableString stringWithString:STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string])];
+	for (STSymbol *type in [arguments objectAtIndex:1])
+		[typeString appendString:STTypeBridgeGetObjCTypeForHumanReadableType(type.string)];
+	
+	NSObject < STFunction > *function = [evaluator evaluateExpression:[arguments objectAtIndex:2] inScope:scope];
+	
+	return [[STNativeFunctionWrapper alloc] initWithFunction:function 
+												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
 });
 
 #pragma mark -

@@ -172,6 +172,9 @@ STBuiltInFunctionExport(BridgeConstant);
 //The implementation of the 'ref' operator.
 STBuiltInFunctionExport(MakeObjectReference);
 
+//The implementation of the 'function-wrapper' generator.
+STBuiltInFunctionExport(FunctionWrapper);
+
 #pragma mark -
 #pragma mark Collection Creation
 

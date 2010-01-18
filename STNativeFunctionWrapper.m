@@ -72,6 +72,9 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	NSParameterAssert(function);
 	NSParameterAssert(signature);
 	
+	NSAssert(![function isKindOfClass:[STNativeFunctionWrapper class]], 
+			 @"You cannot wrap a native function wrapper.");
+	
 	if((self = [super init]))
 	{
 		mFunction = function;
@@ -150,6 +153,29 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 - (NSString *)prettyDescription
 {
 	return [NSString stringWithFormat:@"`Native Function Wrapper for {%@}`", [mFunction prettyDescription]];
+}
+
+#pragma mark -
+#pragma mark Implementing STFunction
+
+- (STEvaluator *)evaluator
+{
+	return [mFunction evaluator];
+}
+
+- (NSMutableDictionary *)superscope
+{
+	return [mFunction superscope];
+}
+
+- (BOOL)evaluatesOwnArguments
+{
+	return [mFunction evaluatesOwnArguments];
+}
+
+- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope
+{
+	return [mFunction applyWithArguments:arguments inScope:scope];
 }
 
 @end

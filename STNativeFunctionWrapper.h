@@ -12,9 +12,10 @@
 
 /*!
  @class
- @abstract	The STNativeFunctionWrapper class is used to create native function wrappers for objects implementing the STFunction protocol.
+ @abstract		The STNativeFunctionWrapper class is used to create native function wrappers for objects implementing the STFunction protocol.
+ @discussion	STNativeFunctionWrapper implements the STFunction protocol. This means that a native function wrapper can be used just like any other function. However, you cannot wrap an STNativeFunctionWrapper in another native function wrapper.
  */
-@interface STNativeFunctionWrapper : NSObject
+@interface STNativeFunctionWrapper : NSObject < STFunction >
 {
 	NSObject < STFunction > *mFunction;
 	NSMethodSignature *mSignature;
@@ -31,7 +32,7 @@
 /*!
  @method
  @abstract		Initialize the receiver with a specified function object, and a specified type signature.
- @param			function	The function object to create a native wrapper for. May not be nil.
+ @param			function	The function object to create a native wrapper for. May not be nil. May not be a STNativeFunctionWrapper.
  @param			signature	The signature that describes the function object's return type and parameters. May not be nil.
  @result		A fully initialized function wrapper.
  @discussion	This method raises an exception if any issues arise while creating the function wrapper.

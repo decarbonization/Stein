@@ -17,7 +17,7 @@
 
 #import "STFunction.h"
 #import "STClosure.h"
-#import "STMessageBridge.h"
+#import "STObjectBridge.h"
 
 #import "STBuiltInFunctions.h"
 #import "STEnumerable.h"
@@ -156,7 +156,7 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 	NSArray *argumentsArray = nil;
 	MessageListGetSelectorAndArguments(evaluator, scope, [arguments tail], &selector, &argumentsArray);
 	
-	return STMessageBridgeSend(target, selector, argumentsArray);
+	return STObjectBridgeSend(target, selector, argumentsArray);
 });
 
 STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
@@ -178,7 +178,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		index++;
 	}
 	
-	return STMessageBridgeSendSuper(target, superclass, NSSelectorFromString(selectorString), evaluatedArguments);
+	return STObjectBridgeSendSuper(target, superclass, NSSelectorFromString(selectorString), evaluatedArguments);
 });
 
 #pragma mark -
@@ -244,6 +244,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(MakeObjectReference, self) forKey:@"ref"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(FunctionWrapper, self) forKey:@"function-wrapper"];
 		
 		//Collection creation
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Array, self) forKey:@"array"];
@@ -476,7 +477,7 @@ id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 			[evaluatedArguments addObject:evaluateArgument];
 		}
 		
-		return [function applyWithArguments:evaluatedArguments inScope:scope];
+		return STFunctionApplyWithEvaluator(function, evaluatedArguments, self);
 	}
 	
 	if([list count] == 1)
@@ -486,7 +487,7 @@ id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 	NSArray *arguments = nil;
 	MessageListGetSelectorAndArguments(self, scope, [list tail], &selector, &arguments);
 	
-	return STMessageBridgeSend(target, selector, arguments);
+	return STObjectBridgeSend(target, selector, arguments);
 }
 
 #pragma mark -

@@ -117,7 +117,10 @@ function gradient (start end) [
 	result:		An NSShadow object.
 `
 function shadow (color blur offset) [
-	(((NSShadow new) setShadowColor:color) setShadowBlurRadius:blur) setShadowOffset:offset
+	NSShadow new !
+			 setShadowColor:color !
+			 setShadowBlurRadius:blur !
+			 setShadowOffset:offset
 ]
 
 

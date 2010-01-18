@@ -38,17 +38,29 @@
  */
 - (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope;
 
-@optional
-
 /*!
  @method
- @abstract	The enclosing scope the receiver was created in. This is used to implement closures. Optional.
+ @abstract	The enclosing scope the receiver was created in. This is used to implement closures.
  */
 - (NSMutableDictionary *)superscope;
 
 @end
 
 #pragma mark -
+
+/*!
+ @function
+ @abstract	Apply a specified object implementing the STFunction protocol with a specified argument list and a specified evaluator.
+ @param		function	The function to apply.
+ @param		arguments	The arguments to pass to the function.
+ @param		evaluator	The evaluator to call the function in.
+ @result	The result of applying the function.
+ */
+ST_INLINE id STFunctionApplyWithEvaluator(id < STFunction > function, STList *arguments, STEvaluator *evaluator)
+{
+	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:[function superscope]];
+	return [function applyWithArguments:arguments inScope:scope];
+}
 
 /*!
  @function
@@ -59,10 +71,5 @@
  */
 ST_INLINE id STFunctionApply(id < STFunction > function, STList *arguments)
 {
-	STEvaluator *evaluator = [function evaluator];
-	
-	id superscope = [function respondsToSelector:@selector(superscope)]? [function superscope] : nil;
-	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:superscope];
-	
-	return [function applyWithArguments:arguments inScope:scope];
+	return STFunctionApplyWithEvaluator(function, arguments, [function evaluator]);
 }

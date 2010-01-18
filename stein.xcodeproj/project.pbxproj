@@ -35,7 +35,7 @@
 		C8E1649810D57C55003F45A9 /* STEvaluator.h in Headers */ = {isa = PBXBuildFile; fileRef = C8DB7A7210D341AD00EF3D63 /* STEvaluator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649910D57C55003F45A9 /* STFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = C8DB7A8710D343C800EF3D63 /* STFunction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649A10D57C55003F45A9 /* STList.h in Headers */ = {isa = PBXBuildFile; fileRef = C806B70210D2D96C00A64BEE /* STList.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C8E1649B10D57C55003F45A9 /* STMessageBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = C8DB7AB510D3468100EF3D63 /* STMessageBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C8E1649B10D57C55003F45A9 /* STObjectBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649C10D57C55003F45A9 /* STParser.h in Headers */ = {isa = PBXBuildFile; fileRef = C8791F2C10D2AF8C00EB5D17 /* STParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649D10D57C55003F45A9 /* STStructClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E15F7B10D551B8003F45A9 /* STStructClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649E10D57C55003F45A9 /* STSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = C806B70510D2D97000A64BEE /* STSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -45,7 +45,7 @@
 		C8E164A410D57C65003F45A9 /* STClosure.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E1614610D55B59003F45A9 /* STClosure.m */; };
 		C8E164A510D57C65003F45A9 /* STEvaluator.m in Sources */ = {isa = PBXBuildFile; fileRef = C8DB7A7310D341AD00EF3D63 /* STEvaluator.m */; };
 		C8E164A610D57C65003F45A9 /* STList.m in Sources */ = {isa = PBXBuildFile; fileRef = C806B70310D2D96C00A64BEE /* STList.m */; };
-		C8E164A710D57C65003F45A9 /* STMessageBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = C8DB7AB610D3468100EF3D63 /* STMessageBridge.m */; };
+		C8E164A710D57C65003F45A9 /* STObjectBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */; };
 		C8E164A810D57C65003F45A9 /* STParser.m in Sources */ = {isa = PBXBuildFile; fileRef = C8791F2D10D2AF8C00EB5D17 /* STParser.m */; };
 		C8E164A910D57C65003F45A9 /* STStructClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E15F7C10D551B8003F45A9 /* STStructClasses.m */; };
 		C8E164AA10D57C65003F45A9 /* STSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = C806B70610D2D97000A64BEE /* STSymbol.m */; };
@@ -142,7 +142,7 @@
 		C83EF1F610D877960037A956 /* STFunctionInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFunctionInvocation.m; sourceTree = "<group>"; };
 		C8791F2C10D2AF8C00EB5D17 /* STParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STParser.h; sourceTree = "<group>"; };
 		C8791F2D10D2AF8C00EB5D17 /* STParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STParser.m; sourceTree = "<group>"; };
-		C883A31710FD68B400C32F06 /* ImageScripting.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ImageScripting.st; sourceTree = "<group>"; };
+		C883A31710FD68B400C32F06 /* ImageScripting.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ImageScripting.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		C8B3187A10E15E860086468F /* STEnumerable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEnumerable.h; sourceTree = "<group>"; };
 		C8B3187B10E15E860086468F /* STEnumerable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STEnumerable.m; sourceTree = "<group>"; };
 		C8B3199310E16B740086468F /* STEvaluatorInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEvaluatorInternal.h; sourceTree = "<group>"; };
@@ -150,8 +150,8 @@
 		C8DB7A7310D341AD00EF3D63 /* STEvaluator.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; path = STEvaluator.m; sourceTree = "<group>"; };
 		C8DB7A8710D343C800EF3D63 /* STFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFunction.h; sourceTree = "<group>"; };
 		C8DB7AAF10D3463B00EF3D63 /* libffi.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libffi.dylib; path = usr/lib/libffi.dylib; sourceTree = SDKROOT; };
-		C8DB7AB510D3468100EF3D63 /* STMessageBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STMessageBridge.h; sourceTree = "<group>"; };
-		C8DB7AB610D3468100EF3D63 /* STMessageBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STMessageBridge.m; sourceTree = "<group>"; };
+		C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STObjectBridge.h; sourceTree = "<group>"; };
+		C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STObjectBridge.m; sourceTree = "<group>"; };
 		C8DB7AD910D347F800EF3D63 /* STTypeBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTypeBridge.h; sourceTree = "<group>"; };
 		C8DB7ADA10D347F800EF3D63 /* STTypeBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTypeBridge.m; sourceTree = "<group>"; };
 		C8E15F7B10D551B8003F45A9 /* STStructClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STStructClasses.h; sourceTree = "<group>"; };
@@ -252,8 +252,8 @@
 		C8E1613B10D55AE1003F45A9 /* Bridge */ = {
 			isa = PBXGroup;
 			children = (
-				C8DB7AB510D3468100EF3D63 /* STMessageBridge.h */,
-				C8DB7AB610D3468100EF3D63 /* STMessageBridge.m */,
+				C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */,
+				C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */,
 				C8DB7AD910D347F800EF3D63 /* STTypeBridge.h */,
 				C8DB7ADA10D347F800EF3D63 /* STTypeBridge.m */,
 				C8E15F7B10D551B8003F45A9 /* STStructClasses.h */,
@@ -356,7 +356,7 @@
 				C8E1649810D57C55003F45A9 /* STEvaluator.h in Headers */,
 				C8E1649910D57C55003F45A9 /* STFunction.h in Headers */,
 				C8E1649A10D57C55003F45A9 /* STList.h in Headers */,
-				C8E1649B10D57C55003F45A9 /* STMessageBridge.h in Headers */,
+				C8E1649B10D57C55003F45A9 /* STObjectBridge.h in Headers */,
 				C8E1649C10D57C55003F45A9 /* STParser.h in Headers */,
 				C8E1649D10D57C55003F45A9 /* STStructClasses.h in Headers */,
 				C8E1649E10D57C55003F45A9 /* STSymbol.h in Headers */,
@@ -468,7 +468,7 @@
 				C8E164A410D57C65003F45A9 /* STClosure.m in Sources */,
 				C8E164A510D57C65003F45A9 /* STEvaluator.m in Sources */,
 				C8E164A610D57C65003F45A9 /* STList.m in Sources */,
-				C8E164A710D57C65003F45A9 /* STMessageBridge.m in Sources */,
+				C8E164A710D57C65003F45A9 /* STObjectBridge.m in Sources */,
 				C8E164A810D57C65003F45A9 /* STParser.m in Sources */,
 				C8E164A910D57C65003F45A9 /* STStructClasses.m in Sources */,
 				C8E164AA10D57C65003F45A9 /* STSymbol.m in Sources */,

@@ -86,6 +86,11 @@
 	return nil;
 }
 
+- (NSMutableDictionary *)superscope
+{
+	return nil;
+}
+
 - (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope
 {
 	NSMethodSignature *functionSignature = mInvocation.functionSignature;

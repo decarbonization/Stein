@@ -56,6 +56,8 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 
 #define UNBORDERED_LIST_CLOSE_CHARACTER		','
 
+#define CHAIN_SEPERATOR_CHARACTER			'!'
+
 #pragma mark -
 #pragma mark Checkers
 
@@ -77,12 +79,12 @@ ST_INLINE BOOL IsCharacterPartOfNumber(unichar character, BOOL isFirstCharacter)
 ST_INLINE BOOL IsCharacterPartOfIdentifier(unichar character, BOOL isFirstCharacter)
 {
 	return ((character != LIST_QUOTE_CHARACTER && 
-			character != LIST_OPEN_CHARACTER && 
-			character != LIST_CLOSE_CHARACTER &&
-			character != DO_LIST_OPEN_CHARACTER &&
-			character != DO_LIST_CLOSE_CHARACTER &&
-			character != UNBORDERED_LIST_CLOSE_CHARACTER &&
-			!IsCharacterWhitespace(character)) ||
+			 character != LIST_OPEN_CHARACTER && 
+			 character != LIST_CLOSE_CHARACTER &&
+			 character != DO_LIST_OPEN_CHARACTER &&
+			 character != DO_LIST_CLOSE_CHARACTER &&
+			 character != UNBORDERED_LIST_CLOSE_CHARACTER &&
+			 !IsCharacterWhitespace(character)) ||
 			(!isFirstCharacter && IsCharacterPartOfNumber(character, NO)));
 }
 
@@ -411,6 +413,30 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 		{
 			STParserStateUpdateCreationLocation(parserState, character);
 			break;
+		}
+		if(isUnbordered && (character == CHAIN_SEPERATOR_CHARACTER))
+		{
+			parserState->index++;
+			STParserStateUpdateCreationLocation(parserState, character);
+			
+			//The chain separator causes the current expression to be used as the
+			//head of a new expression. This allows clean message chaining.
+			STList *oldExpression = expression;
+			
+			expression = [STList list];
+			expression.evaluator = parserState->evaluator;
+			expression.creationLocation = parserState->creationLocation;
+			
+			[expression addObject:oldExpression];
+			
+			//A chain separator followed immediately by a newline will result in that newline being ignored.
+			if(IsCharacterNewline(SafelyGetCharacterAtIndex(parserState->string, parserState->index)))
+			{
+				parserState->index++;
+				STParserStateUpdateCreationLocation(parserState, character);
+			}
+			
+			continue;
 		}
 		//If we encounter whitespace we just ignore it.
 		else if(IsCharacterWhitespace(character))

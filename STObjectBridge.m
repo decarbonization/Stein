@@ -1,12 +1,12 @@
 //
-//  STMessageBridge.m
+//  STObjectBridge.m
 //  stein
 //
 //  Created by Peter MacWhinnie on 2009/12/11.
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#import "STMessageBridge.h"
+#import "STObjectBridge.h"
 
 #import "STTypeBridge.h"
 #import "STFunctionInvocation.h"
@@ -34,7 +34,7 @@ ST_INLINE BOOL IsSelectorExemptFromNullMessaging(SEL selector)
 			selector == @selector(match:));
 }
 
-id STMessageBridgeSend(id target, SEL selector, NSArray *arguments)
+id STObjectBridgeSend(id target, SEL selector, NSArray *arguments)
 {
 	NSCParameterAssert(selector);
 	NSCParameterAssert(arguments);
@@ -77,7 +77,7 @@ id STMessageBridgeSend(id target, SEL selector, NSArray *arguments)
 	return STTypeBridgeConvertValueOfTypeIntoObject(returnBuffer, returnType);
 }
 
-id STMessageBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments)
+id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments)
 {
 	NSCParameterAssert(superclass);
 	NSCParameterAssert(selector);
@@ -347,7 +347,7 @@ void STExtendClass(Class classToExtend, STList *expressions)
 				SEL selector = nil;
 				NSArray *arguments = nil;
 				MessageListGetSelectorAndArguments(evaluator, scope, expression, &selector, &arguments);
-				STMessageBridgeSend(classToExtend, selector, arguments);
+				STObjectBridgeSend(classToExtend, selector, arguments);
 			}
 		}
 	}
