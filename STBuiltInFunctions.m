@@ -261,8 +261,8 @@ STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList 
 	NSString *symbolName = [[arguments objectAtIndex:0] string];
 	NSString *signature = [arguments objectAtIndex:1];
 	
-	return [[[STBridgedFunction alloc] initWithSymbolNamed:symbolName 
-												 signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]] autorelease];
+	return [[STBridgedFunction alloc] initWithSymbolNamed:symbolName 
+												signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]];
 });
 
 STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
@@ -276,6 +276,36 @@ STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList 
 	NSCAssert((value != NULL), @"Could not find constant named %@.", symbolName);
 	
 	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
+});
+
+STBuiltInFunctionDefine(BridgeExtern, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	if([arguments count] < 2)
+		STRaiseIssue(arguments.creationLocation, @"extern requires two or more arguments.");
+	
+	NSString *symbolType = STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string]);
+	NSString *symbolName = [[arguments objectAtIndex:1] string];
+	
+	id result = STNull;
+	if([arguments count] == 2)
+	{
+		void *value = dlsym(RTLD_DEFAULT, [symbolName UTF8String]);
+		NSCAssert((value != NULL), @"Could not find constant named %@.", symbolName);
+		
+		result = STTypeBridgeConvertValueOfTypeIntoObject(value, [symbolType UTF8String]);
+	}
+	else if([arguments count] == 3)
+	{
+		NSMutableString *signature = [NSMutableString stringWithString:symbolType];
+		for (STSymbol *type in [arguments objectAtIndex:2])
+			[signature appendString:STTypeBridgeGetObjCTypeForHumanReadableType([type string])];
+		
+		result = [[STBridgedFunction alloc] initWithSymbolNamed:symbolName 
+													  signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]];
+	}
+	
+	[evaluator setObject:result forVariableNamed:[arguments objectAtIndex:1] inScope:scope];
+	
+	return result;
 });
 
 STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {

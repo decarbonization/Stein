@@ -28,8 +28,7 @@
  */
 ST_INLINE BOOL IsSelectorExemptFromNullMessaging(SEL selector)
 {
-	return (selector == @selector(ifTrue:) || selector == @selector(ifTrue:ifFalse:) ||
-			selector == @selector(ifFalse:) || selector == @selector(ifFalse:ifTrue:) ||
+	return (selector == @selector(ifTrue:) || selector == @selector(ifFalse:) || selector == @selector(ifTrue:ifFalse:) ||
 			selector == @selector(whileTrue:) || selector == @selector(whileFalse:) ||
 			selector == @selector(match:));
 }
@@ -39,7 +38,7 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments)
 	NSCParameterAssert(selector);
 	NSCParameterAssert(arguments);
 	
-	if(!IsSelectorExemptFromNullMessaging(selector) && (!target || (target == STNull)))
+	if(!IsSelectorExemptFromNullMessaging(selector) && STIsNull(target))
 		return STNull;
 	
 	NSMethodSignature *targetMethodSignature = [target methodSignatureForSelector:selector];

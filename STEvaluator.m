@@ -243,6 +243,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		//Bridging
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeExtern, self) forKey:@"extern"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(MakeObjectReference, self) forKey:@"ref"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(FunctionWrapper, self) forKey:@"function-wrapper"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(WrapBlock, self) forKey:@"wrap-block"];
@@ -598,6 +599,13 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 
 - (BOOL)import:(NSString *)location
 {
+	NSString *const possibleExtensions[] = {
+		nil,
+		@"st",
+		@"framework",
+		@"bundle",
+	};
+	
 	if(!location)
 		return NO;
 	
@@ -605,12 +613,19 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 	for (NSString *searchPath in mSearchPaths)
 	{
 		NSString *fullPath = [searchPath stringByAppendingPathComponent:location];
-		if([[NSFileManager defaultManager] fileExistsAtPath:fullPath isDirectory:&isDirectory])
+		for (NSUInteger index = 0; index < (sizeof possibleExtensions / sizeof possibleExtensions[0]); index++)
 		{
-			if(isDirectory)
-				return [self _importBundleAtPath:fullPath];
-			else
-				return [self _importFileAtPath:fullPath];
+			NSString *extension = possibleExtensions[index];
+			if(extension)
+				fullPath = [fullPath stringByAppendingPathExtension:extension];
+			
+			if([[NSFileManager defaultManager] fileExistsAtPath:fullPath isDirectory:&isDirectory])
+			{
+				if(isDirectory)
+					return [self _importBundleAtPath:fullPath];
+				else
+					return [self _importFileAtPath:fullPath];
+			}
 		}
 	}
 	

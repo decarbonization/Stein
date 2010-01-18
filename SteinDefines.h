@@ -41,6 +41,13 @@ ST_EXTERN NSBundle *SteinBundle();
  */
 #define STNull	((NSNull *)kCFNull) /* CFNull is toll-free bridged with NSNull. This saves us a message. */
 
+ST_INLINE BOOL STIsNull(id object)
+{
+	return (!object || object == STNull);
+}
+
+#pragma mark -
+
 /*!
  @defined
  @abstract	The result of this macro is the value used to represent 'true' in Stein.
@@ -52,6 +59,11 @@ ST_EXTERN NSBundle *SteinBundle();
  @abstract	The result of this macro is the value used to represent 'false' in Stein.
  */
 #define STFalse	((NSNumber *)kCFBooleanFalse) /* CFBoolean is toll-free bridged with NSNumber. This saves us a message. */
+
+ST_INLINE BOOL STIsTrue(id object)
+{
+	return [object isTrue];
+}
 
 #pragma mark -
 #pragma mark Types

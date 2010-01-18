@@ -1,5 +1,5 @@
 ;;
-;;	ImageScripting.st
+;;	Imagine.st
 ;;	Created by Peter MacWhinnie on 2010/1/12.
 ;;
 
@@ -13,10 +13,10 @@ NSApplication sharedApplication
 
 ;; At the time of writing this (2010/1/12), Stein does not
 ;; have bridge-support so we have to bridge these manually.
-let NSForegroundColorAttributeName = (bridge-constant NSForegroundColorAttributeName "@")
-let NSFontAttributeName = (bridge-constant NSFontAttributeName "@")
-let NSShadowAttributeName = (bridge-constant NSShadowAttributeName "@")
-let NSKernAttributeName = (bridge-constant NSKernAttributeName "@")
+extern NSString NSForegroundColorAttributeName
+extern NSString NSFontAttributeName
+extern NSString NSShadowAttributeName
+extern NSString NSKernAttributeName
 
 
 `section: Drawing Areas`
@@ -73,11 +73,11 @@ function rgba (r g b a) [
 	intent:		To look up a color with a specified name.
 `
 function color (name) [
-	let colorSelector = "%(name)Color"
+	let colorSelector = "%(name string)Color"
 	(NSColor respondsToSelector:colorSelector) ifTrue:[
 		NSColor performSelector:colorSelector
 	] ifFalse:[
-		"Warning, there is no color named %(name). Returning black." print
+		"Warning, there is no color named %(name string). Returning black." print
 		NSColor blackColor
 	]
 ]
@@ -134,6 +134,12 @@ function save-gstate () [
 `Restore the last saved graphics state.`
 function restore-gstate () [
 	NSGraphicsContext restoreGraphicsState
+]
+
+function isolate (block) [
+	save-gstate
+	block
+	restore-gstate
 ]
 
 `section: Paths`

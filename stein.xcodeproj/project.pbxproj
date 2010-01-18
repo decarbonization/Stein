@@ -24,7 +24,7 @@
 		C83EF1F710D877960037A956 /* STFunctionInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1F510D877960037A956 /* STFunctionInvocation.h */; };
 		C83EF1F810D877960037A956 /* STFunctionInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1F610D877960037A956 /* STFunctionInvocation.m */; };
 		C863D20110E7F00D00387729 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E165B410D584F5003F45A9 /* SteinDefines.m */; };
-		C883A31810FD68B400C32F06 /* ImageScripting.st in Resources */ = {isa = PBXBuildFile; fileRef = C883A31710FD68B400C32F06 /* ImageScripting.st */; };
+		C883A31810FD68B400C32F06 /* Imagine.st in Resources */ = {isa = PBXBuildFile; fileRef = C883A31710FD68B400C32F06 /* Imagine.st */; };
 		C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B0B1104EEC6003B889B /* STIntrospection.h */; };
 		C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B0C1104EEC6003B889B /* STIntrospection.m */; };
 		C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B4E1104F217003B889B /* STNativeBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -147,7 +147,7 @@
 		C83EF1F610D877960037A956 /* STFunctionInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFunctionInvocation.m; sourceTree = "<group>"; };
 		C8791F2C10D2AF8C00EB5D17 /* STParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STParser.h; sourceTree = "<group>"; };
 		C8791F2D10D2AF8C00EB5D17 /* STParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STParser.m; sourceTree = "<group>"; };
-		C883A31710FD68B400C32F06 /* ImageScripting.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ImageScripting.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
+		C883A31710FD68B400C32F06 /* Imagine.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Imagine.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		C8AC0B0B1104EEC6003B889B /* STIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STIntrospection.h; sourceTree = "<group>"; };
 		C8AC0B0C1104EEC6003B889B /* STIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STIntrospection.m; sourceTree = "<group>"; };
 		C8AC0B4E1104F217003B889B /* STNativeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeBlock.h; sourceTree = "<group>"; };
@@ -381,7 +381,7 @@
 		C8E164BE10D57CD3003F45A9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				C883A31710FD68B400C32F06 /* ImageScripting.st */,
+				C883A31710FD68B400C32F06 /* Imagine.st */,
 				C808860E10E2D10800632257 /* Prelude.st */,
 				C8E1640B10D57C0E003F45A9 /* Stein-Info.plist */,
 			);
@@ -494,7 +494,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C808860F10E2D10800632257 /* Prelude.st in Resources */,
-				C883A31810FD68B400C32F06 /* ImageScripting.st in Resources */,
+				C883A31810FD68B400C32F06 /* Imagine.st in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

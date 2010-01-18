@@ -169,6 +169,9 @@ STBuiltInFunctionExport(BridgeFunction);
 //The implementation of the bridge-constant generator.
 STBuiltInFunctionExport(BridgeConstant);
 
+//The implementation of the 'extern' operator.
+STBuiltInFunctionExport(BridgeExtern);
+
 //The implementation of the 'ref' operator.
 STBuiltInFunctionExport(MakeObjectReference);
 
