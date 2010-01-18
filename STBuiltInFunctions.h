@@ -175,6 +175,9 @@ STBuiltInFunctionExport(MakeObjectReference);
 //The implementation of the 'function-wrapper' generator.
 STBuiltInFunctionExport(FunctionWrapper);
 
+//The implementation of the 'wrap-block' generator.
+STBuiltInFunctionExport(WrapBlock);
+
 #pragma mark -
 #pragma mark Collection Creation
 

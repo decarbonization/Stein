@@ -14,6 +14,7 @@
 #import "STBridgedFunction.h"
 
 #import "STNativeFunctionWrapper.h"
+#import "STNativeBlock.h"
 #import "STTypeBridge.h"
 #import "STPointer.h"
 #import <dlfcn.h>
@@ -299,6 +300,24 @@ STBuiltInFunctionDefine(FunctionWrapper, YES, ^id(STEvaluator *evaluator, STList
 	
 	return [[STNativeFunctionWrapper alloc] initWithFunction:function 
 												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
+});
+
+STBuiltInFunctionDefine(WrapBlock, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+	if([arguments count] < 3)
+		STRaiseIssue(arguments.creationLocation, @"wrap-block requires 3 arguments.");
+	
+	NSMutableString *typeString = [NSMutableString stringWithString:STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string])];
+	
+	//The 'block' parameter.
+	[typeString appendString:@"@"];
+	
+	for (STSymbol *type in [arguments objectAtIndex:1])
+		[typeString appendString:STTypeBridgeGetObjCTypeForHumanReadableType(type.string)];
+	
+	id block = [evaluator evaluateExpression:[arguments objectAtIndex:2] inScope:scope];
+	
+	return [[STNativeBlock alloc] initWithBlock:block 
+									  signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
 });
 
 #pragma mark -

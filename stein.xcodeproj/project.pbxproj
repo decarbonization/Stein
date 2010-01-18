@@ -27,6 +27,9 @@
 		C883A31810FD68B400C32F06 /* ImageScripting.st in Resources */ = {isa = PBXBuildFile; fileRef = C883A31710FD68B400C32F06 /* ImageScripting.st */; };
 		C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B0B1104EEC6003B889B /* STIntrospection.h */; };
 		C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B0C1104EEC6003B889B /* STIntrospection.m */; };
+		C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B4E1104F217003B889B /* STNativeBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C8AC0B511104F217003B889B /* STNativeBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B4F1104F217003B889B /* STNativeBlock.m */; };
+		C8AC0B531104F225003B889B /* Block_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B521104F225003B889B /* Block_private.h */; };
 		C8B3187C10E15E860086468F /* STEnumerable.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3187A10E15E860086468F /* STEnumerable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8B3187D10E15E860086468F /* STEnumerable.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B3187B10E15E860086468F /* STEnumerable.m */; };
 		C8B3199410E16B740086468F /* STEvaluatorInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3199310E16B740086468F /* STEvaluatorInternal.h */; };
@@ -147,6 +150,9 @@
 		C883A31710FD68B400C32F06 /* ImageScripting.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ImageScripting.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		C8AC0B0B1104EEC6003B889B /* STIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STIntrospection.h; sourceTree = "<group>"; };
 		C8AC0B0C1104EEC6003B889B /* STIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STIntrospection.m; sourceTree = "<group>"; };
+		C8AC0B4E1104F217003B889B /* STNativeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeBlock.h; sourceTree = "<group>"; };
+		C8AC0B4F1104F217003B889B /* STNativeBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeBlock.m; sourceTree = "<group>"; };
+		C8AC0B521104F225003B889B /* Block_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Block_private.h; sourceTree = "<group>"; };
 		C8B3187A10E15E860086468F /* STEnumerable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEnumerable.h; sourceTree = "<group>"; };
 		C8B3187B10E15E860086468F /* STEnumerable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STEnumerable.m; sourceTree = "<group>"; };
 		C8B3199310E16B740086468F /* STEvaluatorInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEvaluatorInternal.h; sourceTree = "<group>"; };
@@ -215,6 +221,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				C8AC0B4B1104F1E0003B889B /* Object Extensions */,
 				C8E1613D10D55AFE003F45A9 /* Evaluator */,
 				C8E1613C10D55AED003F45A9 /* Parsing */,
 				C8E1613B10D55AE1003F45A9 /* Bridge */,
@@ -222,6 +229,7 @@
 				C8E164DB10D57D5A003F45A9 /* Stein.h */,
 				C8E1656D10D58415003F45A9 /* SteinDefines.h */,
 				C8E165B410D584F5003F45A9 /* SteinDefines.m */,
+				C8AC0B521104F225003B889B /* Block_private.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -253,27 +261,62 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
-		C8E1613B10D55AE1003F45A9 /* Bridge */ = {
+		C8AC0B491104F1BA003B889B /* Type Bridging */ = {
 			isa = PBXGroup;
 			children = (
-				C8AC0B0B1104EEC6003B889B /* STIntrospection.h */,
-				C8AC0B0C1104EEC6003B889B /* STIntrospection.m */,
-				C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */,
-				C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */,
 				C8DB7AD910D347F800EF3D63 /* STTypeBridge.h */,
 				C8DB7ADA10D347F800EF3D63 /* STTypeBridge.m */,
 				C8E15F7B10D551B8003F45A9 /* STStructClasses.h */,
 				C8E15F7C10D551B8003F45A9 /* STStructClasses.m */,
+				C808881D10E3037B00632257 /* STPointer.h */,
+				C808881E10E3037B00632257 /* STPointer.m */,
+			);
+			name = "Type Bridging";
+			sourceTree = "<group>";
+		};
+		C8AC0B4A1104F1D0003B889B /* Function Bridging */ = {
+			isa = PBXGroup;
+			children = (
+				C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */,
+				C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */,
 				C83EF1E310D877300037A956 /* STBridgedFunction.h */,
 				C83EF1E410D877300037A956 /* STBridgedFunction.m */,
 				C83EF1F510D877960037A956 /* STFunctionInvocation.h */,
 				C83EF1F610D877960037A956 /* STFunctionInvocation.m */,
-				C808881D10E3037B00632257 /* STPointer.h */,
-				C808881E10E3037B00632257 /* STPointer.m */,
+			);
+			name = "Function Bridging";
+			sourceTree = "<group>";
+		};
+		C8AC0B4B1104F1E0003B889B /* Object Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C8AC0B0B1104EEC6003B889B /* STIntrospection.h */,
+				C8AC0B0C1104EEC6003B889B /* STIntrospection.m */,
+				C8E162C710D56FCA003F45A9 /* NSObject+Stein.h */,
+				C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */,
 				C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */,
 				C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */,
-				C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */,
-				C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */,
+			);
+			name = "Object Extensions";
+			sourceTree = "<group>";
+		};
+		C8AC0B4D1104F207003B889B /* Block Bridging */ = {
+			isa = PBXGroup;
+			children = (
+				C8AC0B4E1104F217003B889B /* STNativeBlock.h */,
+				C8AC0B4F1104F217003B889B /* STNativeBlock.m */,
+			);
+			name = "Block Bridging";
+			sourceTree = "<group>";
+		};
+		C8E1613B10D55AE1003F45A9 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */,
+				C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */,
+				C8AC0B4D1104F207003B889B /* Block Bridging */,
+				C8AC0B4A1104F1D0003B889B /* Function Bridging */,
+				C8AC0B491104F1BA003B889B /* Type Bridging */,
 			);
 			name = Bridge;
 			sourceTree = "<group>";
@@ -306,8 +349,6 @@
 				C8E1614610D55B59003F45A9 /* STClosure.m */,
 				C8E161AC10D562F5003F45A9 /* STBuiltInFunctions.h */,
 				C8E161AD10D562F5003F45A9 /* STBuiltInFunctions.m */,
-				C8E162C710D56FCA003F45A9 /* NSObject+Stein.h */,
-				C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */,
 			);
 			name = Evaluator;
 			sourceTree = "<group>";
@@ -377,6 +418,8 @@
 				C8088ABD10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h in Headers */,
 				C83BD4F610FFC8740005462D /* STNativeFunctionWrapper.h in Headers */,
 				C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */,
+				C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */,
+				C8AC0B531104F225003B889B /* Block_private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,6 +532,7 @@
 				C863D20110E7F00D00387729 /* SteinDefines.m in Sources */,
 				C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */,
 				C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */,
+				C8AC0B511104F217003B889B /* STNativeBlock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

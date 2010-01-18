@@ -245,6 +245,7 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(MakeObjectReference, self) forKey:@"ref"];
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(FunctionWrapper, self) forKey:@"function-wrapper"];
+		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(WrapBlock, self) forKey:@"wrap-block"];
 		
 		//Collection creation
 		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Array, self) forKey:@"array"];
