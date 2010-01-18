@@ -62,13 +62,13 @@ static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDic
 #pragma mark Environment Built Ins
 
 STBuiltInFunctionDefine(Import, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	BOOL success = YES;
 	for (NSString *argument in arguments)
 	{
-		success = success && [evaluator import:argument];
+		if(![evaluator import:argument])
+			STRaiseIssue(arguments.creationLocation, @"Could not import '%@'.", argument);
 	}
 	
-	return [NSNumber numberWithBool:success];
+	return STTrue;
 });
 
 STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
