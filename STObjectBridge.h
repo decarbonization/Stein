@@ -18,7 +18,9 @@
  @param			target		The object to send the message to.
  @param			selector	A selector describing the message to send. May not be nil.
  @param			arguments	The arguments to send along with the message. May not be nil.
- @discussion	If target is nil or NSNull then this method returns NSNull immediately.
+ @discussion	If target is nil or STNull then this method returns STNull immediately.
+				
+				This function invokes the missing method handling system defined in NSObject+Stein.
  */
 ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments);
 
@@ -29,7 +31,9 @@ ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments);
  @param			superclass	The target superclass. May not be nil.
  @param			selector	A selector describing the message to send. May not be nil.
  @param			arguments	The arguments to send along with the message. May not be nil.
- @discussion	If the target is nil or NSNull then this method returns NSNull immediately.
+ @discussion	If the target is nil or STNull then this method returns STNull immediately.
+				
+				This function _does not_ invoke the missing method handling system defined in NSObject+Stein.
  */
 ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments);
 

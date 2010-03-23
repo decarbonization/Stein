@@ -1,0 +1,119 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 1E1ACB2911595D3200B2BBA9 /* stein */;
+		activeTarget = 8DD76F960486AA7600D96B5E /* stein */;
+		codeSenseManager = 1E1ACB3711595D4500B2BBA9 /* Code sense */;
+		executables = (
+			1E1ACB2911595D3200B2BBA9 /* stein */,
+		);
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 291069234;
+			PBXWorkspaceStateSaveDate = 291069234;
+		};
+		sourceControlManager = 1E1ACB3611595D4500B2BBA9 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	1E1ACB2911595D3200B2BBA9 /* stein */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = stein;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+		};
+	};
+	1E1ACB3611595D4500B2BBA9 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	1E1ACB3711595D4500B2BBA9 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	8DD76F960486AA7600D96B5E /* stein */ = {
+		activeExec = 0;
+		executables = (
+			1E1ACB2911595D3200B2BBA9 /* stein */,
+		);
+	};
+	C8AC0B0B1104EEC6003B889B /* STIntrospection.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1950}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{1888, 768}";
+		};
+	};
+	C8AC0B0C1104EEC6003B889B /* STIntrospection.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 3068}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{1290, 697}";
+			sepNavWindowFrame = "{{153, 76}, {889, 671}}";
+		};
+	};
+	C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1001}}";
+			sepNavSelRange = "{568, 0}";
+			sepNavVisRange = "{3, 1588}";
+		};
+	};
+	C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {439, 5200}}";
+			sepNavSelRange = "{1447, 0}";
+			sepNavVisRange = "{1349, 432}";
+			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
+		};
+	};
+	C8E162C710D56FCA003F45A9 /* NSObject+Stein.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 2821}}";
+			sepNavSelRange = "{3751, 0}";
+			sepNavVisRange = "{3301, 1493}";
+		};
+	};
+	C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 10543}}";
+			sepNavSelRange = "{606, 0}";
+			sepNavVisRange = "{0, 758}";
+			sepNavWindowFrame = "{{130, 97}, {889, 671}}";
+		};
+	};
+	C8E1640910D57C0E003F45A9 /* Stein */ = {
+		activeExec = 0;
+	};
+}

@@ -243,3 +243,33 @@ function text (string x y font color shadow additionalAttributes) [
 	
 	string drawAtPoint:(make-point x y) withAttributes:attributes
 ]
+
+`
+	function:	size-of-text
+	intent:		To calculate the size of a specified block of text with a specified set of attributes.
+	params:		[
+		string => NSString:
+			The string to calculate the size for.
+		
+		font => NSFont:
+			The font of the string.
+		
+		shadow => NSShadow:
+			The shadow of the string.
+		
+		[additionalAttributes] => NSDictionary:
+			Any additional attributes associated with the text. Not Required.
+	]
+	result:		The size of the string passed in.
+`
+function size-of-text (string font shadow additionalAttributes) [
+	let attributes = dict \
+		NSShadowAttributeName shadow \
+		NSFontAttributeName font
+	
+	additionalAttributes ifTrue:[
+		attributes addEntriesFromDictionary:additionalAttributes
+	]
+	
+	string sizeWithAttributes:attributes
+]

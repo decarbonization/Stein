@@ -25,6 +25,7 @@
 		C83EF1F810D877960037A956 /* STFunctionInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1F610D877960037A956 /* STFunctionInvocation.m */; };
 		C863D20110E7F00D00387729 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E165B410D584F5003F45A9 /* SteinDefines.m */; };
 		C883A31810FD68B400C32F06 /* Imagine.st in Resources */ = {isa = PBXBuildFile; fileRef = C883A31710FD68B400C32F06 /* Imagine.st */; };
+		C89D80AA110FCD5D00BCB673 /* libreadline.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1650510D57E6A003F45A9 /* libreadline.dylib */; };
 		C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B0B1104EEC6003B889B /* STIntrospection.h */; };
 		C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B0C1104EEC6003B889B /* STIntrospection.m */; };
 		C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B4E1104F217003B889B /* STNativeBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -199,6 +200,7 @@
 				C8E164C710D57D21003F45A9 /* libffi.dylib in Frameworks */,
 				C8E164C810D57D25003F45A9 /* ApplicationServices.framework in Frameworks */,
 				C8E164C910D57D25003F45A9 /* Foundation.framework in Frameworks */,
+				C89D80AA110FCD5D00BCB673 /* libreadline.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,7 +215,6 @@
 				C6859EA2029092E104C91782 /* Documentation */,
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
-				C8E1650510D57E6A003F45A9 /* libreadline.dylib */,
 			);
 			name = stein;
 			sourceTree = "<group>";
@@ -225,11 +226,7 @@
 				C8E1613D10D55AFE003F45A9 /* Evaluator */,
 				C8E1613C10D55AED003F45A9 /* Parsing */,
 				C8E1613B10D55AE1003F45A9 /* Bridge */,
-				32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */,
-				C8E164DB10D57D5A003F45A9 /* Stein.h */,
-				C8E1656D10D58415003F45A9 /* SteinDefines.h */,
-				C8E165B410D584F5003F45A9 /* SteinDefines.m */,
-				C8AC0B521104F225003B889B /* Block_private.h */,
+				1E1ACB3511595D4500B2BBA9 /* Other */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -238,6 +235,7 @@
 			isa = PBXGroup;
 			children = (
 				C8DB7AAF10D3463B00EF3D63 /* libffi.dylib */,
+				C8E1650510D57E6A003F45A9 /* libreadline.dylib */,
 				C8E15FB610D55624003F45A9 /* ApplicationServices.framework */,
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
 			);
@@ -251,6 +249,17 @@
 				C8E1640A10D57C0E003F45A9 /* Stein.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1E1ACB3511595D4500B2BBA9 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */,
+				C8E164DB10D57D5A003F45A9 /* Stein.h */,
+				C8E1656D10D58415003F45A9 /* SteinDefines.h */,
+				C8E165B410D584F5003F45A9 /* SteinDefines.m */,
+			);
+			name = Other;
 			sourceTree = "<group>";
 		};
 		C6859EA2029092E104C91782 /* Documentation */ = {
@@ -303,6 +312,7 @@
 		C8AC0B4D1104F207003B889B /* Block Bridging */ = {
 			isa = PBXGroup;
 			children = (
+				C8AC0B521104F225003B889B /* Block_private.h */,
 				C8AC0B4E1104F217003B889B /* STNativeBlock.h */,
 				C8AC0B4F1104F217003B889B /* STNativeBlock.m */,
 			);
@@ -621,7 +631,7 @@
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_ENABLE_OBJC_GC = required;
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -651,7 +661,7 @@
 				EXECUTABLE_PREFIX = "";
 				FRAMEWORK_VERSION = A;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_GC = required;
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Stein_Prefix.pch;

@@ -8,6 +8,7 @@
 
 #import "NSObject+Stein.h"
 #import <objc/objc-runtime.h>
+#import "STObjectBridge.h"
 #import "STTypeBridge.h"
 #import "STStructClasses.h"
 
@@ -251,6 +252,33 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return self;
 }
 
+#pragma mark -
+#pragma mark High-Level Forwarding
+
++ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+{
+	return NO;
+}
+
++ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+{
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
+#pragma mark -
+
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+{
+	return NO;
+}
+
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+{
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
 @end
 
 #pragma mark -
@@ -294,6 +322,127 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 - (STRange *)rangeWithLength:(NSUInteger)length
 {
 	return [[[STRange alloc] initWithLocation:[self unsignedIntegerValue] length:length] autorelease];
+}
+
+#pragma mark -
+#pragma mark Infix Notation Support
+
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+{
+	NSString *selectorString = NSStringFromSelector(selector);
+	for (NSUInteger index = 0, length = [selectorString length]; index < length; index++)
+	{
+		unichar character = [selectorString characterAtIndex:index];
+		if(character != '+' && 
+		   character != '-' && 
+		   character != '*' && 
+		   character != '/' && 
+		   character != '^')
+		{
+			return NO;
+		}
+	}
+	
+	return YES;
+}
+
+typedef struct Operation {
+	int originalPosition;
+	char operatorName;
+} Operation;
+
+ST_INLINE int PrecedenceOfOperatorNamed(char operatorName)
+{
+	switch (operatorName)
+	{
+		case '+':
+		case '-':
+			return 1;
+			
+		case '*':
+		case '/':
+			return 2;
+			
+		case '^':
+			return 3;
+			
+		default:
+			break;
+	}
+	
+	return 0;
+}
+
+static int OperationPrecedenceComparator(Operation *left, Operation *right)
+{
+	int leftPrecedence = PrecedenceOfOperatorNamed(left->operatorName);
+	int rightPrecedence = PrecedenceOfOperatorNamed(right->operatorName);
+	
+	if(leftPrecedence > rightPrecedence)
+		return -1;
+	else if(leftPrecedence < rightPrecedence)
+		return 1;
+	
+	return 0;
+}
+
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+{
+	const char *operators = sel_getName(selector);
+	
+	int numberOfOperations = strlen(operators);
+	Operation operations[numberOfOperations];
+	for (int operationOffset = 0; operationOffset < numberOfOperations; operationOffset++)
+	{
+		operations[operationOffset] = (Operation){
+			.originalPosition = operationOffset,
+			.operatorName = operators[operationOffset]
+		};
+	}
+	
+	qsort(operations, numberOfOperations, sizeof(Operation), (void *)&OperationPrecedenceComparator);
+	
+	NSMutableArray *pool = [NSMutableArray arrayWithArray:arguments];
+	[pool insertObject:self atIndex:0];
+	for (int index = 0; index < numberOfOperations; index++)
+	{
+		Operation operation = operations[index];
+		double leftOperand = [[pool objectAtIndex:operation.originalPosition] doubleValue];
+		double rightOperand = [[pool objectAtIndex:operation.originalPosition + 1] doubleValue];
+		double result = 0;
+		switch (operation.operatorName)
+		{
+			case '+':
+				result = leftOperand + rightOperand;
+				break;
+				
+			case '-':
+				result = leftOperand - rightOperand;
+				break;
+				
+			case '*':
+				result = leftOperand * rightOperand;
+				break;
+				
+			case '/':
+				result = leftOperand / rightOperand;
+				break;
+				
+			case '^':
+				result = pow(leftOperand, rightOperand);
+				break;
+				
+			default:
+				break;
+		}
+		
+		[pool replaceObjectAtIndex:operation.originalPosition 
+						withObject:[NSNumber numberWithDouble:result]];
+		[pool replaceObjectAtIndex:operation.originalPosition + 1 
+						withObject:[NSNumber numberWithDouble:result]];
+	}
+	
+	return [pool objectAtIndex:operations[numberOfOperations - 1].originalPosition];
 }
 
 @end
@@ -431,6 +580,23 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return description;
 }
 
+#pragma mark -
+#pragma mark Mass Messaging Support
+
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+{
+	return [[self objectAtIndex:0] respondsToSelector:selector];
+}
+
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+{
+	NSMutableArray *results = [NSMutableArray arrayWithCapacity:[self count]];
+	for (id object in self)
+		[results addObject:STObjectBridgeSend(object, selector, [arguments copy])];
+	
+	return results;
+}
+
 @end
 
 #pragma mark -
@@ -526,6 +692,23 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	[description appendString:@"}"];
 	
 	return description;
+}
+
+#pragma mark -
+#pragma mark Mass Messaging Support
+
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+{
+	return [[self anyObject] respondsToSelector:selector];
+}
+
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+{
+	NSMutableArray *results = [NSMutableSet setWithCapacity:[self count]];
+	for (id object in self)
+		[results addObject:STObjectBridgeSend(object, selector, [arguments copy])];
+	
+	return results;
 }
 
 @end

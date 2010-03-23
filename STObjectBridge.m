@@ -19,6 +19,8 @@
 #import "STNativeFunctionWrapper.h"
 #import "STEvaluatorInternal.h"
 
+#import "NSObject+Stein.h"
+
 /*!
  @function
  @abstract		Determines whether or not a specified selector is exempt from null messaging.
@@ -43,7 +45,16 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments)
 	
 	NSMethodSignature *targetMethodSignature = [target methodSignatureForSelector:selector];
 	if(!targetMethodSignature)
+	{
+		if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:)) && 
+		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:)))
+		{
+			if([target canHandleMissingMethodWithSelector:selector])
+				return [target handleMissingMethodWithSelector:selector arguments:arguments] ?: STNull;
+		}
+		
 		[target doesNotRecognizeSelector:selector];
+	}
 	
 	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:targetMethodSignature];
 	[invocation setTarget:target];

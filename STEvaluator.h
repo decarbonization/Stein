@@ -130,3 +130,23 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
 - (BOOL)import:(NSString *)location;
 
 @end
+
+#pragma mark -
+
+/*!
+ @function
+ @abstract		Pass control of the current process into a Stein script.
+ @param			argc		The length of the argv parameter.
+ @param			argv		The vector containing the arguments passed into the process.
+ @param			filename	The name of the file in the current process's bundle-resources to load, and execute. May not be nil.
+ @result		The return code of the Stein file executed.
+ @discussion	The Stein file should return an integer value representing the exit status of the script.
+ */
+ST_EXTERN int STMain(int argc, const char *argv[], NSString *filename);
+
+/*!
+ @function
+ @abstract		Run a read-evaluate-print loop (REPL) with a new evaluator until the user asks to exit.
+ @discussion	This function will block until the user terminates the REPL.
+ */
+ST_EXTERN void STRunREPL();

@@ -24,6 +24,8 @@
 
 #import "NSObject+Stein.h"
 
+#import <readline/readline.h> //For STRunREPL()
+
 NSString *const kSTEvaluatorEnclosingScopeKey = @"\\__enclosingScope";
 NSString *const kSTEvaluatorSuperclassKey = @"\\__superclass";
 NSString *const kSTBundleIsPureSteinKey = @"STBundleIsPureStein";
@@ -519,6 +521,10 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 	{
 		return [expression applyWithEvaluator:self scope:scope];
 	}
+	else if([expression isKindOfClass:[NSString class]])
+	{
+		return [expression copy];
+	}
 	
 	return expression;
 }
@@ -633,3 +639,144 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 }
 
 @end
+
+#pragma mark -
+
+int STMain(int argc, const char *argv[], NSString *filename)
+{
+	NSCParameterAssert(filename);
+	
+	NSURL *mainFile = [[NSBundle mainBundle] URLForResource:filename withExtension:@"st"];
+	NSCAssert((mainFile != nil), @"Could not find file %@ in main bundle.", filename);
+	
+	NSError *error = nil;
+	NSString *source = [NSString stringWithContentsOfURL:mainFile encoding:NSUTF8StringEncoding error:&error];
+	NSCAssert((source != nil), @"Could not load file %@ in main bundle. Error {%@}.", filename, error);
+	
+	STEvaluator *evaluator = [STEvaluator new];
+	id result = [evaluator parseAndEvaluateString:source];
+	if(!result)
+		return EXIT_SUCCESS;
+	
+	return [result intValue];
+}
+
+/*!
+ @function
+ @abstract		Analyze a string read from the REPL, and indicate the number of unbalanced parentheses and unbalanced brackets found.
+ @param			numberOfUnbalancedParentheses	On return, an integer describing the number of unbalanced parentheses in the specified string.
+ @param			numberOfUnbalancedBrackets		On return, an integer describing the number of unbalanced brackets in the specified string.
+ @param			string							The string to analyze.
+ @discussion	All parameters are required.
+ */
+static void FindUnbalancedExpressions(NSInteger *numberOfUnbalancedParentheses, NSInteger *numberOfUnbalancedBrackets, NSString *string)
+{
+	NSCParameterAssert(numberOfUnbalancedParentheses);
+	NSCParameterAssert(numberOfUnbalancedBrackets);
+	NSCParameterAssert(string);
+	
+	NSUInteger stringLength = [string length];
+	for (NSUInteger index = 0; index < stringLength; index++)
+	{
+		switch ([string characterAtIndex:index])
+		{
+			case '(':
+				(*numberOfUnbalancedParentheses)++;
+				break;
+				
+			case ')':
+				(*numberOfUnbalancedParentheses)--;
+				break;
+				
+			case '[':
+				(*numberOfUnbalancedBrackets)++;
+				break;
+				
+			case ']':
+				(*numberOfUnbalancedBrackets)--;
+				break;
+				
+			default:
+				break;
+		}
+	}
+}
+
+void STRunREPL()
+{
+	//Initialize readline so we get history.
+	rl_initialize();
+	
+	//Create an evaluator.
+	STEvaluator *evaluator = [STEvaluator new];
+	
+	printf("stein ready [version %s]\n", [[SteinBundle() objectForInfoDictionaryKey:@"CFBundleShortVersionString"] UTF8String]);
+	for (;;)
+	{
+		//Break away if we've been told to quit|exit|EOF.
+		char *rawLine = readline("Stein> ");
+		if(!rawLine || (strlen(rawLine) == 0) || (strcmp(rawLine, "quit") == 0) || (strcmp(rawLine, "exit") == 0))
+		{
+			free(rawLine);
+			fprintf(stdout, "goodbye\n");
+			break;
+		}
+		
+		@try
+		{
+			//Convert the line we just read into an NSString and free it. We use a mutable
+			//string so we can append at a later time for the case of partial lines.
+			NSMutableString *line = [NSMutableString stringWithUTF8String:rawLine];
+			
+			
+			//Handle unbalanced pairs of parentheses and brackets.
+			NSInteger numberOfUnbalancedParentheses = 0, numberOfUnbalancedBrackets = 0;
+			FindUnbalancedExpressions(&numberOfUnbalancedParentheses, &numberOfUnbalancedBrackets, line);
+			
+			while (numberOfUnbalancedParentheses > 0)
+			{
+				char *partialLine = readline("... ");
+				
+				for (int i = 0; i < strlen(partialLine); i++)
+				{
+					if(partialLine[i] == '(')
+						numberOfUnbalancedParentheses++;
+					else if(partialLine[i] == ')')
+						numberOfUnbalancedParentheses--;
+				}
+				
+				[line appendFormat:@"%s", partialLine];
+				free(partialLine);
+			}
+			
+			while (numberOfUnbalancedBrackets > 0)
+			{
+				char *partialLine = readline("... ");
+				
+				for (int i = 0; i < strlen(partialLine); i++)
+				{
+					if(partialLine[i] == '[')
+						numberOfUnbalancedBrackets++;
+					else if(partialLine[i] == ']')
+						numberOfUnbalancedBrackets--;
+				}
+				
+				[line appendFormat:@"%s", partialLine];
+				free(partialLine);
+			}
+			
+			
+			//Parse and evaluate the data we just read in from the user, and print out the result.
+			id result = [evaluator parseAndEvaluateString:line];
+			fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
+		}
+		@catch (NSException *e)
+		{
+			fprintf(stderr, "Error: %s\n", [[e reason] UTF8String]);
+		}
+		@finally
+		{
+			free(rawLine);
+		}
+	}
+}
