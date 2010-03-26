@@ -57,7 +57,7 @@ function tiff (w h path callback) [
 	intent:		To create a color object with specified red, green, and blue values.
 `
 function rgb (r g b) [
-	NSColor colorWithDeviceRed:(/ r 255) green:(/ g 255) blue:(/ b 255) alpha:1.0
+	NSColor colorWithDeviceRed:(r / 255) green:(g / 255) blue:(b / 255) alpha:1.0
 ]
 
 `
@@ -65,7 +65,7 @@ function rgb (r g b) [
 	intent:		To create a color object with specified red, green, blue, and alpha values.
 `
 function rgba (r g b a) [
-	NSColor colorWithDeviceRed:(/ r 255) green:(/ g 255) blue:(/ b 255) alpha:a
+	NSColor colorWithDeviceRed:(r / 255) green:(g / 255) blue:(b / 255) alpha:a
 ]
 
 `

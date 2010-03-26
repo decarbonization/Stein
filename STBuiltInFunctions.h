@@ -26,7 +26,7 @@
  */
 #define STBuiltInFunctionDefine(name, evaluates, ...) STBuiltInFunction *STBuiltInFunction##name(STEvaluator *evaluator) \
 { \
-	return [STBuiltInFunction builtInFunctionWithImplementation:(__VA_ARGS__) evaluatesOwnArguments:evaluates evaluator:evaluator]; \
+	return [[STBuiltInFunction alloc] initWithImplementation:(__VA_ARGS__) evaluatesOwnArguments:evaluates evaluator:evaluator]; \
 }
 
 /*!
@@ -73,18 +73,6 @@ typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arg
 - (id)initWithImplementation:(STBuiltInFunctionImplementation)implementation 
 	   evaluatesOwnArguments:(BOOL)evaluatesOwnArguments 
 				   evaluator:(STEvaluator *)evaluator;
-
-/*!
- @method
- @abstract	Create a new autoreleased built in function with an implementation block, and an evaluator.
- @param		implementation			A block to copy that describes the receiver's implementation. May not be nil.
- @param		evaluatesOwnArguments	Whether or not the receiver is going to evaluate its own arguments when it's applied.
- @param		evaluator				The evaluator that owns the built in function. May not be nil.
- @result	A new built in function object.
- */
-+ (STBuiltInFunction *)builtInFunctionWithImplementation:(STBuiltInFunctionImplementation)implementation 
-								   evaluatesOwnArguments:(BOOL)evaluatesOwnArguments 
-											   evaluator:(STEvaluator *)evaluator;
 
 #pragma mark -
 #pragma mark Properties

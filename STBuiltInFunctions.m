@@ -21,15 +21,6 @@
 
 @implementation STBuiltInFunction
 
-- (void)dealloc
-{
-	[mImplementation release];
-	mImplementation = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Creation
 
 - (id)init
@@ -54,11 +45,6 @@
 		return self;
 	}
 	return nil;
-}
-
-+ (STBuiltInFunction *)builtInFunctionWithImplementation:(STBuiltInFunctionImplementation)implementation evaluatesOwnArguments:(BOOL)evaluatesOwnArguments evaluator:(STEvaluator *)evaluator
-{
-	return [[[self alloc] initWithImplementation:implementation evaluatesOwnArguments:evaluatesOwnArguments evaluator:evaluator] autorelease];
 }
 
 #pragma mark -

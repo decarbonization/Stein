@@ -144,7 +144,6 @@
 	{
 		STMethod *method = [[STMethod alloc] initWithClass:self method:methods[index]];
 		[methodArray addObject:method];
-		[method release];
 	}
 	
 	free(methods);
@@ -171,7 +170,6 @@
 	{
 		STIvar *ivar = [[STIvar alloc] initWithClass:self ivar:ivars[index]];
 		[ivarArray addObject:ivar];
-		[ivar release];
 	}
 	
 	free(ivars);

@@ -54,10 +54,10 @@ static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDic
 	implementation.isDoConstruct = NO;
 	implementation.isQuoted = NO;
 	
-	return [[[STClosure alloc] initWithPrototype:arguments 
-							   forImplementation:implementation 
-								   fromEvaluator:self 
-										 inScope:scope] autorelease];
+	return [[STClosure alloc] initWithPrototype:arguments 
+							  forImplementation:implementation 
+								  fromEvaluator:self 
+										inScope:scope];
 }
 
 #pragma mark -
@@ -108,7 +108,7 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 			Class superclass = __STEvaluateExpression(evaluator, [arguments objectAtIndex:2], scope);
 			STList *declarations = [arguments objectAtIndex:3];
 			
-			return STDefineClass(name.string, superclass, declarations);
+			return STDefineClass(name.string, superclass, declarations, evaluator);
 		}
 		else
 		{
@@ -131,10 +131,10 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 	[parameterList replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
 	implementation.isQuoted = NO;
 	
-	STClosure *closure = [[[STClosure alloc] initWithPrototype:parameterList
-											 forImplementation:implementation
-												 fromEvaluator:evaluator 
-													   inScope:scope] autorelease];
+	STClosure *closure = [[STClosure alloc] initWithPrototype:parameterList
+											forImplementation:implementation
+												fromEvaluator:evaluator 
+													  inScope:scope];
 	NSString *functionName = [[arguments objectAtIndex:0] string];
 	[scope setObject:closure forKey:functionName];
 	
@@ -158,7 +158,7 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 	NSArray *argumentsArray = nil;
 	MessageListGetSelectorAndArguments(evaluator, scope, [arguments tail], &selector, &argumentsArray);
 	
-	return STObjectBridgeSend(target, selector, argumentsArray);
+	return STObjectBridgeSend(target, selector, argumentsArray, evaluator);
 });
 
 STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
@@ -180,27 +180,13 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 		index++;
 	}
 	
-	return STObjectBridgeSendSuper(target, superclass, NSSelectorFromString(selectorString), evaluatedArguments);
+	return STObjectBridgeSendSuper(target, superclass, NSSelectorFromString(selectorString), evaluatedArguments, evaluator);
 });
 
 #pragma mark -
 
 @implementation STEvaluator
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	[mRootScope release];
-	mRootScope = nil;
-	
-	[mSearchPaths release];
-	mSearchPaths = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 - (id)init
@@ -491,7 +477,7 @@ id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 	NSArray *arguments = nil;
 	MessageListGetSelectorAndArguments(self, scope, [list tail], &selector, &arguments);
 	
-	return STObjectBridgeSend(target, selector, arguments);
+	return STObjectBridgeSend(target, selector, arguments, self);
 }
 
 #pragma mark -

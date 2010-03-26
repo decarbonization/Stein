@@ -13,20 +13,6 @@
 
 @implementation STBridgedFunction
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	[mInvocation release];
-	mInvocation = nil;
-	
-	[mFunctionName release];
-	mFunctionName = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 - (id)initWithSymbol:(void *)symbol signature:(NSMethodSignature *)signature

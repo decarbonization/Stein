@@ -244,13 +244,10 @@ static void Help()
 
 int main (int argc, const char * argv[])
 {
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
-	
 	if((argc >= 2) && (strcmp(argv[1], "help") == 0))
 	{
 		Help();
 		
-		[pool drain];
 		return 0;
 	}
 	
@@ -259,7 +256,6 @@ int main (int argc, const char * argv[])
 	{
 		STEvaluator *evaluator = [STEvaluator new];
 		RunREPL(evaluator);
-		[evaluator release];
 	}
 	else
 	{
@@ -275,7 +271,6 @@ int main (int argc, const char * argv[])
 				{
 					STEvaluator *replEvaluator = [STEvaluator new];
 					RunREPL(replEvaluator);
-					[replEvaluator release];
 				}
 				else
 				{
@@ -315,7 +310,7 @@ int main (int argc, const char * argv[])
 				}
 				
 				//
-				//	If we're sandboxing each file, we release the evaluator we have
+				//	If we're sandboxing each file, we discard the evaluator we have
 				//	going now and create a new one in it's place. This prevents the
 				//	next file from accssing something from the old evaluator.
 				//
@@ -325,7 +320,6 @@ int main (int argc, const char * argv[])
 				//
 				if(FlagIsSet(options, kProgramOptionSandboxEachFile))
 				{
-					[evaluator release];
 					evaluator = [STEvaluator new];
 				}
 			}
@@ -334,10 +328,7 @@ int main (int argc, const char * argv[])
 				fprintf(stderr, "Error in file %s: %s\n", [path UTF8String], [[e reason] UTF8String]);
 			}
 		}
-		
-		[evaluator release];
 	}
 	
-	[pool drain];
 	return 0;
 }

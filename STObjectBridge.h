@@ -10,7 +10,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STList;
+@class STList, STEvaluator;
 
 /*!
  @function
@@ -22,7 +22,7 @@
 				
 				This function invokes the missing method handling system defined in NSObject+Stein.
  */
-ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments);
+ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *evaluator);
 
 /*!
  @function
@@ -35,7 +35,7 @@ ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments);
 				
 				This function _does not_ invoke the missing method handling system defined in NSObject+Stein.
  */
-ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments);
+ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STEvaluator *evaluator);
 
 #pragma mark -
 
@@ -45,7 +45,7 @@ ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, 
  @param		classToExtend	The class to extend. May not be nil. Should implement the NSObject protocol.
  @param		expressions		A list of expressions consisting of method declarations, and decorators. May not be nil.
  */
-ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions);
+ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions, STEvaluator *evaluator);
 
 #pragma mark -
 
@@ -53,13 +53,13 @@ ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions);
  @function
  @abstract	Undefine a class in the ObjC runtime.
  */
-ST_EXTERN BOOL STUndefineClass(Class classToUndefine);
+ST_EXTERN BOOL STUndefineClass(Class classToUndefine, STEvaluator *evaluator);
 
 /*!
  @function
  @abstract	Remove a classes method, protocol, and property information. This effectively returns a class to a blank-slate like condition.
  */
-ST_EXTERN BOOL STResetClass(Class classToReset);
+ST_EXTERN BOOL STResetClass(Class classToReset, STEvaluator *evaluator);
 
 /*!
  @function
@@ -69,4 +69,4 @@ ST_EXTERN BOOL STResetClass(Class classToReset);
  @param		expressions		A list of expressions consisting of method declarations, and decorators. May not be nil.
  @result	The new class if it could be created without issue; nil otherwise.
  */
-ST_EXTERN Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions);
+ST_EXTERN Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions, STEvaluator *evaluator);

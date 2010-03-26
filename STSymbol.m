@@ -34,17 +34,6 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 
 @implementation STSymbol
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	[mString release];
-	mString = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Creation
 
 + (STSymbol *)symbolWithString:(NSString *)string

@@ -46,7 +46,7 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  @method
  @abstract	Create a new scope with a specified enclosing scope.
  @param		enclosingScope	The scope that encloses the sope about to be created. If nil the receiver's root scope will be used.
- @result	A new autoreleased dictionary ready for use with STEvaluator.
+ @result	A new dictionary ready for use with STEvaluator.
  */
 - (NSMutableDictionary *)scopeWithEnclosingScope:(NSMutableDictionary *)enclosingScope;
 

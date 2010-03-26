@@ -323,24 +323,6 @@ static STPrimitiveValueWrapperDescriptor const kGenericStructWrapperDescriptor =
 
 @implementation STTypeBridgeGenericStructWrapper
 
-- (void)dealloc
-{
-	if(mValue)
-	{
-		free(mValue);
-		mValue = NULL;
-	}
-	
-	if(mObjcType)
-	{
-		free(mObjcType);
-		mObjcType = NULL;
-	}
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 - (id)init

@@ -129,34 +129,36 @@
  @method
  @abstract	Extend the receiver using a closure full of method constructs.
  */
-+ (Class)extend:(STClosure *)extensions;
++ (Class)extend:(STClosure *)extensions inEvaluator:(STEvaluator *)evaluator;
 
 #pragma mark -
 #pragma mark High-Level Forwarding
 
-+ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector;
-+ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments;
++ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator;
++ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator;
 
 /*!
  @method
  @abstract		Returns whether the receiver will handle a missing method with a specified selector.
  @param			selector	The method which contains no known implementation in the receiver.
+ @param			evaluator	The evaluator in which the missing method has been called from.
  @result		YES if the receiver can handle the selector; NO otherwise.
  @discussion	This method is invoked by the Stein runtime when an object doesn't respond to a specified selector.
  */
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector;
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator;
 
 /*!
  @method
  @abstract		Performs an action for a missing selector with a specified array of arguments.
  @param			selector	The method to perform an action for.
  @param			arguments	The arguments passed to the method.
+ @param			evaluator	The evaluator in which the missing method has been called from.
  @result		The result of the action performed.
  @discussion	This method is invoked by the Stein runtime when -[NSObject canHandleMissingMethodWithSelector:] returns YES.
 				
 				The default implementation of this method simply calls -[NSObject doesNotRecognizeSelector:]
  */
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments;
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator;
 
 @end
 

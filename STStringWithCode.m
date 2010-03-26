@@ -13,23 +13,6 @@
 
 @implementation STStringWithCode
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	[mCodeExpressions release];
-	mCodeExpressions = nil;
-	
-	[mCodeRanges release];
-	mCodeRanges = nil;
-	
-	[mString release];
-	mString = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Creation
 
 - (id)init

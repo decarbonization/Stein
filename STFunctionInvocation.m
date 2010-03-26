@@ -13,41 +13,6 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 
 @implementation STFunctionInvocation
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	if(mArgumentTypes)
-	{
-		free(mArgumentTypes);
-		mArgumentTypes = NULL;
-	}
-	
-	if(mClosureInformation)
-	{
-		free(mClosureInformation);
-		mClosureInformation = NULL;
-	}
-	
-	if(mResultBuffer)
-	{
-		free(mResultBuffer);
-		mResultBuffer = NULL;
-	}
-	
-	if(mArgumentValues)
-	{
-		free(mArgumentValues);
-		mArgumentValues = NULL;
-	}
-	
-	[mFunctionSignature release];
-	mFunctionSignature = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 - (id)initWithFunction:(void *)function signature:(NSMethodSignature *)signature
@@ -77,8 +42,6 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 								  mArgumentTypes);
 		if(status != FFI_OK)
 		{
-			[self release];
-			
 			[NSException raise:NSInternalInconsistencyException
 						format:@"Could not prep closure information."];
 			

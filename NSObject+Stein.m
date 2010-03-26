@@ -246,21 +246,21 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 #pragma mark -
 #pragma mark Extension
 
-+ (Class)extend:(STClosure *)extensions
++ (Class)extend:(STClosure *)extensions inEvaluator:(STEvaluator *)evaluator
 {
-	STExtendClass(self, extensions.implementation);
+	STExtendClass(self, extensions.implementation, evaluator);
 	return self;
 }
 
 #pragma mark -
 #pragma mark High-Level Forwarding
 
-+ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
++ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
 {
 	return NO;
 }
 
-+ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
++ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
@@ -268,12 +268,12 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 #pragma mark -
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
 {
 	return NO;
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
@@ -321,13 +321,13 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 - (STRange *)rangeWithLength:(NSUInteger)length
 {
-	return [[[STRange alloc] initWithLocation:[self unsignedIntegerValue] length:length] autorelease];
+	return [[STRange alloc] initWithLocation:[self unsignedIntegerValue] length:length];
 }
 
 #pragma mark -
 #pragma mark Infix Notation Support
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
 {
 	NSString *selectorString = NSStringFromSelector(selector);
 	for (NSUInteger index = 0, length = [selectorString length]; index < length; index++)
@@ -386,7 +386,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	return 0;
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
 	const char *operators = sel_getName(selector);
 	
@@ -436,10 +436,9 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 				break;
 		}
 		
-		[pool replaceObjectAtIndex:operation.originalPosition 
-						withObject:[NSNumber numberWithDouble:result]];
-		[pool replaceObjectAtIndex:operation.originalPosition + 1 
-						withObject:[NSNumber numberWithDouble:result]];
+		NSNumber *resultNumber = [NSNumber numberWithDouble:result];
+		[pool replaceObjectAtIndex:operation.originalPosition withObject:resultNumber];
+		[pool replaceObjectAtIndex:operation.originalPosition + 1 withObject:resultNumber];
 	}
 	
 	return [pool objectAtIndex:operations[numberOfOperations - 1].originalPosition];
@@ -583,16 +582,16 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 #pragma mark -
 #pragma mark Mass Messaging Support
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
 {
 	return [[self objectAtIndex:0] respondsToSelector:selector];
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
 	NSMutableArray *results = [NSMutableArray arrayWithCapacity:[self count]];
 	for (id object in self)
-		[results addObject:STObjectBridgeSend(object, selector, [arguments copy])];
+		[results addObject:STObjectBridgeSend(object, selector, [arguments copy], evaluator)];
 	
 	return results;
 }
@@ -697,16 +696,16 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 #pragma mark -
 #pragma mark Mass Messaging Support
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
 {
 	return [[self anyObject] respondsToSelector:selector];
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
 	NSMutableArray *results = [NSMutableSet setWithCapacity:[self count]];
 	for (id object in self)
-		[results addObject:STObjectBridgeSend(object, selector, [arguments copy])];
+		[results addObject:STObjectBridgeSend(object, selector, [arguments copy], evaluator)];
 	
 	return results;
 }

@@ -11,17 +11,6 @@
 
 @implementation STList
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	[mContents release];
-	mContents = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Creation
 
 - (id)init
@@ -68,7 +57,6 @@
 	
 	if((self = [self init]))
 	{
-		mEvaluator = list->mEvaluator;
 		mIsQuoted = list->mIsQuoted;
 		mIsDoConstruct = list->mIsDoConstruct;
 		mCreationLocation = list ->mCreationLocation;
@@ -158,10 +146,11 @@
 - (STList *)sublistWithRange:(NSRange)range
 {
 	STList *sublist = [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
-	sublist.evaluator = mEvaluator;
+	
 	sublist.creationLocation = mCreationLocation;
 	sublist.isDoConstruct = mIsDoConstruct;
 	sublist.isQuoted = mIsQuoted;
+	
 	return sublist;
 }
 
@@ -274,12 +263,6 @@
 
 @synthesize isQuoted = mIsQuoted;
 @synthesize isDoConstruct = mIsDoConstruct;
-- (void)setIsDoConstruct:(BOOL)isDoConstruct
-{
-	mIsDoConstruct = isDoConstruct;
-}
-
-@synthesize evaluator = mEvaluator;
 @synthesize creationLocation = mCreationLocation;
 
 #pragma mark -

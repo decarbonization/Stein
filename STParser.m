@@ -366,7 +366,6 @@ static STSymbol *GetIdentifierAt(STParserState *parserState)
 static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation, BOOL isUnbordered)
 {
 	STList *expression = [STList list];
-	expression.evaluator = parserState->evaluator;
 	expression.creationLocation = parserState->creationLocation;
 	
 	if(usingDoNotation)
@@ -424,7 +423,6 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 			STList *oldExpression = expression;
 			
 			expression = [STList list];
-			expression.evaluator = parserState->evaluator;
 			expression.creationLocation = parserState->creationLocation;
 			
 			[expression addObject:oldExpression];

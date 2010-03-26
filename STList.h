@@ -20,7 +20,6 @@
 	/* owner */	NSMutableArray *mContents;
 	/* n/a */	BOOL mIsQuoted;
 	/* n/a */	BOOL mIsDoConstruct;
-	/* weak */	STEvaluator *mEvaluator;
 	/* n/a */	STCreationLocation mCreationLocation;
 }
 #pragma mark Creation
@@ -183,12 +182,6 @@
 @property BOOL isDoConstruct;
 
 #pragma mark -
-
-/*!
- @property
- @abstract	The evaluator the list is bound to.
- */
-@property (assign) STEvaluator *evaluator;
 
 /*!
  @property

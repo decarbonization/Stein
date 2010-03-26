@@ -25,7 +25,7 @@
 
 /*!
  @method
- @abstract	Create a new autoreleased pointer of a specified type.
+ @abstract	Create a new pointer of a specified type.
  @param		type	The type of the pointer to create. May not be NULL.
  @result	A new pointer object ready for use.
  */
@@ -33,7 +33,7 @@
 
 /*!
  @method
- @abstract	Create a new autoreleased pointer whose contents will represent an array of values.
+ @abstract	Create a new pointer whose contents will represent an array of values.
  @param		length	The number of values that will be placed in the pointers contents. Must be greater than 0.
  @param		type	The type of the values that will be stored in the pointer.
  @result	A new pointer object ready for use as an array.

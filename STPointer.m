@@ -13,26 +13,6 @@
 
 @implementation STPointer
 
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	if(mBytes)
-	{
-		free(mBytes);
-		mBytes = NULL;
-	}
-	
-	if(mType)
-	{
-		free(mType);
-		mType = NULL;
-	}
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 /*!

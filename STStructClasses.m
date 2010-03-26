@@ -136,7 +136,7 @@ static BOOL STRangeCanWrapValueWithSignature(const STPrimitiveValueWrapperDescri
 
 static id < STPrimitiveValueWrapper > STRangeWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
-	return [[[STRange alloc] initWithRange:*(NSRange *)data] autorelease];
+	return [[STRange alloc] initWithRange:*(NSRange *)data];
 }
 
 static size_t STRangeSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
@@ -265,7 +265,7 @@ static BOOL STPointCanWrapValueWithSignature(const STPrimitiveValueWrapperDescri
 
 static id < STPrimitiveValueWrapper > STPointWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
-	return [[[STPoint alloc] initWithPoint:*(CGPoint *)data] autorelease];
+	return [[STPoint alloc] initWithPoint:*(CGPoint *)data];
 }
 
 static size_t STPointSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
@@ -394,7 +394,7 @@ static BOOL STSizeCanWrapValueWithSignature(const STPrimitiveValueWrapperDescrip
 
 static id < STPrimitiveValueWrapper > STSizeWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
-	return [[[STSize alloc] initWithSize:*(NSSize *)data] autorelease];
+	return [[STSize alloc] initWithSize:*(NSSize *)data];
 }
 
 static size_t STSizeSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
@@ -425,20 +425,6 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 }
 
 #pragma mark -
-#pragma mark Destruction
-
-- (void)dealloc
-{
-	[mOrigin release];
-	mOrigin = nil;
-	
-	[mSize release];
-	mSize = nil;
-	
-	[super dealloc];
-}
-
-#pragma mark -
 #pragma mark Initialization
 
 - (id)initWithRect:(CGRect)rect
@@ -463,8 +449,8 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 
 - (id)initWithX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
 {
-	STPoint *origin = [[[STPoint alloc] initWithX:x y:y] autorelease];
-	STSize *size = [[[STSize alloc] initWithWidth:width height:height] autorelease];
+	STPoint *origin = [[STPoint alloc] initWithX:x y:y];
+	STSize *size = [[STSize alloc] initWithWidth:width height:height];
 	return [self initWithOrigin:origin size:size];
 }
 
@@ -511,7 +497,7 @@ static BOOL STRectCanWrapValueWithSignature(const STPrimitiveValueWrapperDescrip
 
 static id < STPrimitiveValueWrapper > STRectWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
-	return [[[STRect alloc] initWithRect:*(CGRect *)data] autorelease];
+	return [[STRect alloc] initWithRect:*(CGRect *)data];
 }
 
 static size_t STRectSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
