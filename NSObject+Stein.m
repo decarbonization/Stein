@@ -262,8 +262,8 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 + (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
+	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
+	return STNull;
 }
 
 #pragma mark -
@@ -275,8 +275,8 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 - (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
 {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
+	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
+	return STNull;
 }
 
 @end
@@ -284,30 +284,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 #pragma mark -
 
 @implementation NSNumber (Stein)
-
-+ (void)load
-{
-	static BOOL hasAddedPrettyMethods = NO;
-	if(!hasAddedPrettyMethods)
-	{
-		//Add support for the @selector(to) method.
-#if __LP64__
-		class_addMethod(self, 
-						@selector(to), 
-						[self instanceMethodForSelector:@selector(rangeWithLength:)], 
-						"@@:L");
-#else
-		class_addMethod(self, 
-						@selector(to), 
-						[self instanceMethodForSelector:@selector(rangeWithLength:)], 
-						"@@:I");
-#endif
-		
-		hasAddedPrettyMethods = YES;
-	}
-}
-
-#pragma mark -
 
 - (BOOL)isTrue
 {
@@ -319,7 +295,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return [self description];
 }
 
-- (STRange *)rangeWithLength:(NSUInteger)length
+- (STRange *)to:(NSUInteger)length
 {
 	return [[STRange alloc] initWithLocation:[self unsignedIntegerValue] length:length];
 }
@@ -327,50 +303,105 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 #pragma mark -
 #pragma mark Infix Notation Support
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
+static BOOL IsCharacterSequenceOperator(unichar left, unichar right)
+{
+	return (left == '+' || left == '-' || 
+			left == '*' || left == '/' || 
+			left == '%' || left == '^' || 
+			left == '<' || (left == '<' && right == '=') || 
+			left == '>' || (left == '>' && right == '=') || 
+			left == '|' || left == '&');
+}
+
+static BOOL IsSelectorComposedOfOperators(SEL selector)
 {
 	NSString *selectorString = NSStringFromSelector(selector);
 	for (NSUInteger index = 0, length = [selectorString length]; index < length; index++)
 	{
-		unichar character = [selectorString characterAtIndex:index];
-		if(character != '+' && 
-		   character != '-' && 
-		   character != '*' && 
-		   character != '/' && 
-		   character != '^')
-		{
+		unichar leftCharacter = [selectorString characterAtIndex:index];
+		unichar rightCharacter = (index + 1 < length)? [selectorString characterAtIndex:index + 1] : 0;
+		if(!IsCharacterSequenceOperator(leftCharacter, rightCharacter))
 			return NO;
-		}
+		
+		if(rightCharacter != 0)
+			index++;
 	}
 	
 	return YES;
 }
 
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
+{
+	return IsSelectorComposedOfOperators(selector);
+}
+
+#pragma mark -
+
 typedef struct Operation {
 	int originalPosition;
-	char operatorName;
+	char operatorName[3];
 } Operation;
 
-ST_INLINE int PrecedenceOfOperatorNamed(char operatorName)
+static BOOL streq(const char *left, const char *right)
 {
-	switch (operatorName)
+	if(strlen(left) != strlen(right))
+		return NO;
+	
+	for (int index = 0, length = strlen(left); index < length; index++)
 	{
-		case '+':
-		case '-':
-			return 1;
-			
-		case '*':
-		case '/':
-			return 2;
-			
-		case '^':
-			return 3;
-			
-		default:
-			break;
+		if(left[index] != right[index])
+			return NO;
+	}
+	
+	return YES;
+}
+
+ST_INLINE int PrecedenceOfOperatorNamed(char operatorName[3])
+{
+	if(streq(operatorName, "|"))
+	{
+		return 1;
+	}
+	if(streq(operatorName, "&"))
+	{
+		return 2;
+	}
+	else if(streq(operatorName, "<") || streq(operatorName, "<=") || 
+			streq(operatorName, ">") || streq(operatorName, ">="))
+	{
+		return 3;
+	}
+	if(streq(operatorName, "+") || streq(operatorName, "-"))
+	{
+		return 4;
+	}
+	else if(streq(operatorName, "*") || streq(operatorName, "/") || streq(operatorName, "%"))
+	{
+		return 5;
+	}
+	else if(streq(operatorName, "^"))
+	{
+		return 6;
 	}
 	
 	return 0;
+}
+
+static int NumberOfOperators(const char *operatorString)
+{
+	int numberOfOperators = 0;
+	for (int index = 0, length = strlen(operatorString); index < length; index++)
+	{
+		char left = operatorString[index];
+		char right = (index + 1 < length)? operatorString[index + 1] : 0;
+		
+		if((left == '<' || left == '>') && right == '=')
+			index++;
+		
+		numberOfOperators++;
+	}
+	
+	return numberOfOperators;
 }
 
 static int OperationPrecedenceComparator(Operation *left, Operation *right)
@@ -390,14 +421,27 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 {
 	const char *operators = sel_getName(selector);
 	
-	int numberOfOperations = strlen(operators);
+	int numberOfOperations = NumberOfOperators(operators);
 	Operation operations[numberOfOperations];
-	for (int operationOffset = 0; operationOffset < numberOfOperations; operationOffset++)
+	for (int operationOffset = 0, operatorsLength = strlen(operators); operationOffset < operatorsLength; operationOffset++)
 	{
-		operations[operationOffset] = (Operation){
-			.originalPosition = operationOffset,
-			.operatorName = operators[operationOffset]
-		};
+		operations[operationOffset].originalPosition = operationOffset;
+		
+		char left = operators[operationOffset];
+		char right = (operationOffset + 1 < operatorsLength)? operators[operationOffset + 1] : 0;
+		if((left == '<' || left == '>') && right == '=')
+		{
+			operations[operationOffset].operatorName[0] = left;
+			operations[operationOffset].operatorName[1] = right;
+			operations[operationOffset].operatorName[2] = '\0';
+			
+			operationOffset++;
+		}
+		else
+		{
+			operations[operationOffset].operatorName[0] = left;
+			operations[operationOffset].operatorName[1] = '\0';
+		}
 	}
 	
 	qsort(operations, numberOfOperations, sizeof(Operation), (void *)&OperationPrecedenceComparator);
@@ -410,30 +454,59 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		double leftOperand = [[pool objectAtIndex:operation.originalPosition] doubleValue];
 		double rightOperand = [[pool objectAtIndex:operation.originalPosition + 1] doubleValue];
 		double result = 0;
-		switch (operation.operatorName)
+		
+		if(streq(operation.operatorName, "+"))
 		{
-			case '+':
-				result = leftOperand + rightOperand;
-				break;
-				
-			case '-':
-				result = leftOperand - rightOperand;
-				break;
-				
-			case '*':
-				result = leftOperand * rightOperand;
-				break;
-				
-			case '/':
-				result = leftOperand / rightOperand;
-				break;
-				
-			case '^':
-				result = pow(leftOperand, rightOperand);
-				break;
-				
-			default:
-				break;
+			result = leftOperand + rightOperand;
+		}
+		else if(streq(operation.operatorName, "-"))
+		{
+			result = leftOperand - rightOperand;
+		}
+		else if(streq(operation.operatorName, "*"))
+		{
+			result = leftOperand * rightOperand;
+		}
+		else if(streq(operation.operatorName, "/"))
+		{
+			result = leftOperand / rightOperand;
+		}
+		else if(streq(operation.operatorName, "%"))
+		{
+			result = (long)(leftOperand) % (long)(rightOperand);
+		}
+		else if(streq(operation.operatorName, "^"))
+		{
+			result = pow(leftOperand, rightOperand);
+		}
+		else if(streq(operation.operatorName, "&"))
+		{
+			result = leftOperand && rightOperand? rightOperand : 0.0;
+		}
+		else if(streq(operation.operatorName, "|"))
+		{
+			if(leftOperand)
+				result = leftOperand;
+			else if(rightOperand)
+				result = rightOperand;
+			else
+				result = 0.0;
+		}
+		else if(streq(operation.operatorName, "<"))
+		{
+			result = leftOperand < rightOperand? leftOperand : 0.0;
+		}
+		else if(streq(operation.operatorName, "<="))
+		{
+			result = leftOperand <= rightOperand? leftOperand : 0.0;
+		}
+		else if(streq(operation.operatorName, ">"))
+		{
+			result = leftOperand > rightOperand? leftOperand : 0.0;
+		}
+		else if(streq(operation.operatorName, ">="))
+		{
+			result = leftOperand >= rightOperand? leftOperand : 0.0;
 		}
 		
 		NSNumber *resultNumber = [NSNumber numberWithDouble:result];
@@ -580,11 +653,30 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 }
 
 #pragma mark -
-#pragma mark Mass Messaging Support
+#pragma mark Array Programming Support
+
+- (NSArray *)where:(NSArray *)booleans
+{
+	NSParameterAssert(booleans);
+	NSAssert(([self count] <= [booleans count]), 
+			 @"Wrong number of values given to where, expected at least %ld got %ld", [self count], [booleans count]);
+	
+	NSMutableArray *result = [NSMutableArray array];
+	[booleans enumerateObjectsUsingBlock:^(id boolean, NSUInteger index, BOOL *stop) {
+		if([boolean isTrue])
+			[result addObject:[self objectAtIndex:index]];
+	}];
+	
+	return result;
+}
+
+#pragma mark -
 
 - (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
 {
-	return [[self objectAtIndex:0] respondsToSelector:selector];
+	id < NSObject, STMethodMissing > firstObject = [self objectAtIndex:0];
+	return ([firstObject respondsToSelector:selector] || 
+			[firstObject canHandleMissingMethodWithSelector:selector inEvaluator:evaluator]);
 }
 
 - (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
@@ -691,23 +783,6 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	[description appendString:@"}"];
 	
 	return description;
-}
-
-#pragma mark -
-#pragma mark Mass Messaging Support
-
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
-{
-	return [[self anyObject] respondsToSelector:selector];
-}
-
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
-{
-	NSMutableArray *results = [NSMutableSet setWithCapacity:[self count]];
-	for (id object in self)
-		[results addObject:STObjectBridgeSend(object, selector, [arguments copy], evaluator)];
-	
-	return results;
 }
 
 @end

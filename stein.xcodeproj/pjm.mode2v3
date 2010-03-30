@@ -197,90 +197,7 @@
 	<key>Notifications</key>
 	<array/>
 	<key>OpenEditors</key>
-	<array>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
-				<string>1E755487115D08B2007AF0A6</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>STObjectBridge.m</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>1E755488115D08B2007AF0A6</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>STObjectBridge.m</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>1E7554C2115D09F4007AF0A6</string>
-						<key>history</key>
-						<array>
-							<string>1E7554BC115D09D7007AF0A6</string>
-							<string>1E7554BD115D09D7007AF0A6</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {889, 574}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>61 216 889 615 0 0 1440 878 </string>
-			</dict>
-		</dict>
-		<dict>
-			<key>Content</key>
-			<dict>
-				<key>PBXProjectModuleGUID</key>
-				<string>1E75548C115D08B2007AF0A6</string>
-				<key>PBXProjectModuleLabel</key>
-				<string>STList.m</string>
-				<key>PBXSplitModuleInNavigatorKey</key>
-				<dict>
-					<key>Split0</key>
-					<dict>
-						<key>PBXProjectModuleGUID</key>
-						<string>1E75548D115D08B2007AF0A6</string>
-						<key>PBXProjectModuleLabel</key>
-						<string>STList.m</string>
-						<key>_historyCapacity</key>
-						<integer>0</integer>
-						<key>bookmark</key>
-						<string>1E7554C3115D09F4007AF0A6</string>
-						<key>history</key>
-						<array>
-							<string>1E75548E115D08B2007AF0A6</string>
-							<string>1E75548F115D08B2007AF0A6</string>
-						</array>
-					</dict>
-					<key>SplitCount</key>
-					<string>1</string>
-				</dict>
-				<key>StatusBarVisibility</key>
-				<true/>
-			</dict>
-			<key>Geometry</key>
-			<dict>
-				<key>Frame</key>
-				<string>{{0, 20}, {889, 574}}</string>
-				<key>PBXModuleWindowStatusBarHidden2</key>
-				<false/>
-				<key>RubberWindowFrame</key>
-				<string>15 258 889 615 0 0 1440 878 </string>
-			</dict>
-		</dict>
-	</array>
+	<array/>
 	<key>PerspectiveWidths</key>
 	<array>
 		<integer>-1</integer>
@@ -348,26 +265,22 @@
 									<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 									<array>
 										<string>08FB7794FE84155DC02AAC07</string>
-										<string>C8E164AD10D57C6B003F45A9</string>
-										<string>C8E164B510D57CA8003F45A9</string>
 										<string>C8E164B410D57C9D003F45A9</string>
-										<string>C8E164BE10D57CD3003F45A9</string>
 										<string>08FB7795FE84155DC02AAC07</string>
-										<string>C8E1613C10D55AED003F45A9</string>
 										<string>C8E1613B10D55AE1003F45A9</string>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
-											<integer>17</integer>
-											<integer>12</integer>
-											<integer>9</integer>
+											<integer>10</integer>
+											<integer>8</integer>
 											<integer>4</integer>
+											<integer>2</integer>
 											<integer>0</integer>
 										</array>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-									<string>{{0, 58}, {429, 333}}</string>
+									<string>{{0, 0}, {429, 333}}</string>
 								</dict>
 								<key>PBXTopSmartGroupGIDs</key>
 								<array/>
@@ -530,8 +443,8 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>1E755485115D08B2007AF0A6</string>
-				<string>1E755486115D08B2007AF0A6</string>
+				<string>1E149AE6116244500095B03E</string>
+				<string>1E149AE7116244500095B03E</string>
 				<string>1C9437FD063B20B00039CFAC</string>
 				<string>1C9437FE063B20B00039CFAC</string>
 				<string>1C9437FF063B20B00039CFAC</string>
@@ -568,15 +481,13 @@
 	<integer>0</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1E7554C4115D09F4007AF0A6</string>
-		<string>1E755499115D08B2007AF0A6</string>
-		<string>1E75549A115D08B2007AF0A6</string>
+		<string>1E149AE8116244500095B03E</string>
+		<string>1E149AE9116244500095B03E</string>
 		<string>1C530D54069F1CE1000CFCEE</string>
+		<string>1C530D5B069F1CE1000CFCEE</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>1C530D52069F1CE1000CFCEE</string>
-		<string>1E75548C115D08B2007AF0A6</string>
-		<string>1C530D5B069F1CE1000CFCEE</string>
-		<string>1E755487115D08B2007AF0A6</string>
+		<string>1E149AA8116242D70095B03E</string>
 		<string>/Users/pjm/Documents/Projects/Stein/Master/stein.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -733,14 +644,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>STObjectBridge.m</string>
+								<string></string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -796,7 +705,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D52069F1CE1000CFCEE</string>
-				<string>1E755433115D0602007AF0A6</string>
+				<string>1E149AD0116243E40095B03E</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -918,13 +827,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D54069F1CE1000CFCEE</string>
-				<string>1E755491115D08B2007AF0A6</string>
+				<string>1E149ADF116244500095B03E</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>1E755492115D08B2007AF0A6</string>
-				<string>1E755493115D08B2007AF0A6</string>
-				<string>1E755494115D08B2007AF0A6</string>
-				<string>1E755495115D08B2007AF0A6</string>
-				<string>1E755496115D08B2007AF0A6</string>
+				<string>1E149AE0116244500095B03E</string>
+				<string>1E149AE1116244500095B03E</string>
+				<string>1E149AE2116244500095B03E</string>
+				<string>1E149AE3116244500095B03E</string>
+				<string>1E149AE4116244500095B03E</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -956,7 +865,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>stein_cli.m</string>
+										<string></string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -1014,8 +923,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>1E755437115D0602007AF0A6</string>
-				<string>1E755438115D0602007AF0A6</string>
+				<string>1E149AD2116243E40095B03E</string>
+				<string>1E149AD3116243E40095B03E</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -1057,7 +966,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {650, 209}}</string>
 								<key>RubberWindowFrame</key>
-								<string>772 56 650 250 0 0 1440 878 </string>
+								<string>772 47 650 250 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXDebugCLIModule</string>
@@ -1080,17 +989,17 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D5B069F1CE1000CFCEE</string>
-				<string>1E755497115D08B2007AF0A6</string>
+				<string>1E149AE5116244500095B03E</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.consoleV3</string>
 			<key>WindowString</key>
-			<string>772 56 650 250 0 0 1440 878 </string>
+			<string>772 47 650 250 0 0 1440 878 </string>
 			<key>WindowToolGUID</key>
 			<string>1C530D5B069F1CE1000CFCEE</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

@@ -57,7 +57,7 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *
 		}
 		else
 		{
-			if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) && 
+			if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
 			   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
 			{
 				if([target canHandleMissingMethodWithSelector:selector inEvaluator:evaluator])
@@ -105,7 +105,7 @@ id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *a
 	NSCParameterAssert(selector);
 	NSCParameterAssert(arguments);
 	
-	if(!IsSelectorExemptFromNullMessaging(selector) && (!target || (target == STNull)))
+	if(!IsSelectorExemptFromNullMessaging(selector) && STIsNull(target))
 		return STNull;
 	
 	NSCAssert2([target isKindOfClass:superclass], 
@@ -133,8 +133,8 @@ id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *a
 		}
 		else
 		{
-			if(class_respondsToSelector(superclass, @selector(canHandleMissingMethodWithSelector:inEvaluator:)) && 
-			   class_respondsToSelector(superclass, @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
+			if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
+			   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
 			{
 				struct objc_super superTarget = { target, superclass };
 				if(((BOOL(*)(struct objc_super *, SEL, SEL, id))objc_msgSendSuper)(&superTarget, @selector(canHandleMissingMethodWithSelector:inEvaluator:), selector, evaluator))

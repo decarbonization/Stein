@@ -39,7 +39,7 @@ ST_EXTERN NSBundle *SteinBundle();
  @defined
  @abstract	The result of this macro is the value used to represent 'null' in Stein.
  */
-#define STNull	((NSNull *)kCFNull) /* CFNull is toll-free bridged with NSNull. This saves us a message. */
+#define STNull	((id)kCFBooleanFalse) /* CFNull is toll-free bridged with NSNull. This saves us a message. */
 
 ST_INLINE BOOL STIsNull(id object)
 {

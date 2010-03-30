@@ -13,12 +13,50 @@
 @class STClosure, STRange;
 
 /*!
+ @protocol
+ @abstract		The STMethodMissing protocol defines methods used by the high level 
+				forwarding mechanism implemented in Stein's object bridge.
+ @discussion	The Stein object bridge's forwarding mechanism is considerably higher level than
+				the forwarding mechanism provided by the Objective-C runtime. All values are passed
+				around as objects, type information is unnecessary. This allows a considerably cleaner
+				method of responding to unknown messages in an abstract manner.
+ 
+				This forwarding mechanism is used to implement infix arithmetic on NSNumber.
+ */
+@protocol STMethodMissing
+
+/*!
+ @method
+ @abstract		Returns whether or not the receiver can handle a missing method with a specified selector.
+ @param			selector	The method which contains no known implementation in the receiver.
+ @param			evaluator	The evaluator in which the missing method has been called from.
+ @result		YES if the receiver can handle the selector; NO otherwise.
+ @discussion	This method is invoked by the Stein runtime when an object doesn't respond to a specified selector.
+ */
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator;
+
+/*!
+ @method
+ @abstract		Perform an action for a missing method.
+ @param			selector	The method to perform an action for.
+ @param			arguments	The arguments passed to the method.
+ @param			evaluator	The evaluator in which the missing method has been called from.
+ @result		The result of the action performed.
+ @discussion	This method is only called if -[STMethodMissing canHandleMissingMethodWithSelector:inEvaluator:] returns YES.
+				
+				NSObject's default implementation of this method logs an error message and returns STNull.
+ */
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator;
+
+@end
+
+/*!
  @category
  @abstract	This category adds several collections of methods to NSObject that are used extensively by Stein.
 			These methods include decision making control flow constructs (ifTrue/match), class extension,
 			and printing.
  */
-@interface NSObject (Stein)
+@interface NSObject (Stein) < STMethodMissing >
 
 #pragma mark Truthiness
 
@@ -131,35 +169,6 @@
  */
 + (Class)extend:(STClosure *)extensions inEvaluator:(STEvaluator *)evaluator;
 
-#pragma mark -
-#pragma mark High-Level Forwarding
-
-+ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator;
-+ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator;
-
-/*!
- @method
- @abstract		Returns whether the receiver will handle a missing method with a specified selector.
- @param			selector	The method which contains no known implementation in the receiver.
- @param			evaluator	The evaluator in which the missing method has been called from.
- @result		YES if the receiver can handle the selector; NO otherwise.
- @discussion	This method is invoked by the Stein runtime when an object doesn't respond to a specified selector.
- */
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator;
-
-/*!
- @method
- @abstract		Performs an action for a missing selector with a specified array of arguments.
- @param			selector	The method to perform an action for.
- @param			arguments	The arguments passed to the method.
- @param			evaluator	The evaluator in which the missing method has been called from.
- @result		The result of the action performed.
- @discussion	This method is invoked by the Stein runtime when -[NSObject canHandleMissingMethodWithSelector:] returns YES.
-				
-				The default implementation of this method simply calls -[NSObject doesNotRecognizeSelector:]
- */
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator;
-
 @end
 
 #pragma mark -
@@ -168,12 +177,16 @@
  @method
  @abstract	This category adds truthiness and pretty printing to NSNumber.
  */
-@interface NSNumber (Stein)
+@interface NSNumber (Stein) < STMethodMissing >
 
 - (BOOL)isTrue;
 - (NSString *)prettyDescription;
 
-- (STRange *)rangeWithLength:(NSUInteger)length;
+/*!
+ @method
+ @abstract	Construct a range where the receiver is the location and a specified integer is the length.
+ */
+- (STRange *)to:(NSUInteger)length;
 
 @end
 
@@ -211,9 +224,24 @@
 
 /*!
  @category
- @abstract	This category makes NSArray conform to the STEnumerable protocol.
+ @abstract		This category makes NSArray conform to the STEnumerable protocol.
+ @discussion	Stein extends NSArray so that any messages that it does not understand itself will
+				be sent to all of its objects and the results will be collected into a new array.
  */
 @interface NSArray (Stein) < STEnumerable >
+
+#pragma mark Array Programming Support
+
+/*!
+ @method
+ @abstract		Derive a new array by applying an array of boolean-like objects to the receivers contents.
+ @param			booleans	An array of boolean-like objects the same length as the receiver. May not be nil.
+ @result		A new array.
+ @discussion	The `booleans` array should have a boolean-like object that corresponds to each object in
+				the receiver. When a boolean-like object is found to be true, the corresponding object in
+				the receiver will be placed into the new array.
+ */
+- (NSArray *)where:(NSArray *)booleans;
 
 @end
 

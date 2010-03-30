@@ -20,7 +20,14 @@
  @param			arguments	The arguments to send along with the message. May not be nil.
  @discussion	If target is nil or STNull then this method returns STNull immediately.
 				
-				This function invokes the missing method handling system defined in NSObject+Stein.
+				The object bridge messaging mechanism adds two additional routes to find a handler for
+				selectors the `target` object does not recognize:
+ 
+				-	First it will append «inEvaluator:» to the end of `selector`, this allows methods that require the evaluator as a parameter to be invoked more cleanly from within Stein.
+				-	If this fails, then it will attempt to use the forwarding mechanism defined by STMethodMissing.
+					See the documentation on STMethodMissing for more info.
+				-	If the method-missing forwarding mechanism fails to handle the message, then
+					@selector(doesNotRecognizeSelector:) is invoked on target.
  */
 ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *evaluator);
 
@@ -33,7 +40,14 @@ ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STE
  @param			arguments	The arguments to send along with the message. May not be nil.
  @discussion	If the target is nil or STNull then this method returns STNull immediately.
 				
-				This function _does not_ invoke the missing method handling system defined in NSObject+Stein.
+				The object bridge messaging mechanism adds two additional routes to find a handler for
+				selectors the `target` object does not recognize:
+ 
+				-	First it will append «inEvaluator:» to the end of `selector`, this allows methods that require the evaluator as a parameter to be invoked more cleanly from within Stein.
+				-	If this fails, then it will attempt to use the forwarding mechanism defined by STMethodMissing.
+					See the documentation on STMethodMissing for more info.
+				-	If the method-missing forwarding mechanism fails to handle the message, then
+					@selector(doesNotRecognizeSelector:) is invoked on target.
  */
 ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STEvaluator *evaluator);
 
