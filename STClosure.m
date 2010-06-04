@@ -21,7 +21,7 @@
 	return nil;
 }
 
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(STScope *)superscope
 {
 	NSParameterAssert(prototype);
 	NSParameterAssert(implementation);
@@ -47,9 +47,9 @@
 	return NO;
 }
 
-- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)superscope
+- (id)applyWithArguments:(STList *)arguments inScope:(STScope *)superscope
 {
-	NSMutableDictionary *scope = [mEvaluator scopeWithEnclosingScope:superscope];
+	STScope *scope = [mEvaluator scopeWithEnclosingScope:superscope];
 	NSUInteger index = 0;
 	NSUInteger countOfArguments = [arguments count];
 	for (id name in mPrototype)
@@ -105,27 +105,6 @@
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"<%@:%p %@ (%@)>", [self className], self, mName ?: @"[Anonymous]", [mPrototype.allObjects componentsJoinedByString:@" "]];
-}
-
-#pragma mark -
-#pragma mark Looping
-
-- (id)whileTrue:(STClosure *)closure
-{
-	id result = nil;
-	while ([STFunctionApply(self, nil) isTrue])
-		result = STFunctionApply(closure, nil);
-	
-	return result;
-}
-
-- (id)whileFalse:(STClosure *)closure
-{
-	id result = nil;
-	while (![STFunctionApply(self, nil) isTrue])
-		result = STFunctionApply(closure, nil);
-	
-	return result;
 }
 
 #pragma mark -

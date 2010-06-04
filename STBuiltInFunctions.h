@@ -11,6 +11,8 @@
 
 #pragma once
 
+@class STScope;
+
 /*!
  @defined
  @abstract	Export a built in function for use with STEvaluator. For use with STBuiltInFunctionDefine.
@@ -48,7 +50,7 @@
  @param		arguments	The arguments that were given to the function when it was applied.
  @param		scope		The scope in which the function was called in.
  */
-typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope);
+typedef id(^STBuiltInFunctionImplementation)(STEvaluator *evaluator, STList *arguments, STScope *scope);
 
 /*!
  @class

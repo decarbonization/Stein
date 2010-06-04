@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Stein/STEvaluator.h>
 
-@class STList;
+@class STList, STScope;
 
 /*!
  @protocol
@@ -36,13 +36,13 @@
  @param		scope		The scope in which the receiver is being applied.
  @result	The result of applying the receiver as a function.
  */
-- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope;
+- (id)applyWithArguments:(STList *)arguments inScope:(STScope *)scope;
 
 /*!
  @method
  @abstract	The enclosing scope the receiver was created in. This is used to implement closures.
  */
-- (NSMutableDictionary *)superscope;
+- (STScope *)superscope;
 
 @end
 
@@ -58,7 +58,7 @@
  */
 ST_INLINE id STFunctionApplyWithEvaluator(id < STFunction > function, STList *arguments, STEvaluator *evaluator)
 {
-	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:[function superscope]];
+	STScope *scope = [evaluator scopeWithEnclosingScope:[function superscope]];
 	return [function applyWithArguments:arguments inScope:scope];
 }
 

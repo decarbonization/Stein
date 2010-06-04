@@ -28,7 +28,7 @@ ST_EXTERN NSString *const kSTEvaluatorSuperclassKey;
 ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
 
 
-@class STSymbol;
+@class STSymbol, STScope;
 
 /*!
  @class
@@ -36,7 +36,7 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  */
 @interface STEvaluator : NSObject
 {
-	NSMutableDictionary *mRootScope;
+	STScope *mRootScope;
 	NSMutableArray *mSearchPaths;
 }
 
@@ -48,7 +48,7 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  @param		enclosingScope	The scope that encloses the sope about to be created. If nil the receiver's root scope will be used.
  @result	A new dictionary ready for use with STEvaluator.
  */
-- (NSMutableDictionary *)scopeWithEnclosingScope:(NSMutableDictionary *)enclosingScope;
+- (STScope *)scopeWithEnclosingScope:(STScope *)enclosingScope;
 
 #pragma mark -
 
@@ -56,13 +56,13 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  @method
  @abstract	Set the value for a variable with a specified name in a specified scope.
  */
-- (void)setObject:(id)object forVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope;
+- (void)setObject:(id)object forVariableNamed:(STSymbol *)name inScope:(STScope *)scope;
 
 /*!
  @method
  @abstract	Look up the value for a variable with a specified name in a specified scope.
  */
-- (id)objectForVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope;
+- (id)objectForVariableNamed:(STSymbol *)name inScope:(STScope *)scope;
 
 #pragma mark -
 
@@ -70,7 +70,7 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  @property
  @abstract	The root scope of the evaluator.
  */
-@property (readonly) NSMutableDictionary *rootScope;
+@property (readonly) STScope *rootScope;
 
 #pragma mark -
 #pragma mark Parsing & Evaluation
@@ -85,7 +85,7 @@ ST_EXTERN NSString *const kSTBundleIsPureSteinKey;
  @method
  @abstract	Evaluate an expression within a specified scope.
  */
-- (id)evaluateExpression:(id)expression inScope:(NSMutableDictionary *)scope;
+- (id)evaluateExpression:(id)expression inScope:(STScope *)scope;
 
 #pragma mark -
 

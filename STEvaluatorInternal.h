@@ -23,14 +23,14 @@
  @result		The result of evaluating the list.
  @discussion	This function is effectively a method on STEvaluator, it is simply in the form of a function because it is called very often and the overhead of messaging can be quite fatiguing.
  */
-ST_EXTERN id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope);
+ST_EXTERN id __STEvaluateList(STEvaluator *self, STList *list, STScope *scope);
 
 /*!
  @function
  @abstract		Evaluate an expression within a specified scope, returning the result.
  @discussion	This function is effectively a method on STEvaluator, it is simply in the form of a function because it is called very often and the overhead of messaging can be quite fatiguing.
  */
-ST_EXTERN id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary *scope);
+ST_EXTERN id __STEvaluateExpression(STEvaluator *self, id expression, STScope *scope);
 
 #pragma mark -
 
@@ -39,7 +39,7 @@ ST_EXTERN id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableD
  @abstract		Get the selector and arguments for a list describing a message.
  @discussion	All parameters are required.
  */
-ST_INLINE void MessageListGetSelectorAndArguments(STEvaluator *evaluator, NSMutableDictionary *scope, STList *list, SEL *outSelector, NSArray **outArguments)
+ST_INLINE void MessageListGetSelectorAndArguments(STEvaluator *evaluator, STScope *scope, STList *list, SEL *outSelector, NSArray **outArguments)
 {
 	NSCParameterAssert(evaluator);
 	NSCParameterAssert(scope);

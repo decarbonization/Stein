@@ -17,7 +17,7 @@
 
 @end
 
-STBuiltInFunctionDefine(Break, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Break, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	@throw [STBreakException breakException];
 	return STNull;
 });
@@ -33,7 +33,7 @@ STBuiltInFunctionDefine(Break, YES, ^id(STEvaluator *evaluator, STList *argument
 
 @end
 
-STBuiltInFunctionDefine(Continue, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Continue, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	@throw [STContinueException continueException];
 	return STNull;
 });

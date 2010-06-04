@@ -163,7 +163,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return [mFunction evaluator];
 }
 
-- (NSMutableDictionary *)superscope
+- (STScope *)superscope
 {
 	return [mFunction superscope];
 }
@@ -173,7 +173,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return [mFunction evaluatesOwnArguments];
 }
 
-- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope
+- (id)applyWithArguments:(STList *)arguments inScope:(STScope *)scope
 {
 	return [mFunction applyWithArguments:arguments inScope:scope];
 }

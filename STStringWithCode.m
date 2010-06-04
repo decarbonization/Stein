@@ -76,11 +76,11 @@
 #pragma mark -
 #pragma mark Application
 
-- (id)applyWithEvaluator:(STEvaluator *)evaluator scope:(NSMutableDictionary *)scope
+- (id)applyWithEvaluator:(STEvaluator *)evaluator scope:(STScope *)scope
 {
 	NSParameterAssert(evaluator);
 	
-	NSMutableDictionary *expressionEvaluationScope = [evaluator scopeWithEnclosingScope:scope];
+	STScope *expressionEvaluationScope = [evaluator scopeWithEnclosingScope:scope];
 	
 	NSMutableArray *evaluatedExpressionStrings = [NSMutableArray array];
 	for (id expression in mCodeExpressions)

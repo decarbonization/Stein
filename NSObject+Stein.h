@@ -58,65 +58,6 @@
  */
 @interface NSObject (Stein) < STMethodMissing >
 
-#pragma mark Truthiness
-
-/*!
- @method
- @abstract	Returns whether or not the receiver is true.
- */
-- (BOOL)isTrue;
-+ (BOOL)isTrue;
-
-#pragma mark -
-#pragma mark If Statements
-
-/*!
- @method
- @abstract	Ask the receiver if it's true, and then execute a block based on the receiver's truthiness.
- @param		thenClause	The block to call if the receiver is true.
- @param		elseClause	The block to call if the receiver is false.
- @result	The return value of the block that was called.
- */
-- (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause;
-+ (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause;
-
-#pragma mark -
-
-/*!
- @method
- @abstract	Ask the receiver if it's true, and then if it is execute a specified block.
- @param		thenClause	The block to call if the receiver is true.
- @result	The return value of the block that was called.
- */
-- (id)ifTrue:(id < STFunction >)thenClause;
-+ (id)ifTrue:(id < STFunction >)thenClause;
-
-#pragma mark -
-
-/*!
- @method
- @abstract	Ask the receiver if it's false, and then if it is execute a specified block.
- @param		thenClause	The block to call if the receiver is false.
- @result	The return value of the block that was called.
- */
-- (id)ifFalse:(id < STFunction >)thenClause;
-+ (id)ifFalse:(id < STFunction >)thenClause;
-
-#pragma mark -
-#pragma mark Matching
-
-/*!
- @method
- @abstract	Compare the receiver against a closure containing match clauses.
- @param		matchers	A closure whose contents are lists whose heads are a value that
-						the receiver can be matched against, and whose tails are expressions
-						that can be evaluated under normal conditions.
- @result	The result of matching the receiver.
- */
-- (id)match:(STClosure *)matchers;
-+ (id)match:(STClosure *)matchers;
-
-#pragma mark -
 #pragma mark Printing
 
 /*!
@@ -179,7 +120,6 @@
  */
 @interface NSNumber (Stein) < STMethodMissing >
 
-- (BOOL)isTrue;
 - (NSString *)prettyDescription;
 
 /*!
@@ -212,9 +152,6 @@
  @abstract	This category adds truthiness and pretty printing to NSNull.
  */
 @interface NSNull (Stein)
-
-+ (BOOL)isTrue;
-- (BOOL)isTrue;
 
 - (NSString *)prettyDescription;
 

@@ -62,7 +62,7 @@ ST_INLINE BOOL STIsNull(id object)
 
 ST_INLINE BOOL STIsTrue(id object)
 {
-	return [object isTrue];
+	return ((object != nil) && (object != STNull) && (object != STFalse));
 }
 
 #pragma mark -

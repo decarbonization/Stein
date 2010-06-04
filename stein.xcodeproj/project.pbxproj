@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E2C542411B970C200068D58 /* STScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E2C536711B9654E00068D58 /* STScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1E2C542511B970C400068D58 /* STScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E2C536811B9654E00068D58 /* STScope.m */; };
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* stein.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* stein.1 */; };
@@ -126,6 +128,8 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* stein_cli.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = stein_cli.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		1E2C536711B9654E00068D58 /* STScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STScope.h; sourceTree = "<group>"; };
+		1E2C536811B9654E00068D58 /* STScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STScope.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stein_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* stein */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stein; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859EA3029092ED04C91782 /* stein.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = stein.1; sourceTree = "<group>"; };
@@ -349,16 +353,18 @@
 		C8E1613D10D55AFE003F45A9 /* Evaluator */ = {
 			isa = PBXGroup;
 			children = (
+				C8DB7A8710D343C800EF3D63 /* STFunction.h */,
 				C8B3187A10E15E860086468F /* STEnumerable.h */,
 				C8B3187B10E15E860086468F /* STEnumerable.m */,
 				C8B3199310E16B740086468F /* STEvaluatorInternal.h */,
 				C8DB7A7210D341AD00EF3D63 /* STEvaluator.h */,
 				C8DB7A7310D341AD00EF3D63 /* STEvaluator.m */,
-				C8DB7A8710D343C800EF3D63 /* STFunction.h */,
 				C8E1614510D55B59003F45A9 /* STClosure.h */,
 				C8E1614610D55B59003F45A9 /* STClosure.m */,
 				C8E161AC10D562F5003F45A9 /* STBuiltInFunctions.h */,
 				C8E161AD10D562F5003F45A9 /* STBuiltInFunctions.m */,
+				1E2C536711B9654E00068D58 /* STScope.h */,
+				1E2C536811B9654E00068D58 /* STScope.m */,
 			);
 			name = Evaluator;
 			sourceTree = "<group>";
@@ -430,6 +436,7 @@
 				C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */,
 				C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */,
 				C8AC0B531104F225003B889B /* Block_private.h in Headers */,
+				1E2C542411B970C200068D58 /* STScope.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,6 +550,7 @@
 				C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */,
 				C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */,
 				C8AC0B511104F217003B889B /* STNativeBlock.m in Sources */,
+				1E2C542511B970C400068D58 /* STScope.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

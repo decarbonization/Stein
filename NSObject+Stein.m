@@ -22,109 +22,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 @implementation NSObject (Stein)
 
-#pragma mark Truthiness
-
-+ (BOOL)isTrue
-{
-	return YES;
-}
-
-- (BOOL)isTrue
-{
-	return YES;
-}
-
-#pragma mark -
-#pragma mark If Statements
-
-- (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
-{
-	if([self isTrue])
-	{
-		return STFunctionApply(thenClause, [STList list]);
-	}
-	
-	return STFunctionApply(elseClause, [STList list]);
-}
-
-+ (id)ifTrue:(id < STFunction >)thenClause ifFalse:(id < STFunction >)elseClause
-{
-	if([self isTrue])
-	{
-		return STFunctionApply(thenClause, [STList list]);
-	}
-	
-	return STFunctionApply(elseClause, [STList list]);
-}
-
-#pragma mark -
-
-- (id)ifTrue:(id < STFunction >)thenClause
-{
-	return [self ifTrue:thenClause ifFalse:nil];
-}
-
-+ (id)ifTrue:(id < STFunction >)thenClause
-{
-	return [self ifTrue:thenClause ifFalse:nil];
-}
-
-#pragma mark -
-
-- (id)ifFalse:(id < STFunction >)thenClause
-{
-	return [self ifTrue:nil ifFalse:thenClause];
-}
-
-+ (id)ifFalse:(id < STFunction >)thenClause
-{
-	return [self ifTrue:nil ifFalse:thenClause];
-}
-
-#pragma mark -
-#pragma mark Matching
-
-- (id)match:(STClosure *)matchers
-{
-	STEvaluator *evaluator = matchers.evaluator;
-	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
-	for (id pair in matchers.implementation)
-	{
-		if(![pair isKindOfClass:[STList class]])
-			continue;
-		
-		id unevaluatedObjectToMatch = [pair head];
-		if([unevaluatedObjectToMatch isEqualTo:[STSymbol symbolWithString:@"_"]])
-			return [evaluator evaluateExpression:[pair tail] inScope:scope];
-			
-		if([self isEqualTo:[evaluator evaluateExpression:unevaluatedObjectToMatch inScope:scope]])
-			return [evaluator evaluateExpression:[pair tail] inScope:scope];
-	}
-	
-	return nil;
-}
-
-+ (id)match:(STClosure *)matchers
-{
-	STEvaluator *evaluator = matchers.evaluator;
-	NSMutableDictionary *scope = [evaluator scopeWithEnclosingScope:nil];
-	for (id pair in matchers.implementation)
-	{
-		if(![pair isKindOfClass:[STList class]])
-			continue;
-		
-		id unevaluatedObjectToMatch = [pair head];
-		if([unevaluatedObjectToMatch isEqualTo:[STSymbol symbolWithString:@"_"]])
-			return [evaluator evaluateExpression:[pair tail] inScope:scope];
-		
-		if([self isEqualTo:[evaluator evaluateExpression:unevaluatedObjectToMatch inScope:scope]])
-			return [evaluator evaluateExpression:[pair tail] inScope:scope];
-	}
-	
-	return nil;
-}
-
-#pragma mark -
 #pragma mark Printing
 
 - (NSString *)prettyDescription
@@ -284,11 +181,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 #pragma mark -
 
 @implementation NSNumber (Stein)
-
-- (BOOL)isTrue
-{
-	return [self boolValue];
-}
 
 - (NSString *)prettyDescription
 {
@@ -540,16 +432,6 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 @implementation NSNull (Stein)
 
-+ (BOOL)isTrue
-{
-	return NO;
-}
-
-- (BOOL)isTrue
-{
-	return NO;
-}
-
 - (NSString *)prettyDescription
 {
 	return @"null";
@@ -619,7 +501,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	{
 		@try
 		{
-			if([STFunctionApply(function, [STList listWithObject:object]) isTrue])
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
 				[filteredObjects addObject:object];
 		}
 		@catch (STBreakException *e)
@@ -663,7 +545,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	NSMutableArray *result = [NSMutableArray array];
 	[booleans enumerateObjectsUsingBlock:^(id boolean, NSUInteger index, BOOL *stop) {
-		if([boolean isTrue])
+		if(STIsTrue(boolean))
 			[result addObject:[self objectAtIndex:index]];
 	}];
 	
@@ -752,7 +634,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	{
 		@try
 		{
-			if([STFunctionApply(function, [STList listWithObject:object]) isTrue])
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
 				[filteredObjects addObject:object];
 		}
 		@catch (STBreakException *e)
@@ -822,7 +704,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		@try
 		{
 			id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
-			if([mappedValue isTrue])
+			if(STIsTrue(mappedValue))
 				[result setObject:mappedValue forKey:key];
 		}
 		@catch (STBreakException *e)
@@ -846,7 +728,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 		@try
 		{
-			if([STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]) isTrue])
+			if(STIsTrue(STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]])))
 				[result setObject:value forKey:key];
 		}
 		@catch (STBreakException *e)

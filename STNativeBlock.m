@@ -48,12 +48,12 @@
 	return nil;
 }
 
-- (NSMutableDictionary *)superscope
+- (STScope *)superscope
 {
 	return nil;
 }
 
-- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope
+- (id)applyWithArguments:(STList *)arguments inScope:(STScope *)scope
 {
 	NSMethodSignature *functionSignature = mInvocation.functionSignature;
 	NSAssert(([arguments count] == [functionSignature numberOfArguments] - 1), 

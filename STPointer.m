@@ -264,7 +264,7 @@
 		@try
 		{
 			id value = [filteredPointerArray valueAtIndex:index];
-			if([STFunctionApply(function, [STList listWithObject:value]) isTrue])
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:value])))
 			{
 				filteredPointerArray.count++;
 				[filteredPointerArray setValue:value atIndex:filteredPointerArray.count - 1];

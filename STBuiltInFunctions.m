@@ -9,6 +9,7 @@
 #import "STBuiltInFunctions.h"
 
 #import "STEvaluator.h"
+#import "STScope.h"
 #import "STList.h"
 #import "STSymbol.h"
 #import "STBridgedFunction.h"
@@ -50,7 +51,7 @@
 #pragma mark -
 #pragma mark Function
 
-- (id)applyWithArguments:(STList *)arguments inScope:(NSMutableDictionary *)scope
+- (id)applyWithArguments:(STList *)arguments inScope:(STScope *)scope
 {
 	return mImplementation(mEvaluator, arguments, scope);
 }
@@ -64,7 +65,7 @@
 
 #pragma mark -
 
-- (NSMutableDictionary *)superscope
+- (STScope *)superscope
 {
 	return nil;
 }
@@ -74,7 +75,7 @@
 #pragma mark -
 #pragma mark Mathematical
 
-STBuiltInFunctionDefine(Add, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Add, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	double value = [[arguments head] doubleValue];
 	for (id argument in [arguments tail])
 		value += [argument doubleValue];
@@ -82,7 +83,7 @@ STBuiltInFunctionDefine(Add, NO, ^id(STEvaluator *evaluator, STList *arguments, 
 	return [NSNumber numberWithDouble:value];
 });
 
-STBuiltInFunctionDefine(Subtract, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Subtract, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	double value = [[arguments head] doubleValue];
 	for (id argument in [arguments tail])
 		value -= [argument doubleValue];
@@ -90,7 +91,7 @@ STBuiltInFunctionDefine(Subtract, NO, ^id(STEvaluator *evaluator, STList *argume
 	return [NSNumber numberWithDouble:value];
 });
 
-STBuiltInFunctionDefine(Multiply, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Multiply, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	double value = [[arguments head] doubleValue];
 	for (id argument in [arguments tail])
 		value *= [argument doubleValue];
@@ -98,7 +99,7 @@ STBuiltInFunctionDefine(Multiply, NO, ^id(STEvaluator *evaluator, STList *argume
 	return [NSNumber numberWithDouble:value];
 });
 
-STBuiltInFunctionDefine(Divide, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Divide, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	double value = [[arguments head] doubleValue];
 	for (id argument in [arguments tail])
 		value /= [argument doubleValue];
@@ -106,7 +107,7 @@ STBuiltInFunctionDefine(Divide, NO, ^id(STEvaluator *evaluator, STList *argument
 	return [NSNumber numberWithDouble:value];
 });
 
-STBuiltInFunctionDefine(Modulo, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Modulo, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	long value = [[arguments head] longValue];
 	for (id argument in [arguments tail])
 		value %= [argument longValue];
@@ -114,7 +115,7 @@ STBuiltInFunctionDefine(Modulo, NO, ^id(STEvaluator *evaluator, STList *argument
 	return [NSNumber numberWithLong:value];
 });
 
-STBuiltInFunctionDefine(Power, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Power, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	double value = [[arguments head] doubleValue];
 	for (id argument in [arguments tail])
 		value = pow(value, [argument doubleValue]);
@@ -125,7 +126,7 @@ STBuiltInFunctionDefine(Power, NO, ^id(STEvaluator *evaluator, STList *arguments
 #pragma mark -
 #pragma mark Comparisons
 
-STBuiltInFunctionDefine(Equal, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Equal, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	id last = [arguments head];
 	for (id argument in [arguments tail])
 	{
@@ -137,7 +138,7 @@ STBuiltInFunctionDefine(Equal, NO, ^id(STEvaluator *evaluator, STList *arguments
 	
 	return [NSNumber numberWithBool:YES];
 });
-STBuiltInFunctionDefine(NotEqual, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(NotEqual, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	id last = [arguments head];
 	for (id argument in [arguments tail])
 	{
@@ -150,7 +151,7 @@ STBuiltInFunctionDefine(NotEqual, NO, ^id(STEvaluator *evaluator, STList *argume
 	return [NSNumber numberWithBool:YES];
 });
 
-STBuiltInFunctionDefine(LessThan, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(LessThan, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	id last = [arguments head];
 	for (id argument in [arguments tail])
 	{
@@ -162,7 +163,7 @@ STBuiltInFunctionDefine(LessThan, NO, ^id(STEvaluator *evaluator, STList *argume
 	
 	return [NSNumber numberWithBool:YES];
 });
-STBuiltInFunctionDefine(LessThanOrEqual, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(LessThanOrEqual, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	id last = [arguments head];
 	for (id argument in [arguments tail])
 	{
@@ -175,7 +176,7 @@ STBuiltInFunctionDefine(LessThanOrEqual, NO, ^id(STEvaluator *evaluator, STList 
 	return [NSNumber numberWithBool:YES];
 });
 
-STBuiltInFunctionDefine(GreaterThan, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(GreaterThan, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	id last = [arguments head];
 	for (id argument in [arguments tail])
 	{
@@ -187,7 +188,7 @@ STBuiltInFunctionDefine(GreaterThan, NO, ^id(STEvaluator *evaluator, STList *arg
 	
 	return [NSNumber numberWithBool:YES];
 });
-STBuiltInFunctionDefine(GreaterThanOrEqual, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(GreaterThanOrEqual, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	id last = [arguments head];
 	for (id argument in [arguments tail])
 	{
@@ -203,13 +204,13 @@ STBuiltInFunctionDefine(GreaterThanOrEqual, NO, ^id(STEvaluator *evaluator, STLi
 #pragma mark -
 #pragma mark Boolean Operations
 
-STBuiltInFunctionDefine(Or, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	BOOL isTrue = [[arguments head] isTrue];
+STBuiltInFunctionDefine(Or, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
+	BOOL isTrue = STIsTrue([arguments head]);
 	if(!isTrue)
 	{
 		for (id object in [arguments tail])
 		{
-			isTrue = isTrue || [object isTrue];
+			isTrue = isTrue || STIsTrue(object);
 			if(isTrue)
 				break;
 		}
@@ -218,13 +219,13 @@ STBuiltInFunctionDefine(Or, NO, ^id(STEvaluator *evaluator, STList *arguments, N
 	return [NSNumber numberWithBool:isTrue];
 });
 
-STBuiltInFunctionDefine(And, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	BOOL isTrue = [[arguments head] isTrue];
+STBuiltInFunctionDefine(And, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
+	BOOL isTrue = STIsTrue([arguments head]);
 	if(isTrue)
 	{
 		for (id object in [arguments tail])
 		{
-			isTrue = isTrue && [object isTrue];
+			isTrue = isTrue && STIsTrue(object);
 			if(!isTrue)
 				break;
 		}
@@ -233,14 +234,14 @@ STBuiltInFunctionDefine(And, NO, ^id(STEvaluator *evaluator, STList *arguments, 
 	return [NSNumber numberWithBool:isTrue];
 });
 
-STBuiltInFunctionDefine(Not, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	return [NSNumber numberWithBool:![[arguments head] isTrue]];
+STBuiltInFunctionDefine(Not, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
+	return [NSNumber numberWithBool:!STIsTrue([arguments head])];
 });
 
 #pragma mark -
 #pragma mark Bridging
 
-STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 2)
 		STRaiseIssue(arguments.creationLocation, @"bridge-function requires two arguments.");
 	
@@ -251,7 +252,7 @@ STBuiltInFunctionDefine(BridgeFunction, YES, ^id(STEvaluator *evaluator, STList 
 												signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]];
 });
 
-STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 2)
 		STRaiseIssue(arguments.creationLocation, @"bridge-constant requires two arguments.");
 	
@@ -264,7 +265,7 @@ STBuiltInFunctionDefine(BridgeConstant, YES, ^id(STEvaluator *evaluator, STList 
 	return STTypeBridgeConvertValueOfTypeIntoObject(value, [signature UTF8String]);
 });
 
-STBuiltInFunctionDefine(BridgeExtern, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(BridgeExtern, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 2)
 		STRaiseIssue(arguments.creationLocation, @"extern requires two or more arguments.");
 	
@@ -294,17 +295,17 @@ STBuiltInFunctionDefine(BridgeExtern, YES, ^id(STEvaluator *evaluator, STList *a
 	return result;
 });
 
-STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(MakeObjectReference, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 1)
 		STRaiseIssue(arguments.creationLocation, @"ref requires an argument.");
 	
 	STPointer *pointer = [STPointer pointerWithType:@encode(id)];
-	[scope setObject:pointer forKey:[[arguments head] string]];
+	[scope setValue:pointer forVariableNamed:[[arguments head] string] searchParentScopes:NO];
 	
 	return pointer;
 });
 
-STBuiltInFunctionDefine(FunctionWrapper, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(FunctionWrapper, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 3)
 		STRaiseIssue(arguments.creationLocation, @"function-wrapper requires 3 arguments.");
 	
@@ -318,7 +319,7 @@ STBuiltInFunctionDefine(FunctionWrapper, YES, ^id(STEvaluator *evaluator, STList
 												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
 });
 
-STBuiltInFunctionDefine(WrapBlock, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(WrapBlock, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 3)
 		STRaiseIssue(arguments.creationLocation, @"wrap-block requires 3 arguments.");
 	
@@ -339,15 +340,15 @@ STBuiltInFunctionDefine(WrapBlock, YES, ^id(STEvaluator *evaluator, STList *argu
 #pragma mark -
 #pragma mark Collection Creation
 
-STBuiltInFunctionDefine(Array, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Array, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	return [NSMutableArray arrayWithArray:arguments.allObjects];
 });
 
-STBuiltInFunctionDefine(List, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(List, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	return [STList listWithList:arguments];
 });
 
-STBuiltInFunctionDefine(Dictionary, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Dictionary, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
 	
 	id key = nil;

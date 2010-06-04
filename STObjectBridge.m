@@ -367,7 +367,7 @@ void STExtendClass(Class classToExtend, STList *expressions, STEvaluator *evalua
 	NSCParameterAssert(classToExtend);
 	NSCParameterAssert(expressions);
 	
-	NSMutableDictionary *scope = nil;
+	STScope *scope = nil;
 	for (id expression in expressions)
 	{
 		if([expression isKindOfClass:[STList class]])

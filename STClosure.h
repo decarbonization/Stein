@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Stein/STFunction.h>
 
-@class STEvaluator, STList;
+@class STEvaluator, STList, STScope;
 
 /*!
  @class
@@ -18,7 +18,7 @@
 @interface STClosure : NSObject < STFunction >
 {
 	STEvaluator *mEvaluator;
-	NSMutableDictionary *mSuperscope;
+	STScope *mSuperscope;
 	Class mSuperclass;
 	NSString *mName;
 	
@@ -37,7 +37,7 @@
  @result		A fully initialized Stein closure object ready for use.
  @discussion	This is the designated initializer of STClosure.
  */
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(NSMutableDictionary *)superscope;
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(STScope *)superscope;
 
 #pragma mark -
 #pragma mark Properties
@@ -52,7 +52,7 @@
  @property
  @abstract	The superscope of the closure.
  */
-@property (readonly) NSMutableDictionary *superscope;
+@property (readonly) STScope *superscope;
 
 /*!
  @property
@@ -88,25 +88,6 @@
  @abstract	An STList of expressions describing the closure's implementation.
  */
 @property (readonly) STList *implementation;
-
-#pragma mark -
-#pragma mark Looping
-
-/*!
- @method
- @abstract	Repeatedly apply the receiver until the result it returns is false, invoking a specified block each time it is true.
- @param		closure		The closure to apply for each loop.
- @result	The last value returned from the specified closure.
- */
-- (id)whileTrue:(STClosure *)closure;
-
-/*!
- @method
- @abstract	Repeatedly apply the receiver until the result it returns is true, invoking a specified block each time it is false.
- @param		closure		The closure to apply for each loop.
- @result	The last value returned from the specified closure.
- */
-- (id)whileFalse:(STClosure *)closure;
 
 #pragma mark -
 #pragma mark Exception Handling

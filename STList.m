@@ -345,7 +345,7 @@
 	{
 		@try
 		{
-			if([STFunctionApply(function, [STList listWithObject:object]) isTrue])
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
 				[filteredObjects addObject:object];
 		}
 		@catch (STBreakException *e)

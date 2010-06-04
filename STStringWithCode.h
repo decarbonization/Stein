@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STEvaluator, STList;
+@class STEvaluator, STList, STScope;
 
 /*!
  @class
@@ -51,6 +51,6 @@
  @result		A string with the result of the receiver's expressions embedded within it's contents.
  @discussion	The receiver's expressions will be evaluated within a unique scope.
  */
-- (NSString *)applyWithEvaluator:(STEvaluator *)evaluator scope:(NSMutableDictionary *)scope;
+- (NSString *)applyWithEvaluator:(STEvaluator *)evaluator scope:(STScope *)scope;
 
 @end

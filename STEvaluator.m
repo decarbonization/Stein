@@ -15,6 +15,7 @@
 #import "STList.h"
 #import "STStringWithCode.h"
 
+#import "STScope.h"
 #import "STFunction.h"
 #import "STClosure.h"
 #import "STObjectBridge.h"
@@ -32,7 +33,7 @@ NSString *const kSTBundleIsPureSteinKey = @"STBundleIsPureStein";
 
 #pragma mark Tools
 
-static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDictionary *scope)
+static id CreateClosureForDoList(STEvaluator *self, STList *doList, STScope *scope)
 {
 	STList *arguments = nil;
 	STList *implementation = nil;
@@ -63,7 +64,7 @@ static id CreateClosureForDoList(STEvaluator *self, STList *doList, NSMutableDic
 #pragma mark -
 #pragma mark Environment Built Ins
 
-STBuiltInFunctionDefine(Import, NO, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Import, NO, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	for (NSString *argument in arguments)
 	{
 		if(![evaluator import:argument])
@@ -73,7 +74,7 @@ STBuiltInFunctionDefine(Import, NO, ^id(STEvaluator *evaluator, STList *argument
 	return STTrue;
 });
 
-STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	NSUInteger numberOfArguments = [arguments count];
 	if(numberOfArguments < 1)
 		STRaiseIssue(arguments.creationLocation, @"let statement expected identifier, and didn't get one.");
@@ -121,7 +122,7 @@ STBuiltInFunctionDefine(Let, YES, ^id(STEvaluator *evaluator, STList *arguments,
 
 #pragma mark -
 
-STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 3)
 		STRaiseIssue(arguments.creationLocation, @"function requires 3 arguments, was given %ld.", [arguments count]);
 	
@@ -136,7 +137,7 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 												fromEvaluator:evaluator 
 													  inScope:scope];
 	NSString *functionName = [[arguments objectAtIndex:0] string];
-	[scope setObject:closure forKey:functionName];
+	[scope setValue:closure forVariableNamed:functionName searchParentScopes:NO];
 	
 	closure.name = functionName;
 	
@@ -146,7 +147,7 @@ STBuiltInFunctionDefine(Function, YES, ^id(STEvaluator *evaluator, STList *argum
 #pragma mark -
 #pragma mark Messaging Built Ins
 
-STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
+STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
 	if([arguments count] < 1)
 		STRaiseIssue(arguments.creationLocation, @"# expected function or complete message, neither was provided.");
 	
@@ -161,9 +162,9 @@ STBuiltInFunctionDefine(SendMessage, YES, ^id(STEvaluator *evaluator, STList *ar
 	return STObjectBridgeSend(target, selector, argumentsArray, evaluator);
 });
 
-STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *arguments, NSMutableDictionary *scope) {
-	id target = [scope objectForKey:@"self"];
-	Class superclass = [scope objectForKey:kSTEvaluatorSuperclassKey];
+STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
+	id target = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
+	Class superclass = [scope valueForVariableNamed:kSTEvaluatorSuperclassKey searchParentScopes:NO];
 	
 	NSMutableString *selectorString = [NSMutableString string];
 	NSMutableArray *evaluatedArguments = [NSMutableArray array];
@@ -194,61 +195,61 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 	if((self = [super init]))
 	{
 		//Setup the root scope, and expose our built in functions and constants.
-		mRootScope = [NSMutableDictionary new];
+		mRootScope = [STScope new];
 		
 		//Built in Math Functions
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Add, self) forKey:@"+"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Subtract, self) forKey:@"-"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Multiply, self) forKey:@"*"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Divide, self) forKey:@"/"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Modulo, self) forKey:@"%"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Power, self) forKey:@"**"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Add, self) forVariableNamed:@"+" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Subtract, self) forVariableNamed:@"-" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Multiply, self) forVariableNamed:@"*" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Divide, self) forVariableNamed:@"/" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Modulo, self) forVariableNamed:@"%" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Power, self) forVariableNamed:@"**" searchParentScopes:NO];
 		
 		//Built in Comparison Functions
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Equal, self) forKey:@"=="];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(NotEqual, self) forKey:@"!="];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThan, self) forKey:@"<"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(LessThanOrEqual, self) forKey:@"<="];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThan, self) forKey:@">"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(GreaterThanOrEqual, self) forKey:@">="];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Equal, self) forVariableNamed:@"==" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(NotEqual, self) forVariableNamed:@"!=" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(LessThan, self) forVariableNamed:@"<" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(LessThanOrEqual, self) forVariableNamed:@"<=" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(GreaterThan, self) forVariableNamed:@">" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(GreaterThanOrEqual, self) forVariableNamed:@">=" searchParentScopes:NO];
 		
 		//Built in Boolean Operators
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Or, self) forKey:@"or"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(And, self) forKey:@"and"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Not, self) forKey:@"not"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Or, self) forVariableNamed:@"or" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(And, self) forVariableNamed:@"and" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Not, self) forVariableNamed:@"not" searchParentScopes:NO];
 		
 		//Core Built ins
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Let, self) forKey:@"let"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Function, self) forKey:@"function"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(SendMessage, self) forKey:@"#"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Super, self) forKey:@"super"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Let, self) forVariableNamed:@"let" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Function, self) forVariableNamed:@"function" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(SendMessage, self) forVariableNamed:@"#" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Super, self) forVariableNamed:@"super" searchParentScopes:NO];
 		
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Break, self) forKey:@"break"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Continue, self) forKey:@"continue"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Break, self) forVariableNamed:@"break" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Continue, self) forVariableNamed:@"continue" searchParentScopes:NO];
 		
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Import, self) forKey:@"import"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Import, self) forVariableNamed:@"import" searchParentScopes:NO];
 		
 		//Bridging
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forKey:@"bridge-function"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forKey:@"bridge-constant"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(BridgeExtern, self) forKey:@"extern"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(MakeObjectReference, self) forKey:@"ref"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(FunctionWrapper, self) forKey:@"function-wrapper"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(WrapBlock, self) forKey:@"wrap-block"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(BridgeFunction, self) forVariableNamed:@"bridge-function" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(BridgeConstant, self) forVariableNamed:@"bridge-constant" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(BridgeExtern, self) forVariableNamed:@"extern" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(MakeObjectReference, self) forVariableNamed:@"ref" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(FunctionWrapper, self) forVariableNamed:@"function-wrapper" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(WrapBlock, self) forVariableNamed:@"wrap-block" searchParentScopes:NO];
 		
 		//Collection creation
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Array, self) forKey:@"array"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(List, self) forKey:@"list"];
-		[mRootScope setObject:STBuiltInFunctionWithNameForEvaluator(Dictionary, self) forKey:@"dict"];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Array, self) forVariableNamed:@"array" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(List, self) forVariableNamed:@"list" searchParentScopes:NO];
+		[mRootScope setValue:STBuiltInFunctionWithNameForEvaluator(Dictionary, self) forVariableNamed:@"dict" searchParentScopes:NO];
 		
 		//Constants
-		[mRootScope setObject:STTrue forKey:@"true"];
-		[mRootScope setObject:STFalse forKey:@"false"];
-		[mRootScope setObject:STNull forKey:@"null"];
+		[mRootScope setValue:STTrue forVariableNamed:@"true" searchParentScopes:NO];
+		[mRootScope setValue:STFalse forVariableNamed:@"false" searchParentScopes:NO];
+		[mRootScope setValue:STNull forVariableNamed:@"null" searchParentScopes:NO];
 		
 		//Globals
-		[mRootScope setObject:[[NSProcessInfo processInfo] arguments] forKey:@"Args"];
-		[mRootScope setObject:[[NSProcessInfo processInfo] environment] forKey:@"Env"];
+		[mRootScope setValue:[[NSProcessInfo processInfo] arguments] forVariableNamed:@"Args" searchParentScopes:NO];
+		[mRootScope setValue:[[NSProcessInfo processInfo] environment] forVariableNamed:@"Env" searchParentScopes:NO];
 		
 		
 		//Load and run the Prelude file.
@@ -299,33 +300,20 @@ STBuiltInFunctionDefine(Super, YES, ^id(STEvaluator *evaluator, STList *argument
 #pragma mark -
 #pragma mark Scoping
 
-- (NSMutableDictionary *)scopeWithEnclosingScope:(NSMutableDictionary *)enclosingScope
+- (STScope *)scopeWithEnclosingScope:(STScope *)enclosingScope
 {
-	NSMutableDictionary *scope = [NSMutableDictionary dictionaryWithCapacity:1];
+	STScope *scope = [STScope new];
 	if(enclosingScope)
-		[scope setObject:enclosingScope forKey:kSTEvaluatorEnclosingScopeKey];
+		scope.parentScope = enclosingScope;
 	else
-		[scope setObject:mRootScope forKey:kSTEvaluatorEnclosingScopeKey];
+		scope.parentScope = mRootScope;
 	
 	return scope;
 }
 
 #pragma mark -
 
-NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScope, NSString *name)
-{
-	while (currentScope != nil)
-	{
-		if([[currentScope allKeys] containsObject:name])
-			return currentScope;
-		
-		currentScope = [currentScope objectForKey:kSTEvaluatorEnclosingScopeKey];
-	}
-	
-	return nil;
-}
-
-- (void)setObject:(id)object forVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope
+- (void)setObject:(id)object forVariableNamed:(STSymbol *)name inScope:(STScope *)scope
 {
 	if([name isEqualToString:@"_here"] || [name isEqualToString:@"_interpreter"])
 		STRaiseIssue(name.creationLocation, @"Attempting to set readonly variable '%@'.", [name prettyDescription]);
@@ -335,9 +323,9 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	if(firstCharacterInName == '$')
 	{
 		if(object)
-			[mRootScope setObject:object forKey:[nameString substringFromIndex:1]];
+			[scope setValue:object forVariableNamed:[nameString substringFromIndex:1] searchParentScopes:NO];
 		else
-			[mRootScope removeObjectForKey:[nameString substringFromIndex:1]];
+			[scope removeValueForVariableNamed:[nameString substringFromIndex:1] searchParentScopes:NO];
 	}
 	else if(firstCharacterInName == '@')
 	{
@@ -362,18 +350,14 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	}
 	else
 	{
-		NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, nameString);
-		if(!targetScope)
-			targetScope = scope;
-		
 		if(object)
-			[targetScope setObject:object forKey:nameString];
+			[scope setValue:object forVariableNamed:nameString searchParentScopes:YES];
 		else
-			[targetScope removeObjectForKey:nameString];
+			[scope removeValueForVariableNamed:nameString searchParentScopes:YES];
 	}
 }
 
-- (id)objectForVariableNamed:(STSymbol *)name inScope:(NSMutableDictionary *)scope
+- (id)objectForVariableNamed:(STSymbol *)name inScope:(STScope *)scope
 {
 	if([name isEqualToString:@"_here"])
 		return scope;
@@ -385,7 +369,7 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	unichar firstCharacterInName = [nameString characterAtIndex:0];
 	if(firstCharacterInName == '$')
 	{
-		return [mRootScope objectForKey:[nameString substringFromIndex:1]];
+		return [mRootScope valueForVariableNamed:[nameString substringFromIndex:1] searchParentScopes:NO];
 	}
 	else if(firstCharacterInName == '@')
 	{
@@ -410,13 +394,10 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 	}
 	
 	
-	NSMutableDictionary *targetScope = LastScopeWithVariableNamed(scope, nameString);
-	if(targetScope)
-	{
-		id value = [targetScope objectForKey:nameString];
-		if(value)
-			return value;
-	}
+	
+	id value = [scope valueForVariableNamed:nameString searchParentScopes:YES];
+	if(value)
+		return value;
 	
 	
 	Class class = NSClassFromString(nameString);
@@ -441,7 +422,7 @@ NSMutableDictionary *LastScopeWithVariableNamed(NSMutableDictionary *currentScop
 #pragma mark -
 #pragma mark Evaluation
 
-id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
+id __STEvaluateList(STEvaluator *self, STList *list, STScope *scope)
 {
 	if(list.isDoConstruct)
 		return CreateClosureForDoList(self, list, scope);
@@ -482,7 +463,7 @@ id __STEvaluateList(STEvaluator *self, STList *list, NSMutableDictionary *scope)
 
 #pragma mark -
 
-id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary *scope)
+id __STEvaluateExpression(STEvaluator *self, id expression, STScope *scope)
 {
 	if([expression isKindOfClass:[NSArray class]])
 	{
@@ -515,7 +496,7 @@ id __STEvaluateExpression(STEvaluator *self, id expression, NSMutableDictionary 
 	return expression;
 }
 
-- (id)evaluateExpression:(id)expression inScope:(NSMutableDictionary *)scope
+- (id)evaluateExpression:(id)expression inScope:(STScope *)scope
 {
 	if(!scope)
 		scope = mRootScope;
