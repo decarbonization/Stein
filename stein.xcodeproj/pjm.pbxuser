@@ -15,8 +15,8 @@
 			1E1ACB2911595D3200B2BBA9 /* stein */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 297362531;
-			PBXWorkspaceStateSaveDate = 297362531;
+			PBXPerProjectTemplateStateSaveDate = 299011576;
+			PBXWorkspaceStateSaveDate = 299011576;
 		};
 		sourceControlManager = 1E1ACB3611595D4500B2BBA9 /* Source Control */;
 		userBuildSettings = {
@@ -78,17 +78,18 @@
 	};
 	1E2C536711B9654E00068D58 /* STScope.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 975}}";
-			sepNavSelRange = "{2295, 0}";
-			sepNavVisRange = "{598, 1749}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1014}}";
+			sepNavSelRange = "{269, 0}";
+			sepNavVisRange = "{685, 1749}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
 	1E2C536811B9654E00068D58 /* STScope.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 4160}}";
-			sepNavSelRange = "{564, 0}";
-			sepNavVisRange = "{0, 1040}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 5057}}";
+			sepNavSelRange = "{5079, 0}";
+			sepNavVisRange = "{2056, 1132}";
+			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
 	1E75549D115D08E1007AF0A6 /* objc_exception_throw */ = {
@@ -107,6 +108,21 @@
 		state = 1;
 		symbolName = objc_exception_throw;
 	};
+	1EFC55BB11BEE73D00C8FF87 /* STExprFunctor.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 558}}";
+			sepNavSelRange = "{263, 0}";
+			sepNavVisRange = "{0, 811}";
+		};
+	};
+	1EFC55BC11BEE73D00C8FF87 /* STExprFunctor.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 793}}";
+			sepNavSelRange = "{317, 0}";
+			sepNavVisRange = "{302, 500}";
+			sepNavWindowFrame = "{{107, 118}, {889, 671}}";
+		};
+	};
 	8DD76F960486AA7600D96B5E /* stein */ = {
 		activeExec = 0;
 		executables = (
@@ -115,17 +131,17 @@
 	};
 	C806B70210D2D96C00A64BEE /* STList.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 2782}}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 2834}}";
 			sepNavSelRange = "{502, 0}";
-			sepNavVisRange = "{132, 899}";
-			sepNavWindowFrame = "{{222, 13}, {889, 671}}";
+			sepNavVisRange = "{132, 890}";
+			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};
 	C806B70310D2D96C00A64BEE /* STList.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 4927}}";
-			sepNavSelRange = "{6735, 0}";
-			sepNavVisRange = "{6212, 727}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 5200}}";
+			sepNavSelRange = "{181, 0}";
+			sepNavVisRange = "{0, 566}";
 			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};
@@ -250,9 +266,9 @@
 	};
 	C8B3187A10E15E860086468F /* STEnumerable.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1534}}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1872}}";
 			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{1013, 1750}";
+			sepNavVisRange = "{420, 833}";
 			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};
@@ -282,17 +298,17 @@
 	};
 	C8DB7A7310D341AD00EF3D63 /* STEvaluator.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 9763}}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 9412}}";
 			sepNavSelRange = "{10501, 0}";
-			sepNavVisRange = "{14084, 820}";
+			sepNavVisRange = "{12031, 1206}";
 			sepNavWindowFrame = "{{199, 34}, {889, 671}}";
 		};
 	};
 	C8DB7A8710D343C800EF3D63 /* STFunction.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {439, 1131}}";
-			sepNavSelRange = "{1829, 0}";
-			sepNavVisRange = "{1696, 273}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1105}}";
+			sepNavSelRange = "{219, 0}";
+			sepNavVisRange = "{0, 1203}";
 			sepNavWindowFrame = "{{107, 118}, {889, 671}}";
 		};
 	};
@@ -338,9 +354,9 @@
 	};
 	C8E1614610D55B59003F45A9 /* STClosure.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1690}}";
-			sepNavSelRange = "{2466, 0}";
-			sepNavVisRange = "{1926, 847}";
+			sepNavIntBoundsRect = "{{0, 0}, {744, 1742}}";
+			sepNavSelRange = "{1564, 0}";
+			sepNavVisRange = "{1060, 727}";
 			sepNavWindowFrame = "{{130, 97}, {889, 671}}";
 		};
 	};
@@ -370,9 +386,9 @@
 	};
 	C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 10075}}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 9854}}";
 			sepNavSelRange = "{16270, 0}";
-			sepNavVisRange = "{15684, 868}";
+			sepNavVisRange = "{5496, 815}";
 			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};

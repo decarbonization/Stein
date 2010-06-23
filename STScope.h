@@ -9,6 +9,9 @@
 #import <Cocoa/Cocoa.h>
 #import <libkern/OSAtomic.h>
 
+/*!
+ @abstract	The opaque type used to represent the contents of a STScope object.
+ */
 typedef struct STScopeNode * STScopeNodeRef;
 
 #pragma mark -

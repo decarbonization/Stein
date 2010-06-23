@@ -55,16 +55,16 @@
 	for (id name in mPrototype)
 	{
 		if(index >= countOfArguments)
-			[scope setObject:STNull forKey:name];
+			[scope setValue:STNull forVariableNamed:name searchParentScopes:NO];
 		else
-			[scope setObject:[arguments objectAtIndex:index] forKey:name];
+			[scope setValue:[arguments objectAtIndex:index] forVariableNamed:name searchParentScopes:NO];
 		index++;
 	}
 	
 	if(mSuperclass)
-		[scope setObject:mSuperclass forKey:kSTEvaluatorSuperclassKey];
+		[scope setValue:mSuperclass forVariableNamed:kSTEvaluatorSuperclassKey searchParentScopes:NO];
 	
-	[scope setObject:arguments.allObjects forKey:@"_arguments"];
+	[scope setValue:arguments forVariableNamed:@"_arguments" searchParentScopes:NO];
 	
 	id result = nil;
 	for (id expression in mImplementation)

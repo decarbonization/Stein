@@ -8,8 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Stein/STEvaluator.h>
+#import <Stein/STScope.h>
 
-@class STList, STScope;
+@class STList;
 
 /*!
  @protocol
@@ -25,7 +26,7 @@
 
 /*!
  @method
- @abstract	Returns the evaluator that is associated with the function. Cannot be nil.
+ @abstract	Returns the evaluator that is associated with the function. Should not be nil.
  */
 - (STEvaluator *)evaluator;
 

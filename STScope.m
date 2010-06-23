@@ -28,13 +28,22 @@ struct STScopeNode {
 
 #pragma mark Properties
 
+/*!
+ @abstract	Set the previous node of a STScopeNode.
+ @param		me			The node to modify. Required.
+ @param		previous	The new previous. Optional.
+ */
 static void STScopeNode_setPrevious(STScopeNodeRef me, STScopeNodeRef previous)
 {
 	assert(me != NULL);
 	
-	while (OSAtomicCompareAndSwapPtrBarrier(me->previous, previous, (void *volatile *)&me->previous) == false);
+	OSAtomicCompareAndSwapPtrBarrier(me->previous, previous, (void *volatile *)&me->previous);
 }
 
+/*!
+ @abstract	Get the previous node of a STScopeNode.
+ @param		me	The node to read from. Optional.
+ */
 static STScopeNodeRef STScopeNode_getPrevious(STScopeNodeRef me)
 {
 	if(!me)
@@ -44,13 +53,22 @@ static STScopeNodeRef STScopeNode_getPrevious(STScopeNodeRef me)
 	return me->previous;
 }
 
+/*!
+ @abstract	Set the next node of a STScopeNode.
+ @param		me		The node to modify. Required.
+ @param		next	The new next. Optional.
+ */
 static void STScopeNode_setNext(STScopeNodeRef me, STScopeNodeRef next)
 {
 	assert(me != NULL);
 	
-	while (OSAtomicCompareAndSwapPtrBarrier(me->next, next, (void *volatile *)&me->next) == false);
+	OSAtomicCompareAndSwapPtrBarrier(me->next, next, (void *volatile *)&me->next);
 }
 
+/*!
+ @abstract	Get the next node of a STScopeNode.
+ @param		me	The node to read from. Optional.
+ */
 static STScopeNodeRef STScopeNode_getNext(STScopeNodeRef me)
 {
 	if(!me)
@@ -62,6 +80,10 @@ static STScopeNodeRef STScopeNode_getNext(STScopeNodeRef me)
 
 #pragma mark -
 
+/*!
+ @abstract	Get the key of a STScopeNode.
+ @param		me	The node to read from. Optional.
+ */
 static NSString *STScopeNode_getKey(STScopeNodeRef me)
 {
 	if(!me)
@@ -72,13 +94,22 @@ static NSString *STScopeNode_getKey(STScopeNodeRef me)
 
 #pragma mark -
 
+/*!
+ @abstract	Set the value of a STScopeNode.
+ @param		me		The node to modify. Required.
+ @param		value	The value. Optional.
+ */
 static void STScopeNode_setValue(STScopeNodeRef me, id value)
 {
 	assert(me != NULL);
 	
-	while (OSAtomicCompareAndSwapPtrBarrier(me->value, value, (void *volatile *)&me->value) == false);
+	OSAtomicCompareAndSwapPtrBarrier(me->value, value, (void *volatile *)&me->value);
 }
 
+/*!
+ @abstract	Get the value of a STScopeNode.
+ @param		me	The node to read from. Optional.
+ */
 static id STScopeNode_getValue(STScopeNodeRef me)
 {
 	if(!me)
@@ -91,8 +122,18 @@ static id STScopeNode_getValue(STScopeNodeRef me)
 #pragma mark -
 #pragma mark Creation
 
+/*!
+ @abstract	Creates and returns a new STScopeNode value.
+ @param		previous	The node that precedes the node being created in a chain. Optional.
+ @param		next		The node that succeeds the node being created in a chain. Optional.
+ @param		key			The key of the node. Required.
+ @param		value		The value of the node. Optional.
+ @result	A pointer to an STScopeNode struct whose lifecycle is managed by the garbage collector.
+ */
 static STScopeNodeRef STScopeNode_new(STScopeNodeRef previous, STScopeNodeRef next, NSString *key, id value)
 {
+	assert(key != nil);
+	
 	STScopeNodeRef entry = NSAllocateCollectable(sizeof(struct STScopeNode), NSScannedOption);
 	*entry = (struct STScopeNode){
 		.previous = previous, 
@@ -107,9 +148,14 @@ static STScopeNodeRef STScopeNode_new(STScopeNodeRef previous, STScopeNodeRef ne
 #pragma mark -
 #pragma mark Enumeration
 
+/*!
+ @abstract	Iterate a chain of STScopeNode values.
+ @param		me			The node to iterate. Optional.
+ @param		callback	The block to invoke for each value in the node chain. Optional.
+ */
 static void STScopeNode_foreach(STScopeNodeRef me, void(^callback)(STScopeNodeRef node, NSString *key, id value, BOOL *stop))
 {
-	if(!me)
+	if(!me || !callback)
 		return;
 	
 	BOOL stop = NO;
@@ -124,6 +170,9 @@ static void STScopeNode_foreach(STScopeNodeRef me, void(^callback)(STScopeNodeRe
 #pragma mark -
 #pragma mark Equality
 
+/*!
+ @abstract	Returns whether or not two STScopeNodes are equal to each other.
+ */
 static BOOL STScopeNode_equals(STScopeNodeRef me, STScopeNodeRef other)
 {
 	if((me == NULL && other != NULL) || (me != NULL && other == NULL))
@@ -131,6 +180,17 @@ static BOOL STScopeNode_equals(STScopeNodeRef me, STScopeNodeRef other)
 	
 	return ([me->key isEqualToString:other->key] && 
 			[STScopeNode_getValue(me) isEqualTo:STScopeNode_getValue(other)]);
+}
+
+/*!
+ @abstract	Returns a (weak) hash for a STScopeNode.
+ */
+static NSUInteger STScopeNode_hash(STScopeNodeRef me)
+{
+	if(!me)
+		return 0;
+	
+	return ((NSUInteger)(me) >> 1);
 }
 
 #pragma mark -
@@ -164,7 +224,7 @@ static BOOL STScopeNode_equals(STScopeNodeRef me, STScopeNodeRef other)
 	if(!mHead && !mLast)
 		return (NSUInteger)([STScope class]);
 	
-	return ((NSUInteger)(mHead) >> 1) + ((NSUInteger)(mLast) >> 1);
+	return STScopeNode_hash(mHead) + STScopeNode_hash(mLast);
 }
 
 #pragma mark -
