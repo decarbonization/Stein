@@ -57,8 +57,7 @@
 	
 	if((self = [self init]))
 	{
-		mIsQuoted = list->mIsQuoted;
-		mIsDoConstruct = list->mIsDoConstruct;
+		mFlags = list->mFlags;
 		mCreationLocation = list ->mCreationLocation;
 		[mContents setArray:list->mContents];
 		
@@ -106,8 +105,7 @@
 	if((self = [self init]))
 	{
 		mContents = [[decoder decodeObjectForKey:@"mContents"] retain];
-		mIsQuoted = [decoder decodeBoolForKey:@"mIsQuoted"];
-		mIsDoConstruct = [decoder decodeBoolForKey:@"mIsDoConstruct"];
+		mFlags = [decoder decodeIntegerForKey:@"mFlags"];
 		
 		return self;
 	}
@@ -119,8 +117,7 @@
 	NSAssert([encoder allowsKeyedCoding], @"Non-keyed coder (%@) given to -[STList encodeWithCoder:].", encoder);
 	
 	[encoder encodeObject:mContents forKey:@"mContents"];
-	[encoder encodeBool:mIsQuoted forKey:@"mIsQuoted"];
-	[encoder encodeBool:mIsDoConstruct forKey:@"mIsDoConstruct"];
+	[encoder encodeInteger:mFlags forKey:@"mFlags"];
 }
 
 #pragma mark -
@@ -148,8 +145,7 @@
 	STList *sublist = [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
 	
 	sublist.creationLocation = mCreationLocation;
-	sublist.isDoConstruct = mIsDoConstruct;
-	sublist.isQuoted = mIsQuoted;
+	sublist.flags = mFlags;
 	
 	return sublist;
 }
@@ -225,7 +221,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<%@#%p %@(%@)>", [self className], self, mIsQuoted? @"'" : @"", [mContents componentsJoinedByString:@" "]];
+	return [NSString stringWithFormat:@"<%@#%p %@(%@)>", [self className], self, ST_FLAG_IS_SET(mFlags, kSTListFlagIsQuoted)? @"'" : @"", [mContents componentsJoinedByString:@" "]];
 }
 
 - (NSString *)prettyDescription
@@ -234,12 +230,15 @@
 	NSMutableString *description = [NSMutableString string];
 	
 	//Add the leading quote if we're a quoted string.
-	if(mIsQuoted)
+	if(ST_FLAG_IS_SET(mFlags, kSTListFlagIsQuoted))
 		[description appendString:@"'"];
 	
 	
 	//Open the expression
-	[description appendString:mIsDoConstruct? @"[" : @"("];
+	if(ST_FLAG_IS_SET(mFlags, kSTListFlagIsDefinition))
+		[description appendString:@"{"];
+	else
+		[description appendString:@"("];
 	
 	
 	//Get the pretty description for each element in our contents
@@ -253,7 +252,10 @@
 	
 	
 	//Close the expression
-	[description appendString:mIsDoConstruct? @"]" : @")"];
+	if(ST_FLAG_IS_SET(mFlags, kSTListFlagIsDefinition))
+		[description appendString:@"}"];
+	else
+		[description appendString:@")"];
 	
 	return description;
 }
@@ -261,8 +263,7 @@
 #pragma mark -
 #pragma mark Properties
 
-@synthesize isQuoted = mIsQuoted;
-@synthesize isDoConstruct = mIsDoConstruct;
+@synthesize flags = mFlags;
 @synthesize creationLocation = mCreationLocation;
 
 #pragma mark -
@@ -293,18 +294,7 @@
 {
 	for (id object in self)
 	{
-		@try
-		{
-			STFunctionApply(function, [STList listWithObject:object]);
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
+		STFunctionApply(function, [STList listWithObject:object]);
 	}
 	
 	return self;
@@ -316,22 +306,11 @@
 	
 	for (id object in self)
 	{
-		@try
-		{
-			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
-			if(!mappedObject)
-				continue;
-			
-			[mappedObjects addObject:mappedObject];
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
+		id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+		if(!mappedObject)
 			continue;
-		}
+		
+		[mappedObjects addObject:mappedObject];
 	}
 	
 	return mappedObjects;
@@ -343,19 +322,8 @@
 	
 	for (id object in self)
 	{
-		@try
-		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
-				[filteredObjects addObject:object];
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
+		if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+			[filteredObjects addObject:object];
 	}
 	
 	return filteredObjects;

@@ -11,6 +11,13 @@
 
 @class STEvaluator;
 
+enum STListFlags {
+	kSTListFlagsNone = 0,
+	kSTListFlagIsQuoted = 1 << 1, 
+	kSTListFlagIsDefinition = 1 << 2, 
+};
+typedef NSUInteger STListFlags;
+
 /*!
  @class
  @abstract	The STList class is used to represent s-expressions in the Stein language.
@@ -18,8 +25,7 @@
 @interface STList : NSObject < STEnumerable, NSFastEnumeration, NSCopying, NSCoding >
 {
 	/* owner */	NSMutableArray *mContents;
-	/* n/a */	BOOL mIsQuoted;
-	/* n/a */	BOOL mIsDoConstruct;
+	/* n/a */	STListFlags mFlags;
 	/* n/a */	STCreationLocation mCreationLocation;
 }
 #pragma mark Creation
@@ -170,18 +176,9 @@
 #pragma mark Properties
 
 /*!
- @property
- @abstract	Whether or not the list is quoted.
+ @abstract	Any flags specifying the structure of an STList object.
  */
-@property BOOL isQuoted;
-
-/*!
- @property
- @abstract	Whether or not the list is a do construct (was created with square brackets).
- */
-@property BOOL isDoConstruct;
-
-#pragma mark -
+@property STListFlags flags;
 
 /*!
  @property

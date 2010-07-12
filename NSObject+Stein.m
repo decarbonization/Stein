@@ -16,7 +16,6 @@
 #import "STList.h"
 #import "STClosure.h"
 #import "STSymbol.h"
-#import "STEvaluator.h"
 
 static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalIvarsTable";
 
@@ -143,21 +142,21 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 #pragma mark -
 #pragma mark Extension
 
-+ (Class)extend:(STClosure *)extensions inEvaluator:(STEvaluator *)evaluator
++ (Class)extend:(STClosure *)extensions
 {
-	STExtendClass(self, extensions.implementation, evaluator);
+	STExtendClass(self, extensions.implementation);
 	return self;
 }
 
 #pragma mark -
 #pragma mark High-Level Forwarding
 
-+ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
++ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope
 {
 	return NO;
 }
 
-+ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
++ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
 {
 	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
 	return STNull;
@@ -165,12 +164,12 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 #pragma mark -
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope
 {
 	return NO;
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
 {
 	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
 	return STNull;
@@ -449,18 +448,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 {
 	for (id object in self)
 	{
-		@try
-		{
-			STFunctionApply(function, [STList listWithObject:object]);
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
+		STFunctionApply(function, [STList listWithObject:object]);
 	}
 	
 	return self;
@@ -472,22 +460,11 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		@try
-		{
-			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
-			if(!mappedObject)
-				continue;
-			
-			[mappedObjects addObject:mappedObject];
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
+		id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+		if(!mappedObject)
 			continue;
-		}
+		
+		[mappedObjects addObject:mappedObject];
 	}
 	
 	return mappedObjects;
@@ -499,19 +476,8 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		@try
-		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
-				[filteredObjects addObject:object];
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
+		if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+			[filteredObjects addObject:object];
 	}
 	
 	return filteredObjects;
@@ -554,18 +520,18 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope
 {
 	id < NSObject, STMethodMissing > firstObject = [self objectAtIndex:0];
 	return ([firstObject respondsToSelector:selector] || 
-			[firstObject canHandleMissingMethodWithSelector:selector inEvaluator:evaluator]);
+			[firstObject canHandleMissingMethodWithSelector:selector inScope:scope]);
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
 {
 	NSMutableArray *results = [NSMutableArray arrayWithCapacity:[self count]];
 	for (id object in self)
-		[results addObject:STObjectBridgeSend(object, selector, [arguments copy], evaluator)];
+		[results addObject:STObjectBridgeSend(object, selector, [arguments copy], scope)];
 	
 	return results;
 }
@@ -582,18 +548,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 {
 	for (id object in self)
 	{
-		@try
-		{
-			STFunctionApply(function, [STList listWithObject:object]);
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
+		STFunctionApply(function, [STList listWithObject:object]);
 	}
 	
 	return self;
@@ -605,22 +560,11 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		@try
-		{
-			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
-			if(!mappedObject)
-				continue;
-			
-			[mappedObjects addObject:mappedObject];
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
+		id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+		if(!mappedObject)
 			continue;
-		}
+		
+		[mappedObjects addObject:mappedObject];
 	}
 	
 	return mappedObjects;
@@ -632,19 +576,8 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		@try
-		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
-				[filteredObjects addObject:object];
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
+		if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+			[filteredObjects addObject:object];
 	}
 	
 	return filteredObjects;
@@ -678,19 +611,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 - (id)foreach:(id < STFunction >)function
 {
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		@try
-		{
-			STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
-		}
-		@catch (STBreakException *e)
-		{
-			*stop = YES;
-			return;
-		}
-		@catch (STContinueException *e)
-		{
-			return;
-		}
+		STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
 	}];
 	
 	return self;
@@ -701,21 +622,9 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
 	
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		@try
-		{
-			id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
-			if(STIsTrue(mappedValue))
-				[result setObject:mappedValue forKey:key];
-		}
-		@catch (STBreakException *e)
-		{
-			*stop = YES;
-			return;
-		}
-		@catch (STContinueException *e)
-		{
-			return;
-		}
+		id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+		if(STIsTrue(mappedValue))
+			[result setObject:mappedValue forKey:key];
 	}];
 	
 	return result;
@@ -726,20 +635,8 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
 	
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		@try
-		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]])))
-				[result setObject:value forKey:key];
-		}
-		@catch (STBreakException *e)
-		{
-			*stop = YES;
-			return;
-		}
-		@catch (STContinueException *e)
-		{
-			return;
-		}
+		if(STIsTrue(STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]])))
+			[result setObject:value forKey:key];
 	}];
 	
 	return result;

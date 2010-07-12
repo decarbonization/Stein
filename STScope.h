@@ -22,11 +22,28 @@ typedef struct STScopeNode * STScopeNodeRef;
 @interface STScope : NSObject
 {
 @private
+	//Internal:
 	STScope *mParentScope;
 	STScopeNodeRef mHead;
 	STScopeNodeRef mLast;
+	
+	//Properties:
+	NSString *mName;
 }
 
+#pragma mark Initialization
+
+/*!
+ @abstract	Returns a new STScope with a specified parent scope.
+ */
++ (STScope *)scopeWithParentScope:(STScope *)parentScope;
+
+/*!
+ @abstract	Initialize the receiver with a specified parent scope.
+ */
+- (id)initWithParentScope:(STScope *)parentScope;
+
+#pragma mark -
 #pragma mark Scope Chaining
 
 /*!
@@ -73,5 +90,13 @@ typedef struct STScopeNode * STScopeNodeRef;
  @abstract	Returns whether or not the receiver is equal to another scope.
  */
 - (BOOL)isEqualToScope:(STScope *)scope;
+
+#pragma mark -
+#pragma mark Properties
+
+/*!
+ @abstract	The name of the scope.
+ */
+@property (copy) NSString *name;
 
 @end

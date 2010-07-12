@@ -19,8 +19,6 @@ typedef struct STParserState {
 	
 	STCreationLocation creationLocation;
 	NSUInteger index;
-	
-	STEvaluator *evaluator;
 } STParserState;
 
 static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation, BOOL isUnbordered);
@@ -44,8 +42,8 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 #define LIST_OPEN_CHARACTER					'('
 #define LIST_CLOSE_CHARACTER				')'
 
-#define DO_LIST_OPEN_CHARACTER				'['
-#define DO_LIST_CLOSE_CHARACTER				']'
+#define DO_LIST_OPEN_CHARACTER				'{'
+#define DO_LIST_CLOSE_CHARACTER				'}'
 
 #define STRING_OPEN_CHARACTER				'"'
 #define STRING_CLOSE_CHARACTER				'"'
@@ -300,7 +298,6 @@ static id GetStringAt(STParserState *parserState)
 				.stringLength = [expressionString length],
 				.creationLocation = {1, 1},
 				.index = 0,
-				.evaluator = parserState->evaluator,
 			};
 			id expression = GetExpressionAt(&expressionState, NO, YES);
 			if(!resultStringWithCode)
@@ -372,8 +369,7 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 	{
 		parserState->index++;
 		
-		expression.isQuoted = YES;
-		expression.isDoConstruct = YES;
+		expression.flags |= kSTListFlagIsQuoted | kSTListFlagIsDefinition;
 	}
 	else if(!isUnbordered)
 	{
@@ -384,7 +380,7 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 			parserState->index++;
 			STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
 			
-			expression.isQuoted = YES;
+			expression.flags |= kSTListFlagIsQuoted;
 		}
 	}
 	
@@ -539,7 +535,7 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 #pragma mark -
 #pragma mark Exported Interface
 
-NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
+NSArray *STParseString(NSString *string)
 {
 	NSCParameterAssert(string);
 	
@@ -552,7 +548,6 @@ NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator)
 		.index = 0,
 		
 		.creationLocation = { .line = 1, .offset = 1 },
-		.evaluator = targetEvaluator,
 	};
 	for (; parserState.index < parserState.stringLength; parserState.index++)
 	{

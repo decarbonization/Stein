@@ -14,138 +14,6 @@
 
 #pragma mark Tools
 
-/*!
- @defined
- @abstract	Indicate whether or not a flag is set in an options bit-field.
- */
-#define FlagIsSet(options, flag) ((options & flag) == flag)
-
-/*!
- @function
- @abstract		Analyze a string read from the REPL, and indicate the number of unbalanced parentheses and unbalanced brackets found.
- @param			numberOfUnbalancedParentheses	On return, an integer describing the number of unbalanced parentheses in the specified string.
- @param			numberOfUnbalancedBrackets		On return, an integer describing the number of unbalanced brackets in the specified string.
- @param			string							The string to analyze.
- @discussion	All parameters are required.
- */
-static void FindUnbalancedExpressions(NSInteger *numberOfUnbalancedParentheses, NSInteger *numberOfUnbalancedBrackets, NSString *string)
-{
-	NSCParameterAssert(numberOfUnbalancedParentheses);
-	NSCParameterAssert(numberOfUnbalancedBrackets);
-	NSCParameterAssert(string);
-	
-	NSUInteger stringLength = [string length];
-	for (NSUInteger index = 0; index < stringLength; index++)
-	{
-		switch ([string characterAtIndex:index])
-		{
-			case '(':
-				(*numberOfUnbalancedParentheses)++;
-				break;
-				
-			case ')':
-				(*numberOfUnbalancedParentheses)--;
-				break;
-			
-			case '[':
-				(*numberOfUnbalancedBrackets)++;
-				break;
-				
-			case ']':
-				(*numberOfUnbalancedBrackets)--;
-				break;
-				
-			default:
-				break;
-		}
-	}
-}
-
-#pragma mark -
-#pragma mark Implementation
-
-/*!
- @function
- @abstract	Run a read-evaluate-print loop (REPL) with a specified evaluator until the user asks to exit.
- */
-static void RunREPL(STEvaluator *evaluator)
-{
-	//Initialize readline so we get history.
-	rl_initialize();
-	
-	printf("stein ready [version %s]\n", [[SteinBundle() objectForInfoDictionaryKey:@"CFBundleShortVersionString"] UTF8String]);
-	for (;;)
-	{
-		//Break away if we've been told to quit|exit|EOF.
-		char *rawLine = readline("Stein> ");
-		if(!rawLine || (strlen(rawLine) == 0) || (strcmp(rawLine, "quit") == 0) || (strcmp(rawLine, "exit") == 0))
-		{
-			free(rawLine);
-			fprintf(stdout, "goodbye\n");
-			break;
-		}
-		
-		@try
-		{
-			//Convert the line we just read into an NSString and free it. We use a mutable
-			//string so we can append at a later time for the case of partial lines.
-			NSMutableString *line = [NSMutableString stringWithUTF8String:rawLine];
-			
-			
-			//Handle unbalanced pairs of parentheses and brackets.
-			NSInteger numberOfUnbalancedParentheses = 0, numberOfUnbalancedBrackets = 0;
-			FindUnbalancedExpressions(&numberOfUnbalancedParentheses, &numberOfUnbalancedBrackets, line);
-			
-			while (numberOfUnbalancedParentheses > 0)
-			{
-				char *partialLine = readline("... ");
-				
-				for (int i = 0; i < strlen(partialLine); i++)
-				{
-					if(partialLine[i] == '(')
-						numberOfUnbalancedParentheses++;
-					else if(partialLine[i] == ')')
-						numberOfUnbalancedParentheses--;
-				}
-				
-				[line appendFormat:@"%s", partialLine];
-				free(partialLine);
-			}
-			
-			while (numberOfUnbalancedBrackets > 0)
-			{
-				char *partialLine = readline("... ");
-				
-				for (int i = 0; i < strlen(partialLine); i++)
-				{
-					if(partialLine[i] == '[')
-						numberOfUnbalancedBrackets++;
-					else if(partialLine[i] == ']')
-						numberOfUnbalancedBrackets--;
-				}
-				
-				[line appendFormat:@"%s", partialLine];
-				free(partialLine);
-			}
-			
-			
-			//Parse and evaluate the data we just read in from the user, and print out the result.
-			id result = [evaluator parseAndEvaluateString:line];
-			fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
-		}
-		@catch (NSException *e)
-		{
-			fprintf(stderr, "Error: %s\n", [[e reason] UTF8String]);
-		}
-		@finally
-		{
-			free(rawLine);
-		}
-	}
-}
-
-#pragma mark -
-
 typedef enum ProgramOptions {
 	/*!
 	 @enum		ProgramOptions
@@ -254,8 +122,7 @@ int main (int argc, const char * argv[])
 	//If we're only given one argument (the path of your executable), then we enter REPL mode.
 	if(argc == 1)
 	{
-		STEvaluator *evaluator = [STEvaluator new];
-		RunREPL(evaluator);
+		STRunREPL();
 	}
 	else
 	{
@@ -263,25 +130,17 @@ int main (int argc, const char * argv[])
 		ProgramOptions options = 0;
 		AnalyzeProgramArguments(argc, argv, &paths, &options);
 		
-		STEvaluator *evaluator = [STEvaluator new];
-		if(FlagIsSet(options, kProgramOptionRunREPLInBackground))
+		if(ST_FLAG_IS_SET(options, kProgramOptionRunREPLInBackground))
 		{
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-				if(FlagIsSet(options, kProgramOptionSandboxEachFile))
-				{
-					STEvaluator *replEvaluator = [STEvaluator new];
-					RunREPL(replEvaluator);
-				}
-				else
-				{
-					RunREPL(evaluator);
-				}
+				STRunREPL();
 				
 				exit(EXIT_SUCCESS);
 			});
 		}
 		
 		NSError *error = nil;
+		STScope *globalScope = STBuiltInFunctionScope();
 		for (NSString *path in paths)
 		{
 			NSString *fileContents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
@@ -293,19 +152,19 @@ int main (int argc, const char * argv[])
 			
 			@try
 			{
-				NSArray *expressions = [evaluator parseString:fileContents];
+				id expressions = STParseString(fileContents);
 				
 				//
 				//	If we're in parse only mode, we simply print the
 				//	data we parsed and go along our merry way.
 				//
-				if(FlagIsSet(options, kProgramOptionParseOnly))
+				if(ST_FLAG_IS_SET(options, kProgramOptionParseOnly))
 				{
 					fprintf(stdout, "%s => %s\n", [path UTF8String], [[expressions prettyDescription] UTF8String]);
 				}
 				else
 				{
-					id result = [evaluator evaluateExpression:expressions inScope:nil];
+					id result = STEvaluate(expressions, [STScope scopeWithParentScope:globalScope]);
 					fprintf(stdout, "%s => %s\n", [path UTF8String], [[result prettyDescription] UTF8String]);
 				}
 				
@@ -318,9 +177,9 @@ int main (int argc, const char * argv[])
 				//	around if there are any valid closures or classes that were created
 				//	through it.
 				//
-				if(FlagIsSet(options, kProgramOptionSandboxEachFile))
+				if(ST_FLAG_IS_SET(options, kProgramOptionSandboxEachFile))
 				{
-					evaluator = [STEvaluator new];
+					globalScope = STBuiltInFunctionScope();
 				}
 			}
 			@catch (NSException *e)

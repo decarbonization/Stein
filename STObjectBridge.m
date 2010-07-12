@@ -15,9 +15,11 @@
 #import "STList.h"
 #import "STSymbol.h"
 
+#import "STScope.h"
+#import "STInterpreter.h"
+
 #import "STClosure.h"
 #import "STNativeFunctionWrapper.h"
-#import "STEvaluatorInternal.h"
 
 #import "NSObject+Stein.h"
 
@@ -35,7 +37,7 @@ ST_INLINE BOOL IsSelectorExemptFromNullMessaging(SEL selector)
 			selector == @selector(match:));
 }
 
-id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *evaluator)
+id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STScope *scope)
 {
 	NSCParameterAssert(selector);
 	NSCParameterAssert(arguments);
@@ -46,26 +48,14 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *
 	NSMethodSignature *targetMethodSignature = [target methodSignatureForSelector:selector];
 	if(!targetMethodSignature)
 	{
-		//We provide a shorthand for calling methods that require
-		//a reference to the evaluator to properly function.
-		NSString *extendedSelectorString = [NSStringFromSelector(selector) stringByAppendingString:@"inEvaluator:"];
-		targetMethodSignature = [target methodSignatureForSelector:NSSelectorFromString(extendedSelectorString)];
-		if(targetMethodSignature)
+		/*if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
+		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
 		{
-			selector = NSSelectorFromString(extendedSelectorString);
-			arguments = [arguments arrayByAddingObject:evaluator];
-		}
-		else
-		{
-			if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
-			   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
-			{
-				if([target canHandleMissingMethodWithSelector:selector inEvaluator:evaluator])
-					return [target handleMissingMethodWithSelector:selector arguments:arguments inEvaluator:evaluator] ?: STNull;
-			}
-			
-			[target doesNotRecognizeSelector:selector];
-		}
+			if([target canHandleMissingMethodWithSelector:selector inEvaluator:evaluator])
+				return [target handleMissingMethodWithSelector:selector arguments:arguments inEvaluator:evaluator] ?: STNull;
+		}*/
+		
+		[target doesNotRecognizeSelector:selector];
 	}
 	
 	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:targetMethodSignature];
@@ -99,7 +89,7 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *
 	return STTypeBridgeConvertValueOfTypeIntoObject(returnBuffer, returnType);
 }
 
-id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STEvaluator *evaluator)
+id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STScope *scope)
 {
 	NSCParameterAssert(superclass);
 	NSCParameterAssert(selector);
@@ -119,30 +109,20 @@ id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *a
 	//If we couldn't find the method, then the superclass doesn't have the method.
 	if(!method)
 	{
-		//We provide a shorthand for calling methods that require
-		//a reference to the evaluator to properly function.
 		NSString *extendedSelectorString = [NSStringFromSelector(selector) stringByAppendingString:@"inEvaluator:"];
 		method = class_getInstanceMethod(superclass, NSSelectorFromString(extendedSelectorString));
 		if(!method)
 			method = class_getClassMethod(superclass, NSSelectorFromString(extendedSelectorString));
 		
-		if(method)
+		/*if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
+		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
 		{
-			selector = NSSelectorFromString(extendedSelectorString);
-			arguments = [arguments arrayByAddingObject:evaluator];
-		}
-		else
-		{
-			if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
-			   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
-			{
-				struct objc_super superTarget = { target, superclass };
-				if(((BOOL(*)(struct objc_super *, SEL, SEL, id))objc_msgSendSuper)(&superTarget, @selector(canHandleMissingMethodWithSelector:inEvaluator:), selector, evaluator))
-					return objc_msgSendSuper(&superTarget, @selector(handleMissingMethodWithSelector:arguments:inEvaluator:), selector, arguments, evaluator) ?: STNull;
-			}
-			
-			[superclass doesNotRecognizeSelector:selector];
-		}
+			struct objc_super superTarget = { target, superclass };
+			if(((BOOL(*)(struct objc_super *, SEL, SEL, id))objc_msgSendSuper)(&superTarget, @selector(canHandleMissingMethodWithSelector:inEvaluator:), selector, evaluator))
+				return objc_msgSendSuper(&superTarget, @selector(handleMissingMethodWithSelector:arguments:inEvaluator:), selector, arguments, evaluator) ?: STNull;
+		}*/
+		
+		[superclass doesNotRecognizeSelector:selector];
 	}
 	
 	//Create the function invocation
@@ -245,8 +225,7 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 		if([expression isKindOfClass:[STList class]] && [expression isQuoted])
 		{
 			implementation = expression;
-			implementation.isDoConstruct = NO;
-			implementation.isQuoted = NO;
+			implementation.flags = kSTListFlagsNone;
 			break;
 		}
 		
@@ -292,8 +271,7 @@ static void GetMethodDefinitionFromListWithoutTypes(STList *list, SEL *outSelect
 		if([expression isKindOfClass:[STList class]])
 		{
 			implementation = expression;
-			implementation.isDoConstruct = NO;
-			implementation.isQuoted = NO;
+			implementation.flags = kSTListFlagsNone;
 			break;
 		}
 		
@@ -316,7 +294,7 @@ static void GetMethodDefinitionFromListWithoutTypes(STList *list, SEL *outSelect
 	*outImplementation = implementation;
 }
 
-static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Class class, STEvaluator *evaluator)
+static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Class class)
 {
 	SEL selector = NULL;
 	STList *prototype = nil;
@@ -330,10 +308,7 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 		GetMethodDefinitionFromListWithoutTypes(list, &selector, &prototype, &typeSignatureString, &implementation);
 	
 	
-	STClosure *closure = [[STClosure alloc] initWithPrototype:prototype 
-											forImplementation:implementation 
-												fromEvaluator:evaluator 
-													  inScope:nil];
+	STClosure *closure = [[STClosure alloc] initWithPrototype:prototype forImplementation:implementation inScope:nil];
 	closure.superclass = [class superclass];
 	
 	const char *typeSignature = [typeSignatureString UTF8String];
@@ -362,7 +337,7 @@ static void AddMethodFromClosureToClass(STList *list, BOOL isInstanceMethod, Cla
 
 #pragma mark -
 
-void STExtendClass(Class classToExtend, STList *expressions, STEvaluator *evaluator)
+void STExtendClass(Class classToExtend, STList *expressions)
 {
 	NSCParameterAssert(classToExtend);
 	NSCParameterAssert(expressions);
@@ -375,21 +350,21 @@ void STExtendClass(Class classToExtend, STList *expressions, STEvaluator *evalua
 			id head = [expression head];
 			if([head isEqualTo:@"+"])
 			{
-				AddMethodFromClosureToClass([expression tail], NO, classToExtend, evaluator);
+				AddMethodFromClosureToClass([expression tail], NO, classToExtend);
 			}
 			else if([head isEqualTo:@"-"])
 			{
-				AddMethodFromClosureToClass([expression tail], YES, classToExtend, evaluator);
+				AddMethodFromClosureToClass([expression tail], YES, classToExtend);
 			}
 			else
 			{
 				if(!scope)
-					scope = [evaluator scopeWithEnclosingScope:nil];
+				{
+					scope = [STScope new];
+					[scope setValue:classToExtend forVariableNamed:@"self" searchParentScopes:NO];
+				}
 				
-				SEL selector = nil;
-				NSArray *arguments = nil;
-				MessageListGetSelectorAndArguments(evaluator, scope, expression, &selector, &arguments);
-				STObjectBridgeSend(classToExtend, selector, arguments, evaluator);
+				STEvaluate(expression, scope);
 			}
 		}
 	}
@@ -397,7 +372,7 @@ void STExtendClass(Class classToExtend, STList *expressions, STEvaluator *evalua
 
 #pragma mark -
 
-BOOL STUndefineClass(Class classToUndefine, STEvaluator *evaluator)
+BOOL STUndefineClass(Class classToUndefine)
 {
 	NSCParameterAssert(classToUndefine);
 	
@@ -406,13 +381,13 @@ BOOL STUndefineClass(Class classToUndefine, STEvaluator *evaluator)
 	return YES;
 }
 
-BOOL STResetClass(Class classToReset, STEvaluator *evaluator)
+BOOL STResetClass(Class classToReset)
 {
 	//TODO: Implement.
 	return NO;
 }
 
-Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions, STEvaluator *evaluator)
+Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions)
 {
 	NSCParameterAssert(subclassName);
 	NSCParameterAssert(superclass);
@@ -424,7 +399,7 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 		newClass = objc_getClass([subclassName UTF8String]);
 	
 	if(expressions)
-		STExtendClass(newClass, expressions, evaluator);
+		STExtendClass(newClass, expressions);
 	
 	return newClass;
 }

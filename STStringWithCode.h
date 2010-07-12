@@ -44,13 +44,8 @@
 #pragma mark Application
 
 /*!
- @method
- @abstract		Apply the receiver with a specified evaluator within a specified scope.
- @param			evaluator	The evaluator to use when evaluating the receiver's expressions. May not be nil.
- @param			scope		The scope to evaluate the expressions in. May be nil.
- @result		A string with the result of the receiver's expressions embedded within it's contents.
- @discussion	The receiver's expressions will be evaluated within a unique scope.
+ @abstract	Apply the receiver within a specified scope.
  */
-- (NSString *)applyWithEvaluator:(STEvaluator *)evaluator scope:(STScope *)scope;
+- (id)applyInScope:(STScope *)scope;
 
 @end

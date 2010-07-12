@@ -10,7 +10,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STList, STEvaluator;
+@class STList, STScope;
 
 /*!
  @function
@@ -29,7 +29,7 @@
 				-	If the method-missing forwarding mechanism fails to handle the message, then
 					@selector(doesNotRecognizeSelector:) is invoked on target.
  */
-ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STEvaluator *evaluator);
+ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STScope *scope);
 
 /*!
  @function
@@ -49,7 +49,7 @@ ST_EXTERN id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STE
 				-	If the method-missing forwarding mechanism fails to handle the message, then
 					@selector(doesNotRecognizeSelector:) is invoked on target.
  */
-ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STEvaluator *evaluator);
+ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STScope *scope);
 
 #pragma mark -
 
@@ -59,7 +59,7 @@ ST_EXTERN id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, 
  @param		classToExtend	The class to extend. May not be nil. Should implement the NSObject protocol.
  @param		expressions		A list of expressions consisting of method declarations, and decorators. May not be nil.
  */
-ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions, STEvaluator *evaluator);
+ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions);
 
 #pragma mark -
 
@@ -67,13 +67,13 @@ ST_EXTERN void STExtendClass(Class classToExtend, STList *expressions, STEvaluat
  @function
  @abstract	Undefine a class in the ObjC runtime.
  */
-ST_EXTERN BOOL STUndefineClass(Class classToUndefine, STEvaluator *evaluator);
+ST_EXTERN BOOL STUndefineClass(Class classToUndefine);
 
 /*!
  @function
  @abstract	Remove a classes method, protocol, and property information. This effectively returns a class to a blank-slate like condition.
  */
-ST_EXTERN BOOL STResetClass(Class classToReset, STEvaluator *evaluator);
+ST_EXTERN BOOL STResetClass(Class classToReset);
 
 /*!
  @function
@@ -83,4 +83,4 @@ ST_EXTERN BOOL STResetClass(Class classToReset, STEvaluator *evaluator);
  @param		expressions		A list of expressions consisting of method declarations, and decorators. May not be nil.
  @result	The new class if it could be created without issue; nil otherwise.
  */
-ST_EXTERN Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions, STEvaluator *evaluator);
+ST_EXTERN Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions);

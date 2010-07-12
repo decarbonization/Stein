@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Stein/STFunction.h>
 
-@class STEvaluator, STList, STScope;
+@class STList, STScope;
 
 /*!
  @class
@@ -17,7 +17,6 @@
  */
 @interface STClosure : NSObject < STFunction >
 {
-	STEvaluator *mEvaluator;
 	STScope *mSuperscope;
 	Class mSuperclass;
 	NSString *mName;
@@ -29,24 +28,17 @@
 
 /*!
  @method
- @abstract		Initialize a Stein closure with a prototype, implementation, a signature describing it's prototype, and an evaluator to apply it with.
+ @abstract		Initialize a Stein closure with a prototype, implementation, and a signature describing it's prototype.
  @param			prototype		The prototype of the closure in the form of an STList of symbols. May not be nil.
  @param			implementation	The implementation of the closure in the form of an STList of Stein expressions. May not be nil.
- @param			evaluator		The evaluator to use when applying the closure.
  @param			superscope		The scope that encloses the closure being created.
  @result		A fully initialized Stein closure object ready for use.
  @discussion	This is the designated initializer of STClosure.
  */
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(STScope *)superscope;
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation inScope:(STScope *)superscope;
 
 #pragma mark -
 #pragma mark Properties
-
-/*!
- @property
- @abstract	The evaluator to use when the closure is applied.
- */
-@property (readonly) STEvaluator *evaluator;
 
 /*!
  @property

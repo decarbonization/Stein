@@ -197,6 +197,24 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 
 @implementation STScope
 
+#pragma mark Initialization
+
++ (STScope *)scopeWithParentScope:(STScope *)parentScope
+{
+	return [[self alloc] initWithParentScope:parentScope];
+}
+
+- (id)initWithParentScope:(STScope *)parentScope
+{
+	if((self = [self init]))
+	{
+		self.parentScope = parentScope;
+	}
+	
+	return self;
+}
+
+#pragma mark -
 #pragma mark Scope Chaining
 
 @synthesize parentScope = mParentScope;
@@ -206,7 +224,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 
 - (NSString *)description
 {
-	NSMutableString *description = [NSMutableString stringWithFormat:@"<%@:%p {\n", [self className], self];
+	NSMutableString *description = [NSMutableString stringWithFormat:@"<%@:%p %@ {\n", [self className], self, mName ?: @"(anonymous scope)"];
 	
 	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
 		[description appendFormat:@"\t%@: %@\n", [key description], [value description]];
@@ -379,5 +397,10 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 {
 	return [self valueForVariableNamed:key searchParentScopes:YES];
 }
+
+#pragma mark -
+#pragma mark Properties
+
+@synthesize name = mName;
 
 @end

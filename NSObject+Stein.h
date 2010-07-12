@@ -29,24 +29,24 @@
  @method
  @abstract		Returns whether or not the receiver can handle a missing method with a specified selector.
  @param			selector	The method which contains no known implementation in the receiver.
- @param			evaluator	The evaluator in which the missing method has been called from.
+ @param			scope		The scope in which the receiver was called from.
  @result		YES if the receiver can handle the selector; NO otherwise.
  @discussion	This method is invoked by the Stein runtime when an object doesn't respond to a specified selector.
  */
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator;
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope;
 
 /*!
  @method
  @abstract		Perform an action for a missing method.
  @param			selector	The method to perform an action for.
  @param			arguments	The arguments passed to the method.
- @param			evaluator	The evaluator in which the missing method has been called from.
+ @param			scope		The scope in which the receiver was called from.
  @result		The result of the action performed.
- @discussion	This method is only called if -[STMethodMissing canHandleMissingMethodWithSelector:inEvaluator:] returns YES.
+ @discussion	This method is only called if -[STMethodMissing canHandleMissingMethodWithSelector:inScope:] returns YES.
 				
 				NSObject's default implementation of this method logs an error message and returns STNull.
  */
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator;
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope;
 
 @end
 
@@ -108,7 +108,7 @@
  @method
  @abstract	Extend the receiver using a closure full of method constructs.
  */
-+ (Class)extend:(STClosure *)extensions inEvaluator:(STEvaluator *)evaluator;
++ (Class)extend:(STClosure *)extensions;
 
 @end
 

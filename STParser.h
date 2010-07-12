@@ -23,4 +23,4 @@
  @result		An array of lists, symbols, strings, and numbers.
  @discussion	This function is thread safe.
  */
-ST_EXTERN NSArray *STParseString(NSString *string, STEvaluator *targetEvaluator);
+ST_EXTERN NSArray *STParseString(NSString *string);

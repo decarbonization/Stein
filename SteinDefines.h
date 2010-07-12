@@ -19,6 +19,8 @@
 
 #define ST_INLINE	static inline
 
+#define ST_FLAG_IS_SET(bitfield, flag) ((flag & bitfield) == flag)
+
 #ifdef __OBJC__
 
 #import <Foundation/Foundation.h>

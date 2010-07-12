@@ -67,11 +67,6 @@
 	return NO;
 }
 
-- (STEvaluator *)evaluator
-{
-	return nil;
-}
-
 - (STScope *)superscope
 {
 	return nil;

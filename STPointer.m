@@ -22,8 +22,8 @@
  @param			type	The type of the value that will be stored in the pointer's buffer. May not be NULL.
  @result		A fully initialized pointer with a buffer to hold the value described.
  @discussion	You do not generally use this initializer to create a pointer object. Rather, it is
-				recommended that you use `pointerWithType:` or `arrayPointerOfLength:type:` to create
-				your pointer objects.
+ recommended that you use `pointerWithType:` or `arrayPointerOfLength:type:` to create
+ your pointer objects.
  */
 - (id)initWithSize:(size_t)size type:(const char *)type isArray:(BOOL)isArray
 {
@@ -208,18 +208,7 @@
 	NSUInteger valueCount = self.count;
 	for (NSUInteger index = 0; index < valueCount; index++)
 	{
-		@try
-		{
-			STFunctionApply(function, [STList listWithObject:[self valueAtIndex:index]]);
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
+		STFunctionApply(function, [STList listWithObject:[self valueAtIndex:index]]);
 	}
 	
 	return self;
@@ -234,19 +223,8 @@
 	NSUInteger valueCount = self.count;
 	for (NSUInteger index = 0; index < valueCount; index++)
 	{
-		@try
-		{
-			id mappedValue = STFunctionApply(function, [STList listWithObject:[self valueAtIndex:index]]);
-			[mappedPointerArray setValue:mappedValue atIndex:index];
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
-		@catch (STBreakException *e)
-		{
-			break;
-		}
+		id mappedValue = STFunctionApply(function, [STList listWithObject:[self valueAtIndex:index]]);
+		[mappedPointerArray setValue:mappedValue atIndex:index];
 	}
 	
 	return mappedPointerArray;
@@ -261,22 +239,11 @@
 	NSUInteger valueCount = self.count;
 	for (NSUInteger index = 0; index < valueCount; index++)
 	{
-		@try
+		id value = [filteredPointerArray valueAtIndex:index];
+		if(STIsTrue(STFunctionApply(function, [STList listWithObject:value])))
 		{
-			id value = [filteredPointerArray valueAtIndex:index];
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:value])))
-			{
-				filteredPointerArray.count++;
-				[filteredPointerArray setValue:value atIndex:filteredPointerArray.count - 1];
-			}
-		}
-		@catch (STContinueException *e)
-		{
-			continue;
-		}
-		@catch (STBreakException *e)
-		{
-			break;
+			filteredPointerArray.count++;
+			[filteredPointerArray setValue:value atIndex:filteredPointerArray.count - 1];
 		}
 	}
 	

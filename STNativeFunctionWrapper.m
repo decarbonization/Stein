@@ -158,11 +158,6 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 #pragma mark -
 #pragma mark Implementing STFunction
 
-- (STEvaluator *)evaluator
-{
-	return [mFunction evaluator];
-}
-
 - (STScope *)superscope
 {
 	return [mFunction superscope];

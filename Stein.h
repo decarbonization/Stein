@@ -8,6 +8,8 @@
  */
 
 #import <Stein/SteinDefines.h>
-#import <Stein/STEvaluator.h>
+#import <Stein/STParser.h>
+#import <Stein/STInterpreter.h>
+#import <Stein/STBuiltInFunctions.h>
 #import <Stein/STList.h>
 #import <Stein/STSymbol.h>

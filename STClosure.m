@@ -7,9 +7,8 @@
 //
 
 #import "STClosure.h"
-#import "STEvaluator.h"
-#import "STEvaluatorInternal.h"
 #import "STList.h"
+#import "STInterpreter.h"
 
 @implementation STClosure
 
@@ -21,17 +20,15 @@
 	return nil;
 }
 
-- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation fromEvaluator:(STEvaluator *)evaluator inScope:(STScope *)superscope
+- (id)initWithPrototype:(STList *)prototype forImplementation:(STList *)implementation inScope:(STScope *)superscope
 {
 	NSParameterAssert(prototype);
 	NSParameterAssert(implementation);
-	NSParameterAssert(evaluator);
 	
 	if((self = [super init]))
 	{
 		mPrototype = prototype;
 		mImplementation = implementation;
-		mEvaluator = evaluator;
 		mSuperscope = superscope;
 		
 		return self;
@@ -49,7 +46,7 @@
 
 - (id)applyWithArguments:(STList *)arguments inScope:(STScope *)superscope
 {
-	STScope *scope = [mEvaluator scopeWithEnclosingScope:superscope];
+	STScope *scope = [STScope scopeWithParentScope:superscope];
 	NSUInteger index = 0;
 	NSUInteger countOfArguments = [arguments count];
 	for (id name in mPrototype)
@@ -61,14 +58,14 @@
 		index++;
 	}
 	
-	if(mSuperclass)
-		[scope setValue:mSuperclass forVariableNamed:kSTEvaluatorSuperclassKey searchParentScopes:NO];
+	/*if(mSuperclass)
+		[scope setValue:mSuperclass forVariableNamed:kSTEvaluatorSuperclassKey searchParentScopes:NO];*/
 	
 	[scope setValue:arguments forVariableNamed:@"_arguments" searchParentScopes:NO];
 	
 	id result = nil;
 	for (id expression in mImplementation)
-		result = __STEvaluateExpression(mEvaluator, expression, scope);
+		result = STEvaluate(expression, scope);
 	
 	return result;
 }
@@ -76,7 +73,6 @@
 #pragma mark -
 #pragma mark Properties
 
-@synthesize evaluator = mEvaluator;
 @synthesize superscope = mSuperscope;
 @synthesize superclass = mSuperclass;
 @synthesize name = mName;

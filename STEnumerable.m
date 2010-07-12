@@ -7,33 +7,3 @@
 //
 
 #import "STEnumerable.h"
-
-@implementation STBreakException
-
-+ (STBreakException *)breakException
-{
-	return (STBreakException *)[super exceptionWithName:@"STBreakException" reason:@"break" userInfo:nil];
-}
-
-@end
-
-STBuiltInFunctionDefine(Break, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
-	@throw [STBreakException breakException];
-	return STNull;
-});
-
-#pragma mark -
-
-@implementation STContinueException
-
-+ (STContinueException *)continueException
-{
-	return (STContinueException *)[super exceptionWithName:@"STContinueException" reason:@"continue" userInfo:nil];
-}
-
-@end
-
-STBuiltInFunctionDefine(Continue, YES, ^id(STEvaluator *evaluator, STList *arguments, STScope *scope) {
-	@throw [STContinueException continueException];
-	return STNull;
-});

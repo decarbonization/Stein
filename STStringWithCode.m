@@ -9,7 +9,7 @@
 #import "STStringWithCode.h"
 
 #import "STList.h"
-#import "STEvaluator.h"
+#import "STInterpreter.h"
 
 @implementation STStringWithCode
 
@@ -76,16 +76,14 @@
 #pragma mark -
 #pragma mark Application
 
-- (id)applyWithEvaluator:(STEvaluator *)evaluator scope:(STScope *)scope
+- (id)applyInScope:(STScope *)scope
 {
-	NSParameterAssert(evaluator);
-	
-	STScope *expressionEvaluationScope = [evaluator scopeWithEnclosingScope:scope];
+	STScope *expressionEvaluationScope = [STScope scopeWithParentScope:scope];
 	
 	NSMutableArray *evaluatedExpressionStrings = [NSMutableArray array];
 	for (id expression in mCodeExpressions)
 	{
-		id resultOfExpression = [evaluator evaluateExpression:expression inScope:expressionEvaluationScope];
+		id resultOfExpression = STEvaluate(expression, expressionEvaluationScope);
 		[evaluatedExpressionStrings addObject:[resultOfExpression description]];
 	}
 	
