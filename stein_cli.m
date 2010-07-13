@@ -93,8 +93,7 @@ static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outP
  */
 static void Help()
 {
-	fprintf(stdout, "stein [-spr] [paths...]\n\n");
-	fprintf(stdout, "\t-s\tRun each file in it's own evaluator, isolating their environments from each other.\n");
+	fprintf(stdout, "stein [-pr] [paths...]\n\n");
 	fprintf(stdout, "\t-p\tOnly parse the files, printing the compiled structure.\n");
 	fprintf(stdout, "\t-r\tRun the REPL on a background thread while the files are run on the main thread.\n");
 }

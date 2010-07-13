@@ -65,6 +65,13 @@
 @end
 
 /*!
+ @abstract	This category provides overloaded math operators that operate on decimal numbers.
+ */
+@interface NSDecimalNumber (SteinTools)
+
+@end
+
+/*!
  @abstract	This category adds pretty printing and STEnumerable support to NSString.
  */
 @interface NSString (SteinTools) <STEnumerable>

@@ -156,6 +156,18 @@ static id set_ivar(STList *arguments, STScope *scope)
 	return value;
 }
 
+static id ivar(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 1)
+		STRaiseIssue(arguments.creationLocation, @"ivar requires 1 parameter (name), %ld given.", arguments.count);
+	
+	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
+	if(!self)
+		STRaiseIssue(arguments.creationLocation, @"ivar called outside of object-context.");
+	
+	return [self valueForIvarNamed:[[arguments head] string]];
+}
+
 #pragma mark -
 
 static id load(STList *arguments, STScope *scope)
@@ -181,6 +193,9 @@ static id load(STList *arguments, STScope *scope)
 
 static id _super(STList *message, STScope *scope)
 {
+	if(message.count == 0)
+		STRaiseIssue(message.creationLocation, @"super requires a message.");
+	
 	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
 	if(!self)
 		STRaiseIssue(message.creationLocation, @"super called outside of class context.");
@@ -225,15 +240,44 @@ static id eval(STList *arguments, STScope *scope)
 	return lastResult;
 }
 
+static id apply(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 2)
+		STRaiseIssue(arguments.creationLocation, @"apply requires 2 parameters (function, parameters), got %ld", arguments.count);
+	
+	id <STFunction> function = [arguments objectAtIndex:0];
+	id parameters = [arguments objectAtIndex:1];
+	if([parameters isKindOfClass:[NSArray class]])
+		parameters = [STList listWithArray:parameters];
+	else if(![parameters isKindOfClass:[STList class]])
+		STRaiseIssue(arguments.creationLocation, @"Wrong type given for apply's `parameters`, got %@, expected STList|NSArray.", [parameters className]);
+	
+	return [function applyWithArguments:parameters inScope:scope];
+}
+
+#pragma mark -
+
+static id _break(STList *arguments, STScope *scope)
+{
+	@throw [STBreakException breakExceptionFrom:arguments.creationLocation];
+	return nil;
+}
+
+static id _continue(STList *arguments, STScope *scope)
+{
+	@throw [STContinueException continueExceptionFrom:arguments.creationLocation];
+	return nil;
+}
+
 #pragma mark -
 #pragma mark • Mathematics
 
 static id plus(STList *arguments, STScope *scope)
 {
-	NSDecimalNumber *leftOperand = [arguments head];
-	for (NSDecimalNumber *rightOperand in [arguments tail])
+	id leftOperand = [arguments head];
+	for (id rightOperand in [arguments tail])
 	{
-		leftOperand = [leftOperand decimalNumberByAdding:rightOperand];
+		leftOperand = [leftOperand operatorAdd:rightOperand];
 	}
 	
 	return leftOperand;
@@ -241,10 +285,10 @@ static id plus(STList *arguments, STScope *scope)
 
 static id minus(STList *arguments, STScope *scope)
 {
-	NSDecimalNumber *leftOperand = [arguments head];
-	for (NSDecimalNumber *rightOperand in [arguments tail])
+	id leftOperand = [arguments head];
+	for (id rightOperand in [arguments tail])
 	{
-		leftOperand = [leftOperand decimalNumberBySubtracting:rightOperand];
+		leftOperand = [leftOperand operatorSubtract:rightOperand];
 	}
 	
 	return leftOperand;
@@ -252,10 +296,10 @@ static id minus(STList *arguments, STScope *scope)
 
 static id multiply(STList *arguments, STScope *scope)
 {
-	NSDecimalNumber *leftOperand = [arguments head];
-	for (NSDecimalNumber *rightOperand in [arguments tail])
+	id leftOperand = [arguments head];
+	for (id rightOperand in [arguments tail])
 	{
-		leftOperand = [leftOperand decimalNumberByMultiplyingBy:rightOperand];
+		leftOperand = [leftOperand operatorMultiply:rightOperand];
 	}
 	
 	return leftOperand;
@@ -263,10 +307,10 @@ static id multiply(STList *arguments, STScope *scope)
 
 static id divide(STList *arguments, STScope *scope)
 {
-	NSDecimalNumber *leftOperand = [arguments head];
-	for (NSDecimalNumber *rightOperand in [arguments tail])
+	id leftOperand = [arguments head];
+	for (id rightOperand in [arguments tail])
 	{
-		leftOperand = [leftOperand decimalNumberByDividingBy:rightOperand];
+		leftOperand = [leftOperand operatorDivide:rightOperand];
 	}
 	
 	return leftOperand;
@@ -274,10 +318,10 @@ static id divide(STList *arguments, STScope *scope)
 
 static id power(STList *arguments, STScope *scope)
 {
-	NSDecimalNumber *leftOperand = [arguments head];
-	for (NSDecimalNumber *rightOperand in [arguments tail])
+	id leftOperand = [arguments head];
+	for (id rightOperand in [arguments tail])
 	{
-		leftOperand = [leftOperand decimalNumberByRaisingToPower:[rightOperand unsignedIntegerValue]];
+		leftOperand = [leftOperand operatorPower:rightOperand];
 	}
 	
 	return leftOperand;
@@ -497,16 +541,28 @@ static id to_native_function(STList *arguments, STScope *scope)
 
 static id array(STList *arguments, STScope *scope)
 {
+	//Special case for `array ()`
+	if(arguments.count == 1 && [arguments head] == STNull)
+		return [NSMutableArray array];
+	
 	return [arguments.allObjects mutableCopy];
 }
 
 static id list(STList *arguments, STScope *scope)
 {
+	//Special case for `list ()`
+	if(arguments.count == 1 && [arguments head] == STNull)
+		return [STList new];
+	
 	return [arguments copy];
 }
 
 static id dictionary(STList *arguments, STScope *scope)
 {
+	//Special case for `dictionary ()`
+	if(arguments.count == 1 && [arguments head] == STNull)
+		return [NSMutableDictionary dictionary];
+	
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
 	
 	id key = nil;
@@ -566,14 +622,25 @@ STScope *STBuiltInFunctionScope()
 		   forConstantNamed:@"let"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set_ivar evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"set-ivar"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ivar evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"ivar"];
+	
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"load!"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"super"];
+	
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&parse evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"parse"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&eval evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"eval"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&apply evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"apply"];
+	
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_break evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"break"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_continue evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"continue"];
 	
 	//Mathematics
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus evaluatesOwnArguments:NO] 

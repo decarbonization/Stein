@@ -9,6 +9,7 @@
 #import "NSObject+SteinInternalSupport.h"
 
 #import "STInterpreter.h"
+#import "STList.h"
 
 #import <objc/runtime.h>
 #import "STTypeBridge.h"
@@ -185,6 +186,9 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 - (id)applyWithArguments:(STList *)message inScope:(STScope *)scope
 {
+	if(message.count == 0)
+		STRaiseIssue(message.creationLocation, @"malformed message to %@", self);
+	
 	NSMutableString *selectorString = [NSMutableString string];
 	NSMutableArray *parameters = [NSMutableArray array];
 	
@@ -204,6 +208,39 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	}
 	
 	return STObjectBridgeSend(self, NSSelectorFromString(selectorString), parameters, scope);
+}
+
+#pragma mark -
+#pragma mark Operators
+
+- (id)operatorAdd:(id)rightOperand
+{
+	[NSException raise:NSInternalInconsistencyException format:@"abstract operator"];
+	return STNull;
+}
+
+- (id)operatorSubtract:(id)rightOperand
+{
+	[NSException raise:NSInternalInconsistencyException format:@"abstract operator"];
+	return STNull;
+}
+
+- (id)operatorMultiply:(id)rightOperand
+{
+	[NSException raise:NSInternalInconsistencyException format:@"abstract operator"];
+	return STNull;
+}
+
+- (id)operatorDivide:(id)rightOperand
+{
+	[NSException raise:NSInternalInconsistencyException format:@"abstract operator"];
+	return STNull;
+}
+
+- (id)operatorPower:(id)rightOperand
+{
+	[NSException raise:NSInternalInconsistencyException format:@"abstract operator"];
+	return STNull;
 }
 
 @end

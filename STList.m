@@ -332,7 +332,18 @@
 {
 	for (id object in self)
 	{
-		STFunctionApply(function, [STList listWithObject:object]);
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:object]);
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return self;
@@ -344,11 +355,22 @@
 	
 	for (id object in self)
 	{
-		id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
-		if(!mappedObject)
+		@try
+		{
+			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			if(!mappedObject)
+				continue;
+			
+			[mappedObjects addObject:mappedObject];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
 			continue;
-		
-		[mappedObjects addObject:mappedObject];
+		}
 	}
 	
 	return mappedObjects;
@@ -360,8 +382,19 @@
 	
 	for (id object in self)
 	{
-		if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
-			[filteredObjects addObject:object];
+		@try
+		{
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+				[filteredObjects addObject:object];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return filteredObjects;

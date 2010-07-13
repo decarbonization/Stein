@@ -58,7 +58,7 @@
 		index++;
 	}
 	
-	[scope setValue:arguments forVariableNamed:@"_arguments" searchParentScopes:NO];
+	[scope setValue:arguments forVariableNamed:@"$_arguments" searchParentScopes:NO];
 	
 	id result = nil;
 	for (id expression in mImplementation)

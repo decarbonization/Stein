@@ -67,3 +67,29 @@
 - (id)filter:(id < STFunction >)function;
 
 @end
+
+#pragma mark -
+
+@interface STBreakException : NSException
+{
+@private
+	STCreationLocation mCreationLocation;
+}
+
++ (STBreakException *)breakExceptionFrom:(STCreationLocation)creationLocation;
+
+@property STCreationLocation creationLocation;
+
+@end
+
+@interface STContinueException : NSException
+{
+@private
+	STCreationLocation mCreationLocation;
+}
+
++ (STContinueException *)continueExceptionFrom:(STCreationLocation)creationLocation;
+
+@property STCreationLocation creationLocation;
+
+@end

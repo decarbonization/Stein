@@ -7,6 +7,7 @@
 //
 
 #import "NSObject+SteinTools.h"
+#import "NSObject+SteinInternalSupport.h"
 #import <objc/objc-runtime.h>
 #import "STObjectBridge.h"
 #import "STTypeBridge.h"
@@ -96,12 +97,7 @@
 
 static BOOL IsCharacterSequenceOperator(unichar left, unichar right)
 {
-	return (left == '+' || left == '-' || 
-			left == '*' || left == '/' || 
-			left == '%' || left == '^' || 
-			left == '<' || (left == '<' && right == '=') || 
-			left == '>' || (left == '>' && right == '=') || 
-			left == '|' || left == '&');
+	return (left == '+' || left == '-' || left == '*' || left == '/' || left == '^');
 }
 
 static BOOL IsSelectorComposedOfOperators(SEL selector)
@@ -161,7 +157,7 @@ ST_INLINE int PrecedenceOfOperatorNamed(char operatorName[3])
 	{
 		return 3;
 	}
-	else if(streq(operatorName, "*") || streq(operatorName, "/") || streq(operatorName, "%"))
+	else if(streq(operatorName, "*") || streq(operatorName, "/"))
 	{
 		return 4;
 	}
@@ -212,41 +208,95 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	for (int index = 0; index < numberOfOperations; index++)
 	{
 		Operation operation = operations[index];
-		double leftOperand = [[pool objectAtIndex:operation.originalPosition] doubleValue];
-		double rightOperand = [[pool objectAtIndex:operation.originalPosition + 1] doubleValue];
-		double result = 0;
+		id leftOperand = [pool objectAtIndex:operation.originalPosition];
+		id rightOperand = [pool objectAtIndex:operation.originalPosition + 1];
+		id result = 0;
 		
 		if(streq(operation.operatorName, "+"))
 		{
-			result = leftOperand + rightOperand;
+			result = [leftOperand operatorAdd:rightOperand];
 		}
 		else if(streq(operation.operatorName, "-"))
 		{
-			result = leftOperand - rightOperand;
+			result = [leftOperand operatorSubtract:rightOperand];
 		}
 		else if(streq(operation.operatorName, "*"))
 		{
-			result = leftOperand * rightOperand;
+			result = [leftOperand operatorMultiply:rightOperand];
 		}
 		else if(streq(operation.operatorName, "/"))
 		{
-			result = leftOperand / rightOperand;
-		}
-		else if(streq(operation.operatorName, "%"))
-		{
-			result = (long)(leftOperand) % (long)(rightOperand);
+			result = [leftOperand operatorDivide:rightOperand];
 		}
 		else if(streq(operation.operatorName, "^"))
 		{
-			result = pow(leftOperand, rightOperand);
+			result = [leftOperand operatorPower:rightOperand];
 		}
 		
-		NSNumber *resultNumber = [NSNumber numberWithDouble:result];
-		[pool replaceObjectAtIndex:operation.originalPosition withObject:resultNumber];
-		[pool replaceObjectAtIndex:operation.originalPosition + 1 withObject:resultNumber];
+		[pool replaceObjectAtIndex:operation.originalPosition withObject:result];
+		[pool replaceObjectAtIndex:operation.originalPosition + 1 withObject:result];
 	}
 	
 	return [pool objectAtIndex:operations[numberOfOperations - 1].originalPosition];
+}
+
+#pragma mark -
+#pragma mark Operators
+
+- (id)operatorAdd:(id)rightOperand
+{
+	return [NSNumber numberWithDouble:[self doubleValue] + [rightOperand doubleValue]];
+}
+
+- (id)operatorSubtract:(id)rightOperand
+{
+	return [NSNumber numberWithDouble:[self doubleValue] - [rightOperand doubleValue]];
+}
+
+- (id)operatorMultiply:(id)rightOperand
+{
+	return [NSNumber numberWithDouble:[self doubleValue] * [rightOperand doubleValue]];
+}
+
+- (id)operatorDivide:(id)rightOperand
+{
+	return [NSNumber numberWithDouble:[self doubleValue] / [rightOperand doubleValue]];
+}
+
+- (id)operatorPower:(id)rightOperand
+{
+	return [NSNumber numberWithDouble:pow([self doubleValue], [rightOperand doubleValue])];
+}
+
+@end
+
+@implementation NSDecimalNumber (SteinTools)
+
+#pragma mark Operators
+
+- (NSDecimalNumber *)operatorAdd:(NSDecimalNumber *)rightOperand
+{
+	return [self decimalNumberByAdding:rightOperand];
+}
+
+- (NSDecimalNumber *)operatorSubtract:(NSDecimalNumber *)rightOperand
+{
+	return [self decimalNumberBySubtracting:rightOperand];
+}
+
+- (NSDecimalNumber *)operatorMultiply:(NSDecimalNumber *)rightOperand
+{
+	return [self decimalNumberByMultiplyingBy:rightOperand];
+}
+
+- (NSDecimalNumber *)operatorDivide:(NSDecimalNumber *)rightOperand
+{
+	return [self decimalNumberByDividingBy:rightOperand];
+}
+
+- (NSDecimalNumber *)operatorPower:(NSDecimalNumber *)rightOperand
+{
+	return [self decimalNumberByRaisingToPower:[rightOperand unsignedIntegerValue]];
 }
 
 @end
@@ -273,8 +323,19 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 {
 	for (NSUInteger index = 0, length = [self length]; index < length; index++)
 	{
-		NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
-		STFunctionApply(function, [STList listWithObjects:character, nil]);
+		@try
+		{
+			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
+			STFunctionApply(function, [STList listWithObjects:character, nil]);
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return self;
@@ -285,15 +346,26 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	NSMutableString *string = [NSMutableString string];
 	for (NSUInteger index = 0, length = [self length]; index < length; index++)
 	{
-		NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
-		id result = STFunctionApply(function, [STList listWithObjects:character, nil]);
-		if([result isKindOfClass:[NSNumber class]])
+		@try
 		{
-			[string appendFormat:@"%C", [result charValue]];
+			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
+			id result = STFunctionApply(function, [STList listWithObjects:character, nil]);
+			if([result isKindOfClass:[NSNumber class]])
+			{
+				[string appendFormat:@"%C", [result charValue]];
+			}
+			else
+			{
+				[string appendString:[result description]];
+			}
 		}
-		else
+		@catch (STBreakException *e)
 		{
-			[string appendString:[result description]];
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
 		}
 	}
 	
@@ -305,10 +377,21 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	NSMutableString *string = [NSMutableString string];
 	for (NSUInteger index = 0, length = [self length]; index < length; index++)
 	{
-		NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
-		if(STIsTrue(STFunctionApply(function, [STList listWithObjects:character, nil])))
+		@try
 		{
-			[string appendFormat:@"%C", [character charValue]];
+			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
+			if(STIsTrue(STFunctionApply(function, [STList listWithObjects:character, nil])))
+			{
+				[string appendFormat:@"%C", [character charValue]];
+			}
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
 		}
 	}
 	
@@ -338,7 +421,18 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 {
 	for (id object in self)
 	{
-		STFunctionApply(function, [STList listWithObject:object]);
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:object]);
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return self;
@@ -350,11 +444,22 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
-		if(!mappedObject)
+		@try
+		{
+			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			if(!mappedObject)
+				continue;
+			
+			[mappedObjects addObject:mappedObject];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
 			continue;
-		
-		[mappedObjects addObject:mappedObject];
+		}
 	}
 	
 	return mappedObjects;
@@ -366,8 +471,19 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
-			[filteredObjects addObject:object];
+		@try
+		{
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+				[filteredObjects addObject:object];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return filteredObjects;
@@ -437,7 +553,18 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 {
 	for (id object in self)
 	{
-		STFunctionApply(function, [STList listWithObject:object]);
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:object]);
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return self;
@@ -449,11 +576,22 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
-		if(!mappedObject)
+		@try
+		{
+			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			if(!mappedObject)
+				continue;
+			
+			[mappedObjects addObject:mappedObject];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
 			continue;
-		
-		[mappedObjects addObject:mappedObject];
+		}
 	}
 	
 	return mappedObjects;
@@ -465,8 +603,19 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	
 	for (id object in self)
 	{
-		if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
-			[filteredObjects addObject:object];
+		@try
+		{
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+				[filteredObjects addObject:object];
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
 	}
 	
 	return filteredObjects;
@@ -500,7 +649,19 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 - (id)foreach:(id < STFunction >)function
 {
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+		@try
+		{
+			STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
 	}];
 	
 	return self;
@@ -511,9 +672,21 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
 	
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
-		if(STIsTrue(mappedValue))
-			[result setObject:mappedValue forKey:key];
+		@try
+		{
+			id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+			if(STIsTrue(mappedValue))
+				[result setObject:mappedValue forKey:key];
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
 	}];
 	
 	return result;
@@ -524,8 +697,20 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
 	
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		if(STIsTrue(STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]])))
-			[result setObject:value forKey:key];
+		@try
+		{
+			if(STIsTrue(STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]])))
+				[result setObject:value forKey:key];
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
 	}];
 	
 	return result;

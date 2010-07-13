@@ -14,6 +14,7 @@
 #import "STClosure.h"
 #import "STFunction.h"
 #import "STScope.h"
+#import "STEnumerable.h"
 
 #import "STParser.h"
 #import "STList.h"
@@ -93,7 +94,7 @@ id STEvaluate(id expression, STScope *scope)
 			if([expression isQuoted])
 				return expression;
 			
-			id result = [scope valueForVariableNamed:[expression string] searchParentScopes:YES];
+			id result = [scope valueForKeyPath:[expression string]];
 			if(!result)
 			{
 				result = NSClassFromString([expression string]);
@@ -111,6 +112,14 @@ id STEvaluate(id expression, STScope *scope)
 		{
 			return [expression copy];
 		}
+	}
+	@catch (STBreakException *e)
+	{
+		STRaiseIssue(e.creationLocation, @"break called outside of enumerable context");
+	}
+	@catch (STContinueException *e)
+	{
+		STRaiseIssue(e.creationLocation, @"continue called outside of enumerable context");
 	}
 	@catch (SteinException *e)
 	{

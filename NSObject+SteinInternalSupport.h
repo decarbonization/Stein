@@ -39,4 +39,37 @@
 - (id)valueForIvarNamed:(NSString *)name;
 + (id)valueForIvarNamed:(NSString *)name;
 
+#pragma mark -
+#pragma mark Operators
+
+/*!
+ @abstract		Add the receiver to another object.
+ @discussion	The default implementation of this method is abstract.
+ */
+- (id)operatorAdd:(id)rightOperand;
+
+/*!
+ @abstract		Subtract from the receiver by another object.
+ @discussion	The default implementation of this method is abstract.
+ */
+- (id)operatorSubtract:(id)rightOperand;
+
+/*!
+ @abstract		Multiply the receiver by another object.
+ @discussion	The default implementation of this method is abstract.
+ */
+- (id)operatorMultiply:(id)rightOperand;
+
+/*!
+ @abstract		Divide the receiver with another object.
+ @discussion	The default implementation of this method is abstract.
+ */
+- (id)operatorDivide:(id)rightOperand;
+
+/*!
+ @abstract		Raise the receiver to the power of another object.
+ @discussion	The default implementation of this method is abstract.
+ */
+- (id)operatorPower:(id)rightOperand;
+
 @end
