@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class STEvaluator, STList, STScope;
+@class STList, STScope;
 
 /*!
  @class

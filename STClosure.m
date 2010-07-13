@@ -58,9 +58,6 @@
 		index++;
 	}
 	
-	/*if(mSuperclass)
-		[scope setValue:mSuperclass forVariableNamed:kSTEvaluatorSuperclassKey searchParentScopes:NO];*/
-	
 	[scope setValue:arguments forVariableNamed:@"_arguments" searchParentScopes:NO];
 	
 	id result = nil;

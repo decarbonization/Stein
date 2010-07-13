@@ -66,6 +66,15 @@ typedef struct STScopeNode * STScopeNodeRef;
 - (void)setValue:(id)value forVariableNamed:(NSString *)name searchParentScopes:(BOOL)searchParentScopes;
 
 /*!
+ @abstract		Sets the value of a constant in the receiver.
+ @param			value	The value of the constant. Required.
+ @param			name	The name of the constant. Required.
+ @discussion	This method raises if there is an existing constant with the same name.
+				This method *does not* search parent scopes for existing constants.
+ */
+- (void)setValue:(id)value forConstantNamed:(NSString *)name;
+
+/*!
  @abstract	Removes the value of a variable with a specified name in the receiver.
  @param		name				The name of the variable to remove. Required.
  @param		searchParentScopes	Whether or not the receiver should check its parent scopes if

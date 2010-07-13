@@ -19,6 +19,7 @@
 #import "STPointer.h"
 #import <dlfcn.h>
 
+#import "STParser.h"
 #import "STList.h"
 #import "STSymbol.h"
 
@@ -85,7 +86,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 
 - (id)applyWithArguments:(STList *)message inScope:(STScope *)scope
 {
-	return (*mImplementation)(message, scope);
+	return (*mImplementation)(message, scope) ?: STNull;
 }
 
 @end
@@ -111,13 +112,6 @@ static id let(STList *arguments, STScope *scope)
 		if([directive isEqualTo:@"="])
 		{
 			id expression = [arguments sublistFromIndex:2];
-			if([expression count] == 1 && 
-			   [[expression head] isKindOfClass:[STList class]] && 
-			   ST_FLAG_IS_SET([[expression head] flags], kSTListFlagIsDefinition))
-			{
-				expression = [expression head];
-			}
-			
 			id value = STEvaluate(expression, scope);
 			[scope setValue:value forVariableNamed:name searchParentScopes:YES];
 			return value;
@@ -143,6 +137,54 @@ static id let(STList *arguments, STScope *scope)
 	}
 }
 
+static id load(STList *arguments, STScope *scope)
+{
+	id lastResult = nil;
+	for (NSString *path in arguments)
+	{
+		NSError *error = nil;
+		NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+		if(!contents)
+			STRaiseIssue(arguments.creationLocation, @"Could not load file at path %@. Got error «%@».", path, [error localizedDescription]);
+		
+		STScope *fileScope = [STScope scopeWithParentScope:scope];
+		fileScope.name = [path lastPathComponent];
+		[fileScope setValue:path forVariableNamed:@"$file" searchParentScopes:NO];
+		
+		NSArray *expressions = STParseString(contents);
+		lastResult = STEvaluate(expressions, fileScope);
+	}
+	
+	return lastResult;
+}
+
+static id _super(STList *message, STScope *scope)
+{
+	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
+	if(!self)
+		STRaiseIssue(message.creationLocation, @"super called outside of class context.");
+	
+	NSMutableString *selectorString = [NSMutableString string];
+	NSMutableArray *parameters = [NSMutableArray array];
+	
+	BOOL isLookingForLabel = YES;
+	for (id component in message)
+	{
+		if(isLookingForLabel)
+		{
+			[selectorString appendString:[component string]];
+		}
+		else
+		{
+			[parameters addObject:STEvaluate(component, scope)];
+		}
+		
+		isLookingForLabel = !isLookingForLabel;
+	}
+	
+	return STObjectBridgeSendSuper(self, [self superclass], NSSelectorFromString(selectorString), parameters, scope);
+}
+
 #pragma mark -
 #pragma mark • Mathematics
 
@@ -154,7 +196,7 @@ static id plus(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByAdding:rightOperand];
 	}
 	
-	return leftOperand ?: STNull;
+	return leftOperand;
 }
 
 static id minus(STList *arguments, STScope *scope)
@@ -165,7 +207,7 @@ static id minus(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberBySubtracting:rightOperand];
 	}
 	
-	return leftOperand ?: STNull;
+	return leftOperand;
 }
 
 static id multiply(STList *arguments, STScope *scope)
@@ -176,7 +218,7 @@ static id multiply(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByMultiplyingBy:rightOperand];
 	}
 	
-	return leftOperand ?: STNull;
+	return leftOperand;
 }
 
 static id divide(STList *arguments, STScope *scope)
@@ -187,7 +229,7 @@ static id divide(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByDividingBy:rightOperand];
 	}
 	
-	return leftOperand ?: STNull;
+	return leftOperand;
 }
 
 static id power(STList *arguments, STScope *scope)
@@ -198,7 +240,7 @@ static id power(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByRaisingToPower:[rightOperand unsignedIntegerValue]];
 	}
 	
-	return leftOperand ?: STNull;
+	return leftOperand;
 }
 
 #pragma mark -
@@ -496,11 +538,15 @@ static id range(STList *arguments, STScope *scope)
 STScope *STBuiltInFunctionScope()
 {
 	STScope *functionScope = [STScope new];
+	functionScope.name = @"Global Scope";
 	
 	//Core
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&let evaluatesOwnArguments:YES] 
-		   forVariableNamed:@"let" 
-		 searchParentScopes:NO];
+		   forConstantNamed:@"let"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"load"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"super"];
 	
 	//Mathematics
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus evaluatesOwnArguments:NO] 
@@ -589,25 +635,16 @@ STScope *STBuiltInFunctionScope()
 	
 	
 	//Constants
-	[functionScope setValue:[NSDecimalNumber maximumDecimalNumber] 
-		   forVariableNamed:@"$MaxNumber" 
-		 searchParentScopes:NO];
-	[functionScope setValue:[NSDecimalNumber minimumDecimalNumber] 
-		   forVariableNamed:@"$MinNumber" 
-		 searchParentScopes:NO];
-	[functionScope setValue:[[NSProcessInfo processInfo] arguments] 
-		   forVariableNamed:@"$Args" 
-		 searchParentScopes:NO];
-	[functionScope setValue:[[NSProcessInfo processInfo] environment] 
-		   forVariableNamed:@"$Env" 
-		 searchParentScopes:NO];
+	[functionScope setValue:[NSDecimalNumber minimumDecimalNumber] forConstantNamed:@"$min-number"];
+	[functionScope setValue:[NSDecimalNumber maximumDecimalNumber] forConstantNamed:@"$max-number"];
 	
-	[functionScope setValue:STTrue 
-		   forVariableNamed:@"true" 
-		 searchParentScopes:NO];
-	[functionScope setValue:STFalse 
-		   forVariableNamed:@"false" 
-		 searchParentScopes:NO];
+	[functionScope setValue:[[NSProcessInfo processInfo] arguments] forConstantNamed:@"$args"];
+	[functionScope setValue:[[NSProcessInfo processInfo] environment] forConstantNamed:@"$env"];
+	
+	[functionScope setValue:STTrue forConstantNamed:@"true"];
+	[functionScope setValue:STFalse forConstantNamed:@"false"];
+	
+	[functionScope setValue:@"" forVariableNamed:@"$file" searchParentScopes:NO];
 	
 	return functionScope;
 }

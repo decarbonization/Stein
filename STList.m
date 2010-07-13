@@ -8,6 +8,7 @@
 
 #import "STList.h"
 #import "NSObject+Stein.h"
+#import <stdarg.h>
 
 @implementation STList
 
@@ -86,6 +87,43 @@
 + (STList *)listWithObject:(id)object
 {
 	return [[[self alloc] initWithObject:object] autorelease];
+}
+
+- (id)initWithObjects:(id)object fromVaList:(va_list)list
+{
+	if((self = [self init]))
+	{
+		if(object)
+		{
+			[mContents addObject:object];
+			
+			id value = nil;
+			while ((value = va_arg(list, id)) != nil)
+				[mContents addObject:value];
+		}
+	}
+	
+	return self;
+}
+
+- (id)initWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION
+{
+	va_list arguments;
+	va_start(arguments, object);
+	self = [self initWithObjects:object fromVaList:arguments];
+	va_end(arguments);
+	
+	return self;
+}
+
++ (id)listWithObjects:(id)object, ...
+{
+	va_list arguments;
+	va_start(arguments, object);
+	STList *list = [[self alloc] initWithObjects:object fromVaList:arguments];
+	va_end(arguments);
+	
+	return list;
 }
 
 #pragma mark -

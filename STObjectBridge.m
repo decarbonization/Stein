@@ -48,12 +48,12 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STScope *scop
 	NSMethodSignature *targetMethodSignature = [target methodSignatureForSelector:selector];
 	if(!targetMethodSignature)
 	{
-		/*if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
-		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
+		if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:)) &&
+		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inScope:)))
 		{
-			if([target canHandleMissingMethodWithSelector:selector inEvaluator:evaluator])
-				return [target handleMissingMethodWithSelector:selector arguments:arguments inEvaluator:evaluator] ?: STNull;
-		}*/
+			if([target canHandleMissingMethodWithSelector:selector])
+				return [target handleMissingMethodWithSelector:selector arguments:arguments inScope:scope] ?: STNull;
+		}
 		
 		[target doesNotRecognizeSelector:selector];
 	}
@@ -109,18 +109,13 @@ id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *a
 	//If we couldn't find the method, then the superclass doesn't have the method.
 	if(!method)
 	{
-		NSString *extendedSelectorString = [NSStringFromSelector(selector) stringByAppendingString:@"inEvaluator:"];
-		method = class_getInstanceMethod(superclass, NSSelectorFromString(extendedSelectorString));
-		if(!method)
-			method = class_getClassMethod(superclass, NSSelectorFromString(extendedSelectorString));
-		
-		/*if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:inEvaluator:)) &&
-		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inEvaluator:)))
+		if(class_respondsToSelector(object_getClass(target), @selector(canHandleMissingMethodWithSelector:)) &&
+		   class_respondsToSelector(object_getClass(target), @selector(handleMissingMethodWithSelector:arguments:inScope:)))
 		{
 			struct objc_super superTarget = { target, superclass };
-			if(((BOOL(*)(struct objc_super *, SEL, SEL, id))objc_msgSendSuper)(&superTarget, @selector(canHandleMissingMethodWithSelector:inEvaluator:), selector, evaluator))
-				return objc_msgSendSuper(&superTarget, @selector(handleMissingMethodWithSelector:arguments:inEvaluator:), selector, arguments, evaluator) ?: STNull;
-		}*/
+			if(((BOOL(*)(struct objc_super *, SEL, SEL))objc_msgSendSuper)(&superTarget, @selector(canHandleMissingMethodWithSelector:), selector))
+				return objc_msgSendSuper(&superTarget, @selector(handleMissingMethodWithSelector:arguments:inScope:), selector, arguments, scope) ?: STNull;
+		}
 		
 		[superclass doesNotRecognizeSelector:selector];
 	}

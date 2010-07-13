@@ -19,16 +19,12 @@ typedef enum ProgramOptions {
 	 @enum		ProgramOptions
 	 @abstract	Enumerations describing each of the options a user can specify in the Stein CLI.
 	 
-	 @constant	kProgramOptionSandboxEachFile
-					This field is set when the user has asked for each file to be run in its own interpreter.
-	 
-	 @constant	kProgramOptionSandboxEachFile
+	 @constant	kProgramOptionParseOnly
 					This field is set when the user has indicated they want each file to be compiled and printed, but not interpreted.
 	 
 	 @constant	kProgramOptionRunREPLInBackground
 					This field is set when the user has indicated they want to run the REPL loop in a background thread, while the files they specified run in the main thread.
 	 */
-	kProgramOptionSandboxEachFile = (1 << 0),
 	kProgramOptionParseOnly = (1 << 1),
 	kProgramOptionRunREPLInBackground = (1 << 2),
 } ProgramOptions;
@@ -64,11 +60,6 @@ static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outP
 			
 			switch (arg[1])
 			{
-				case 'S':
-				case 's':
-					options |= kProgramOptionSandboxEachFile;
-					break;
-					
 				case 'P':
 				case 'p':
 					options |= kProgramOptionParseOnly;
@@ -164,22 +155,10 @@ int main (int argc, const char * argv[])
 				}
 				else
 				{
+					[globalScope setValue:path forVariableNamed:@"$file" searchParentScopes:NO];
+					
 					id result = STEvaluate(expressions, [STScope scopeWithParentScope:globalScope]);
 					fprintf(stdout, "%s => %s\n", [path UTF8String], [[result prettyDescription] UTF8String]);
-				}
-				
-				//
-				//	If we're sandboxing each file, we discard the evaluator we have
-				//	going now and create a new one in it's place. This prevents the
-				//	next file from accssing something from the old evaluator.
-				//
-				//	This does not guarantee the old evaluator is gone, it will stick
-				//	around if there are any valid closures or classes that were created
-				//	through it.
-				//
-				if(ST_FLAG_IS_SET(options, kProgramOptionSandboxEachFile))
-				{
-					globalScope = STBuiltInFunctionScope();
 				}
 			}
 			@catch (NSException *e)

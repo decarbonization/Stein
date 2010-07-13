@@ -9,8 +9,6 @@
 #import <Cocoa/Cocoa.h>
 #import <Stein/STEnumerable.h>
 
-@class STEvaluator;
-
 enum STListFlags {
 	kSTListFlagsNone = 0,
 	kSTListFlagIsQuoted = 1 << 1, 
@@ -85,6 +83,9 @@ typedef NSUInteger STListFlags;
 
 - (id)initWithObject:(id)object;
 + (STList *)listWithObject:(id)object;
+
+- (id)initWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION;
++ (id)listWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION;
 
 #pragma mark -
 #pragma mark Accessing objects

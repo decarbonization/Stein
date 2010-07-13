@@ -10,8 +10,6 @@
 
 #pragma once
 
-@class STEvaluator;
-
 /*!
  @method
  @abstract		Parse a specified string as Stein code, producing an array of lists, symbols,

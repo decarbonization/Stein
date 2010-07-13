@@ -13,16 +13,18 @@
 /*!
  @abstract	The STScopeNode type provides the backing for the STScope object
 			in the form of a doubly linked list that stores keys and values.
- @param		previous	The previous node in the list. Readwrite.
- @param		next		The next node in the list. Readwrite.
- @param		key			The key of the node. Readonly.
- @param		value		The value of the node. Readwrite.
+ @field		previous	The previous node in the list. Readwrite.
+ @field		next		The next node in the list. Readwrite.
+ @field		key			The key of the node. Readonly.
+ @param		readonly	Whether or not the value of the node is readonly. Readonly.
+ @field		value		The value of the node. Readwrite.
  */
 struct STScopeNode {
 //private:
 	volatile STScopeNodeRef previous;
 	volatile STScopeNodeRef next;
 	NSString *const key;
+	BOOL const readonly;
 	volatile id value;
 };
 
@@ -92,6 +94,14 @@ static NSString *STScopeNode_getKey(STScopeNodeRef me)
 	return me->key;
 }
 
+static BOOL STScopeNode_getReadonly(STScopeNodeRef me)
+{
+	if(!me)
+		return YES;
+	
+	return me->readonly;
+}
+
 #pragma mark -
 
 /*!
@@ -103,6 +113,7 @@ static void STScopeNode_setValue(STScopeNodeRef me, id value)
 {
 	assert(me != NULL);
 	
+	NSCAssert(!me->readonly, @"Attempting to write to readonly scope node %@", me->key);
 	OSAtomicCompareAndSwapPtrBarrier(me->value, value, (void *volatile *)&me->value);
 }
 
@@ -127,10 +138,11 @@ static id STScopeNode_getValue(STScopeNodeRef me)
  @param		previous	The node that precedes the node being created in a chain. Optional.
  @param		next		The node that succeeds the node being created in a chain. Optional.
  @param		key			The key of the node. Required.
+ @param		readonly	Whether or not the value of the node is readonly.
  @param		value		The value of the node. Optional.
  @result	A pointer to an STScopeNode struct whose lifecycle is managed by the garbage collector.
  */
-static STScopeNodeRef STScopeNode_new(STScopeNodeRef previous, STScopeNodeRef next, NSString *key, id value)
+static STScopeNodeRef STScopeNode_new(STScopeNodeRef previous, STScopeNodeRef next, NSString *key, BOOL readonly, id value)
 {
 	assert(key != nil);
 	
@@ -139,6 +151,7 @@ static STScopeNodeRef STScopeNode_new(STScopeNodeRef previous, STScopeNodeRef ne
 		.previous = previous, 
 		.next = next, 
 		.key = key, 
+		.readonly = readonly, 
 		.value = value, 
 	};
 	
@@ -308,6 +321,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	STScopeNodeRef matchingNode = [self firstNodeWithKey:name];
 	if(matchingNode)
 	{
+		NSAssert(!STScopeNode_getReadonly(matchingNode), @"Attempting to set readonly variable %@.", name);
 		STScopeNode_setValue(matchingNode, value);
 	}
 	else
@@ -317,7 +331,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 			STScope *parentScope = self.parentScope;
 			do {
 				matchingNode = [parentScope firstNodeWithKey:name];
-				if(matchingNode)
+				if(matchingNode && !STScopeNode_getReadonly(matchingNode))
 				{
 					STScopeNode_setValue(matchingNode, value);
 					return;
@@ -327,7 +341,34 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 			} while (parentScope != nil);
 		}
 		
-		STScopeNodeRef newNode = STScopeNode_new(mLast, nil, name, value);
+		STScopeNodeRef newNode = STScopeNode_new(mLast, nil, name, NO, value);
+		if(mLast)
+			STScopeNode_setNext(mLast, newNode);
+		
+		mLast = newNode;
+		if(!mHead)
+			mHead = newNode;
+	}
+	
+	[self didChangeValueForKey:name];
+}
+
+- (void)setValue:(id)value forConstantNamed:(NSString *)name
+{
+	NSParameterAssert(value);
+	NSParameterAssert(name);
+	
+	[self willChangeValueForKey:name];
+	
+	STScopeNodeRef matchingNode = [self firstNodeWithKey:name];
+	if(matchingNode)
+	{
+		NSAssert(!STScopeNode_getReadonly(matchingNode), @"Attempting to set readonly variable %@.", name);
+		STScopeNode_setValue(matchingNode, value);
+	}
+	else
+	{
+		STScopeNodeRef newNode = STScopeNode_new(mLast, nil, name, YES, value);
 		if(mLast)
 			STScopeNode_setNext(mLast, newNode);
 		

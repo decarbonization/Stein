@@ -10,7 +10,6 @@
 #import <objc/objc-runtime.h>
 #import "STObjectBridge.h"
 #import "STTypeBridge.h"
-#import "STStructClasses.h"
 
 #import "STFunction.h"
 #import "STList.h"
@@ -151,7 +150,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 #pragma mark -
 #pragma mark High-Level Forwarding
 
-+ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope
++ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {
 	return NO;
 }
@@ -164,7 +163,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 #pragma mark -
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {
 	return NO;
 }
@@ -184,11 +183,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 - (NSString *)prettyDescription
 {
 	return [self description];
-}
-
-- (STRange *)to:(NSUInteger)length
-{
-	return [[STRange alloc] initWithLocation:[self unsignedIntegerValue] length:length];
 }
 
 #pragma mark -
@@ -221,7 +215,7 @@ static BOOL IsSelectorComposedOfOperators(SEL selector)
 	return YES;
 }
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inEvaluator:(STEvaluator *)evaluator
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {
 	return IsSelectorComposedOfOperators(selector);
 }
@@ -308,7 +302,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	return 0;
 }
 
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inEvaluator:(STEvaluator *)evaluator
+- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
 {
 	const char *operators = sel_getName(selector);
 	
@@ -425,6 +419,55 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 																				 withString:@"\\\""]];
 }
 
+#pragma mark -
+#pragma mark Enumerable
+
+- (id)foreach:(id < STFunction >)function
+{
+	for (NSUInteger index = 0, length = [self length]; index < length; index++)
+	{
+		NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
+		STFunctionApply(function, [STList listWithObjects:character, nil]);
+	}
+	
+	return self;
+}
+
+- (id)map:(id < STFunction >)function
+{
+	NSMutableString *string = [NSMutableString string];
+	for (NSUInteger index = 0, length = [self length]; index < length; index++)
+	{
+		NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
+		id result = STFunctionApply(function, [STList listWithObjects:character, nil]);
+		if([result isKindOfClass:[NSNumber class]])
+		{
+			[string appendFormat:@"%C", [result charValue]];
+		}
+		else
+		{
+			[string appendString:[result description]];
+		}
+	}
+	
+	return string;
+}
+
+- (id)filter:(id < STFunction >)function
+{
+	NSMutableString *string = [NSMutableString string];
+	for (NSUInteger index = 0, length = [self length]; index < length; index++)
+	{
+		NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
+		if(STIsTrue(STFunctionApply(function, [STList listWithObjects:character, nil])))
+		{
+			[string appendFormat:@"%C", [character charValue]];
+		}
+	}
+	
+	return string;
+}
+
 @end
 
 #pragma mark -
@@ -520,11 +563,10 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {
 	id < NSObject, STMethodMissing > firstObject = [self objectAtIndex:0];
-	return ([firstObject respondsToSelector:selector] || 
-			[firstObject canHandleMissingMethodWithSelector:selector inScope:scope]);
+	return [firstObject respondsToSelector:selector];
 }
 
 - (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope

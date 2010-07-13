@@ -10,7 +10,7 @@
 #import <Stein/STEnumerable.h>
 
 @protocol STFunction;
-@class STClosure, STRange;
+@class STClosure;
 
 /*!
  @protocol
@@ -33,7 +33,7 @@
  @result		YES if the receiver can handle the selector; NO otherwise.
  @discussion	This method is invoked by the Stein runtime when an object doesn't respond to a specified selector.
  */
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector inScope:(STScope *)scope;
+- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector;
 
 /*!
  @method
@@ -115,29 +115,20 @@
 #pragma mark -
 
 /*!
- @method
- @abstract	This category adds truthiness and pretty printing to NSNumber.
+ @abstract	This category adds pretty printing and infix notation support to NSNumber.
  */
 @interface NSNumber (Stein) < STMethodMissing >
 
 - (NSString *)prettyDescription;
 
-/*!
- @method
- @abstract	Construct a range where the receiver is the location and a specified integer is the length.
- */
-- (STRange *)to:(NSUInteger)length;
-
 @end
 
 /*!
- @method
- @abstract	Pretty printing to NSString.
+ @abstract	This category adds pretty printing and STEnumerable support to NSString.
  */
-@interface NSString (Stein)
+@interface NSString (Stein) < STEnumerable >
 
 /*!
- @method
  @abstract		Returns the receiver.
  @discussion	This method exists to allow NSString to be interchangable with STSymbol in some contexts.
  */
@@ -148,8 +139,7 @@
 @end
 
 /*!
- @method
- @abstract	This category adds truthiness and pretty printing to NSNull.
+ @abstract	This category adds pretty printing to NSNull.
  */
 @interface NSNull (Stein)
 
@@ -160,7 +150,6 @@
 #pragma mark -
 
 /*!
- @category
  @abstract		This category makes NSArray conform to the STEnumerable protocol.
  @discussion	Stein extends NSArray so that any messages that it does not understand itself will
 				be sent to all of its objects and the results will be collected into a new array.
@@ -170,7 +159,6 @@
 #pragma mark Array Programming Support
 
 /*!
- @method
  @abstract		Derive a new array by applying an array of boolean-like objects to the receivers contents.
  @param			booleans	An array of boolean-like objects the same length as the receiver. May not be nil.
  @result		A new array.
@@ -183,7 +171,6 @@
 @end
 
 /*!
- @category
  @abstract	This category makes NSSet conform to the STEnumerable protocol.
  */
 @interface NSSet (Stein) < STEnumerable >
@@ -191,7 +178,6 @@
 @end
 
 /*!
- @category
  @abstract	This category makes NSDictionary conform to the STEnumerable protocol.
  */
 @interface NSDictionary (Stein) < STEnumerable >
