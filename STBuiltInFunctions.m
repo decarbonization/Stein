@@ -290,6 +290,7 @@ static id _super(STList *message, STScope *scope)
 }
 
 #pragma mark -
+#pragma mark • Core Lisp Functions
 
 //`
 //	function	parse
@@ -350,6 +351,7 @@ static id apply(STList *arguments, STScope *scope)
 }
 
 #pragma mark -
+#pragma mark • Control Flow
 
 //`
 //	function	break
@@ -369,6 +371,90 @@ static id _continue(STList *arguments, STScope *scope)
 {
 	@throw [STContinueException continueExceptionFrom:arguments.creationLocation];
 	return nil;
+}
+
+#pragma mark -
+
+//`
+//	function	decide
+//	intention	To provide basic control flow for Stein.
+//	forms {
+//		(condition, true-block) -> id \
+//			Evaluates condition and calls true-block if condition is true. \
+//			If the condition is true, the result of true-block is yielded, `false` otherwise.
+//		(condition, true-block, false-block) -> id \
+//			Evaluates the condition and calls true-block if the condition is true, or the \
+//			false-block if the condition is false. The result of the called block is yielded.
+// }
+//`
+static id decide(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 2 && arguments.count != 3)
+		STRaiseIssue(arguments.creationLocation, @"if given wrong number of parameters, expects 2 or 3, got %ld", arguments.count);
+	
+	if(STIsTrue(STEvaluate([arguments objectAtIndex:0], scope)))
+	{
+		id action = [arguments objectAtIndex:1];
+		if([action respondsToSelector:@selector(flags)] && 
+		   ST_FLAG_IS_SET([action flags], kSTListFlagIsDefinition))
+		{
+			return STEvaluate([[arguments objectAtIndex:1] allObjects], scope);
+		}
+		else
+		{
+			return STEvaluate([arguments objectAtIndex:1], scope);
+		}
+	}
+	else if(arguments.count == 3)
+	{
+		id action = [arguments objectAtIndex:1];
+		if([action respondsToSelector:@selector(flags)] && 
+		   ST_FLAG_IS_SET([action flags], kSTListFlagIsDefinition))
+		{
+			return STEvaluate([[arguments objectAtIndex:2] allObjects], scope);
+		}
+		else
+		{
+			return STEvaluate([arguments objectAtIndex:2], scope);
+		}
+	}
+	
+	return STFalse;
+}
+
+//`
+//	function	match
+//	intention	To match a specified value against a list of values, \
+//				evaluating a specified block based on the result.
+//	forms {
+//		(left-operand { right-operand	expression|{ expressions... }... } -> id
+//	}
+//`
+static id match(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 2)
+		STRaiseIssue(arguments.creationLocation, @"match requires 2 parameters (left-operand, { right-operand\texpression|{ expressions... }... }, got %ld", arguments.count);
+	
+	id leftOperand = STEvaluate([arguments objectAtIndex:0], scope);
+	for (STList *potentialMatch in [arguments objectAtIndex:1])
+	{
+		id rightOperand = STEvaluate([potentialMatch objectAtIndex:0], scope);
+		if([leftOperand isEqual:rightOperand] || [rightOperand isEqualTo:ST_SYM(@"_")])
+		{
+			id action = [potentialMatch objectAtIndex:1];
+			if([action respondsToSelector:@selector(flags)] && 
+			   ST_FLAG_IS_SET([action flags], kSTListFlagIsDefinition))
+			{
+				return STEvaluate([action allObjects], scope);
+			}
+			else
+			{
+				return STEvaluate(action, scope);
+			}
+		}
+	}
+	
+	return STFalse;
 }
 
 #pragma mark -
@@ -933,7 +1019,7 @@ STScope *STBuiltInFunctionScope()
 		   forConstantNamed:@"ivar"];
 	
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
-		   forConstantNamed:@"load!"];
+		   forConstantNamed:@"load"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"super"];
 	
@@ -948,6 +1034,10 @@ STScope *STBuiltInFunctionScope()
 		   forConstantNamed:@"break"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_continue evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"continue"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&decide evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"decide"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&match evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"match"];
 	
 	//Mathematics
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus evaluatesOwnArguments:NO] 
@@ -999,7 +1089,7 @@ STScope *STBuiltInFunctionScope()
 	
 	//Bridging
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_extern evaluatesOwnArguments:YES] 
-		   forVariableNamed:@"extern!" 
+		   forVariableNamed:@"extern" 
 		 searchParentScopes:NO];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref evaluatesOwnArguments:YES] 
 		   forVariableNamed:@"ref" 
@@ -1041,6 +1131,7 @@ STScope *STBuiltInFunctionScope()
 	
 	[functionScope setValue:STTrue forConstantNamed:@"true"];
 	[functionScope setValue:STFalse forConstantNamed:@"false"];
+	[functionScope setValue:ST_SYM(@"_") forConstantNamed:@"_"];
 	
 	[functionScope setValue:@"" forVariableNamed:@"$file" searchParentScopes:NO];
 	

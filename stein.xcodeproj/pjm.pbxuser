@@ -15,8 +15,8 @@
 			1E1ACB2911595D3200B2BBA9 /* stein */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 300748612;
-			PBXWorkspaceStateSaveDate = 300748612;
+			PBXPerProjectTemplateStateSaveDate = 300755264;
+			PBXWorkspaceStateSaveDate = 300755264;
 		};
 		sourceControlManager = 1E1ACB3611595D4500B2BBA9 /* Source Control */;
 		userBuildSettings = {
@@ -134,9 +134,9 @@
 	};
 	1EC9303911EAB6F200EACB73 /* STInterpreter.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 3692}}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 3653}}";
 			sepNavSelRange = "{2444, 0}";
-			sepNavVisRange = "{1868, 1044}";
+			sepNavVisRange = "{6323, 985}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};
@@ -165,9 +165,9 @@
 	};
 	1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 14001}}";
-			sepNavSelRange = "{672, 0}";
-			sepNavVisRange = "{4005, 1385}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 14612}}";
+			sepNavSelRange = "{28550, 0}";
+			sepNavVisRange = "{26907, 2333}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};
