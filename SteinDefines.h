@@ -64,7 +64,8 @@ ST_INLINE BOOL STIsNull(id object)
 
 ST_INLINE BOOL STIsTrue(id object)
 {
-	return ((object != nil) && (object != STNull) && (object != STFalse));
+	return ((object != nil) && (object != STNull) && 
+			[object respondsToSelector:@selector(boolValue)] && [object boolValue]);
 }
 
 #pragma mark -

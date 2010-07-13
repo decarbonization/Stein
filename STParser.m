@@ -178,7 +178,7 @@ static NSNumber *GetNumberAt(STParserState *parserState)
 		parserState->index = [parserState->string length];
 	}
 	
-	return [NSNumber numberWithDouble:[[parserState->string substringWithRange:numberRange] doubleValue]];
+	return [NSDecimalNumber decimalNumberWithString:[parserState->string substringWithRange:numberRange]];
 }
 
 static id GetStringAt(STParserState *parserState)
