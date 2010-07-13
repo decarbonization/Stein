@@ -11,6 +11,7 @@
 #import "STObjectBridge.h"
 #import "STTypeBridge.h"
 #import "STBridgedFunction.h"
+#import "NSObject+SteinInternalSupport.h"
 
 #import "STNativeFunctionWrapper.h"
 #import "STNativeBlock.h"
@@ -136,6 +137,23 @@ static id let(STList *arguments, STScope *scope)
 		STRaiseIssue(arguments.creationLocation, @"malformed let statement");
 	}
 }
+
+static id set_ivar(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 2)
+		STRaiseIssue(arguments.creationLocation, @"set-ivar requires exactly 2 parameters (name, value), %ld given.", arguments.count);
+	
+	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
+	if(!self)
+		STRaiseIssue(arguments.creationLocation, @"set-ivar called outside of object-context.");
+	
+	NSString *name = [[arguments objectAtIndex:0] string];
+	id value = STEvaluate([arguments objectAtIndex:1], scope);
+	[self setValue:value forIvarNamed:name];
+	return value;
+}
+
+#pragma mark -
 
 static id load(STList *arguments, STScope *scope)
 {
@@ -562,9 +580,11 @@ STScope *STBuiltInFunctionScope()
 	//Core
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&let evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"let"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set_ivar evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"set-ivar"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"load"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"super"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&parse evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"parse"];

@@ -269,21 +269,20 @@
 										<string>C8E164B510D57CA8003F45A9</string>
 										<string>C8E164B410D57C9D003F45A9</string>
 										<string>08FB7795FE84155DC02AAC07</string>
-										<string>C8AC0B4B1104F1E0003B889B</string>
 										<string>C8E1613D10D55AFE003F45A9</string>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
-											<integer>11</integer>
-											<integer>7</integer>
+											<integer>19</integer>
+											<integer>8</integer>
 											<integer>6</integer>
 											<integer>4</integer>
 											<integer>0</integer>
 										</array>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-									<string>{{0, 126}, {429, 333}}</string>
+									<string>{{0, 94}, {429, 333}}</string>
 								</dict>
 								<key>PBXTopSmartGroupGIDs</key>
 								<array/>
@@ -488,13 +487,13 @@
 	<integer>0</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1E1B287A11ECD1CE00100A18</string>
+		<string>1E1B289E11ECD43400100A18</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>1E1B27D011ECCAEB00100A18</string>
 		<string>1E1B27D111ECCAEB00100A18</string>
 		<string>1C530D54069F1CE1000CFCEE</string>
-		<string>1C530D52069F1CE1000CFCEE</string>
 		<string>1C530D5B069F1CE1000CFCEE</string>
+		<string>1C530D52069F1CE1000CFCEE</string>
 		<string>/Users/pjm/Documents/Projects/Stein/Master/stein.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
@@ -1006,7 +1005,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C530D5B069F1CE1000CFCEE</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>
