@@ -44,6 +44,8 @@ static inline unichar SafelyGetCharacterAtIndex(NSString *string, NSUInteger ind
 
 #define DO_LIST_OPEN_CHARACTER				'{'
 #define DO_LIST_CLOSE_CHARACTER				'}'
+#define PARAM_LIST_OPEN_CHARACTER			'|'
+#define PARAM_LIST_CLOSE_CHARACTER			'|'
 
 #define STRING_OPEN_CHARACTER				'"'
 #define STRING_CLOSE_CHARACTER				'"'
@@ -321,7 +323,7 @@ static id GetStringAt(STParserState *parserState)
 	return resultString;
 }
 
-static STSymbol *GetIdentifierAt(STParserState *parserState)
+static STSymbol *GetIdentifierAt(STParserState *parserState, NSCharacterSet *extraInvalidCharacters)
 {
 	STCreationLocation symbolCreationLocation = parserState->creationLocation;
 	
@@ -333,7 +335,9 @@ static STSymbol *GetIdentifierAt(STParserState *parserState)
 	{
 		unichar character = [parserState->string characterAtIndex:index];
 		
-		if(!IsCharacterPartOfIdentifier(character, (index == identifierRange.location)) || (character == ':'))
+		if(!IsCharacterPartOfIdentifier(character, (index == identifierRange.location)) || 
+		   (character == ':') ||
+		   [extraInvalidCharacters characterIsMember:character])
 		{
 			if(character == ':')
 			{
@@ -391,9 +395,9 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 		if(character == DO_LIST_CLOSE_CHARACTER)
 		{
 			//If we're unbordered then we need to move back one character
-			//so that any containing do-dot statement will see it's closing
+			//so that any containing do statement will see it's closing
 			//character. This will also result in error reporting when a
-			//dot is used outside of a do-dot statement.
+			//} is used outside of a do statement.
 			if(isUnbordered)
 			{
 				parserState->index--;
@@ -453,7 +457,46 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 		//If we encounter the word 'do' at the end of a line, we start do-notation expression parsing.
 		else if(character == DO_LIST_OPEN_CHARACTER)
 		{
-			[expression addObject:GetExpressionAt(parserState, YES, NO)];
+			if(SafelyGetCharacterAtIndex(parserState->string, parserState->index + 1) == PARAM_LIST_OPEN_CHARACTER)
+			{
+				//Move past DO_LIST_OPEN_CHARACTER and PARAM_LIST_OPEN_CHARACTER
+				parserState->index += 2;
+				
+				NSCharacterSet *closingCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"|"];
+				STList *argumentsList = [STList list];
+				argumentsList.flags |= kSTListFlagIsDefinitionParameters;
+				for (; parserState->index < parserState->stringLength; parserState->index++)
+				{
+					unichar character = [parserState->string characterAtIndex:parserState->index];
+					if(character == PARAM_LIST_CLOSE_CHARACTER)
+					{
+						break;
+					}
+					else if(IsCharacterWhitespace(character))
+					{
+						//Do Nothing.
+					}
+					else if(IsCharacterPartOfIdentifier(character, YES))
+					{
+						[argumentsList addObject:GetIdentifierAt(parserState, closingCharacterSet)];
+					}
+					else
+					{
+						STRaiseIssue(parserState->creationLocation, @"Unexpected character %C in parameter list", character);
+					}
+				}
+				
+				//We move back one character because when asking for a do-block from the parser
+				//it expects the parser will be sitting on the opening curly-brace. It's not in
+				//this case.
+				STList *blockList = GetExpressionAt(parserState, YES, NO);
+				[blockList insertObject:argumentsList atIndex:0];
+				[expression addObject:blockList];
+			}
+			else
+			{
+				[expression addObject:GetExpressionAt(parserState, YES, NO)];
+			}
 		}
 		//If we're in do-notation, and we've gotten this far, we're looking for subexpressions.
 		else if(usingDoNotation)
@@ -474,7 +517,7 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 		//If we find part of an identifier, we read it and add it to our expression.
 		else if(IsCharacterPartOfIdentifier(character, YES))
 		{
-			[expression addObject:GetIdentifierAt(parserState)];
+			[expression addObject:GetIdentifierAt(parserState, nil)];
 		}
 		//If we find a quote character we scan the next subexpression as a quoted list.
 		else if(character == LIST_QUOTE_CHARACTER)
@@ -506,7 +549,7 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 				parserState->index++;
 				STParserStateUpdateCreationLocation(parserState, [parserState->string characterAtIndex:parserState->index]);
 				
-				STSymbol *identifier = GetIdentifierAt(parserState);
+				STSymbol *identifier = GetIdentifierAt(parserState, nil);
 				identifier.isQuoted = YES;
 				[expression addObject:identifier];
 			}

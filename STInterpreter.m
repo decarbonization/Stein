@@ -26,10 +26,21 @@
 
 static id LambdaFromDefinition(STList *definition, STScope *scope)
 {
-	STList *prototype = [definition head];
-	[prototype replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
+	STList *prototype = nil;
+	STList *body = nil;
+	if(ST_FLAG_IS_SET([[definition head] flags], kSTListFlagIsDefinitionParameters))
+	{
+		prototype = [definition head];
+		[prototype replaceValuesByPerformingSelectorOnEachObject:@selector(string)];
+		
+		body = [definition tail];
+	}
+	else
+	{
+		prototype = [STList list];
+		body = definition;
+	}
 	
-	STList *body = [definition tail];
 	body.flags = kSTListFlagsNone;
 	
 	return [[STClosure alloc] initWithPrototype:prototype forImplementation:body inScope:scope];

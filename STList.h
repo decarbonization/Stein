@@ -15,6 +15,7 @@ enum STListFlags {
 	kSTListFlagsNone = 0,
 	kSTListFlagIsQuoted = 1 << 1, 
 	kSTListFlagIsDefinition = 1 << 2, 
+	kSTListFlagIsDefinitionParameters = 1 << 4,
 };
 typedef NSUInteger STListFlags;
 
