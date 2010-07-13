@@ -30,13 +30,11 @@ typedef NSUInteger STListFlags;
 #pragma mark Creation
 
 /*!
- @method
  @abstract	Initialize the receiver as an empty list.
  */
 - (id)init;
 
 /*!
- @method
  @abstract	Create a new autoreleased empty list.
  */
 + (STList *)list;
@@ -44,7 +42,6 @@ typedef NSUInteger STListFlags;
 #pragma mark -
 
 /*!
- @method
  @abstract	Initialize the receiver with a specified array.
  @param		array	The array to initialize the receiver's contents with. May not be nil.
  @result	A list with the contents of the specified array.
@@ -52,7 +49,6 @@ typedef NSUInteger STListFlags;
 - (id)initWithArray:(NSArray *)array;
 
 /*!
- @method
  @abstract	Create a new autoreleased list with a specified array.
  @param		array	The array to use as list's contents. May not be nil.
  @result	A list with the contents of the specified array.
@@ -62,7 +58,6 @@ typedef NSUInteger STListFlags;
 #pragma mark -
 
 /*!
- @method
  @abstract		Initialize the receiver with the contents of a specified list.
  @param			list	The list to initialize the receiver's contents with. May not be nil.
  @result		A list with the contents of the specified list.
@@ -71,7 +66,6 @@ typedef NSUInteger STListFlags;
 - (id)initWithList:(STList *)list;
 
 /*!
- @method
  @abstract		Create a new autoreleased list with the contents of a specified list.
  @param			list	The list to use as the list's contents. May not be nil.
  @result		A list with the contents of the specified list.
@@ -81,24 +75,36 @@ typedef NSUInteger STListFlags;
 
 #pragma mark -
 
+/*!
+ @abstract	Initialize the receiver with a specified object.
+ */
 - (id)initWithObject:(id)object;
+
+/*!
+ @abstract	Returns a new STList with a specified object.
+ */
 + (STList *)listWithObject:(id)object;
 
+/*!
+ @abstract	Initializes the receiver with a nil-terminated list of objects.
+ */
 - (id)initWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION;
-+ (id)listWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION;
+
+/*!
+ @abstract	Creates a new STList with a nil-terminated list of objects.
+ */
++ (STList *)listWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION;
 
 #pragma mark -
 #pragma mark Accessing objects
 
 /*!
- @method
  @abstract	Get the head of the list.
  @result	The head of the list; nil if the receiver is empty.
  */
 - (id)head;
 
 /*!
- @method
  @abstract	Get the tail (everything but the first object) of the list.
  @result	The tail of the list; an empty list of the receiver has less than two elements.
  */
@@ -107,20 +113,17 @@ typedef NSUInteger STListFlags;
 #pragma mark -
 
 /*!
- @method
  @abstract	Look up the object at a specified index in the receiver.
  */
 - (id)objectAtIndex:(NSUInteger)index;
 
 /*!
- @method
  @abstract		Create a new autoreleased sublist with the contents of the receiver in the specified range.
  @discussion	The list returned by this method inherits the receiver's evaluator, but does not inherit it's quote/do construct status.
  */
 - (STList *)sublistWithRange:(NSRange)range;
 
 /*!
- @method
  @abstract		Create a new autoreleased sublist with the contents of the receiver from a specified index to the end of the list.
  @discussion	The list returned by this method inherits the receiver's evaluator, but does not inherit it's quote/do construct status.
  */
@@ -130,13 +133,11 @@ typedef NSUInteger STListFlags;
 #pragma mark Modification
 
 /*!
- @method
  @abstract	Add an object to the end of the receiver.
  */
 - (void)addObject:(id)object;
 
 /*!
- @method
  @abstract	Insert an object into the receiver at a specified index.
  */
 - (void)insertObject:(id)object atIndex:(NSUInteger)index;
@@ -144,13 +145,11 @@ typedef NSUInteger STListFlags;
 #pragma mark -
 
 /*!
- @method
  @abstract	Remove a specified object from the receiver.
  */
 - (void)removeObject:(id)object;
 
 /*!
- @method
  @abstract	Remove the object at a specified index from the receiver.
  */
 - (void)removeObjectAtIndex:(NSUInteger)index;
@@ -163,13 +162,11 @@ typedef NSUInteger STListFlags;
 #pragma mark Finding Objects
 
 /*!
- @method
  @abstract	Find the location of a specified object.
  */
 - (NSUInteger)indexOfObject:(id)object;
 
 /*!
- @method
  @abstract	Find the location of a specified object using a pointer comparison.
  */
 - (NSUInteger)indexOfObjectIdenticalTo:(id)object;
@@ -183,7 +180,6 @@ typedef NSUInteger STListFlags;
 @property STListFlags flags;
 
 /*!
- @property
  @abstract	The location at which the list was created.
  */
 @property STCreationLocation creationLocation;
@@ -191,13 +187,11 @@ typedef NSUInteger STListFlags;
 #pragma mark -
 
 /*!
- @property
  @abstract	The number of objects in the list.
  */
 @property (readonly) NSUInteger count;
 
 /*!
- @property
  @abstract	All of the objects in the list in the form of an array.
  */
 @property (readonly) NSArray *allObjects;

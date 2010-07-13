@@ -1,12 +1,12 @@
 //
-//  NSObject+Stein.m
+//  NSObject+SteinTools.m
 //  stein
 //
 //  Created by Peter MacWhinnie on 2009/12/13.
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#import "NSObject+Stein.h"
+#import "NSObject+SteinTools.h"
 #import <objc/objc-runtime.h>
 #import "STObjectBridge.h"
 #import "STTypeBridge.h"
@@ -16,9 +16,7 @@
 #import "STClosure.h"
 #import "STSymbol.h"
 
-static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalIvarsTable";
-
-@implementation NSObject (Stein)
+@implementation NSObject (SteinTools)
 
 #pragma mark Printing
 
@@ -30,7 +28,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 + (NSString *)prettyDescription
 {
-	return NSStringFromClass(self);
+	return [self className];
 }
 
 #pragma mark -
@@ -74,71 +72,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 }
 
 #pragma mark -
-#pragma mark Ivars
-
-- (void)setValue:(id)value forIvarNamed:(NSString *)name
-{
-	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
-	if(!ivar)
-	{
-		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
-		if(!ivarTable)
-		{
-			ivarTable = [NSMutableDictionary dictionary];
-			objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
-		}
-		
-		if(value)
-			[ivarTable setObject:value forKey:name];
-		else
-			[ivarTable removeObjectForKey:value];
-		
-		return;
-	}
-	
-	const char *ivarTypeEncoding = ivar_getTypeEncoding(ivar);
-	Byte buffer[STTypeBridgeGetSizeOfObjCType(ivarTypeEncoding)];
-	STTypeBridgeConvertObjectIntoType(value, ivarTypeEncoding, (void **)&buffer);
-	object_setIvar(self, ivar, (void *)buffer);
-}
-
-- (id)valueForIvarNamed:(NSString *)name
-{
-	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
-	if(!ivar)
-	{
-		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
-		return [ivarTable objectForKey:name];
-	}
-	
-	void *location = object_getIvar(self, ivar);
-	return STTypeBridgeConvertValueOfTypeIntoObject(&location, ivar_getTypeEncoding(ivar));
-}
-
-#pragma mark -
-
-+ (void)setValue:(id)value forIvarNamed:(NSString *)name
-{
-	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
-	if(!ivarTable)
-	{
-		ivarTable = [NSMutableDictionary dictionary];
-		objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
-	}
-	
-	if(value)
-		[ivarTable setObject:value forKey:name];
-	else
-		[ivarTable removeObjectForKey:value];
-}
-
-+ (id)valueForIvarNamed:(NSString *)name
-{
-	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
-	return [ivarTable objectForKey:name];
-}
-
-#pragma mark -
 #pragma mark Extension
 
 + (Class)extend:(STClosure *)extensions
@@ -147,38 +80,11 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return self;
 }
 
-#pragma mark -
-#pragma mark High-Level Forwarding
-
-+ (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
-{
-	return NO;
-}
-
-+ (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
-{
-	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
-	return STNull;
-}
-
-#pragma mark -
-
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
-{
-	return NO;
-}
-
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
-{
-	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
-	return STNull;
-}
-
 @end
 
 #pragma mark -
 
-@implementation NSNumber (Stein)
+@implementation NSNumber (SteinTools)
 
 - (NSString *)prettyDescription
 {
@@ -406,7 +312,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-@implementation NSString (Stein)
+@implementation NSString (SteinTools)
 
 - (NSString *)string
 {
@@ -472,7 +378,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-@implementation NSNull (Stein)
+@implementation NSNull (SteinTools)
 
 - (NSString *)prettyDescription
 {
@@ -483,7 +389,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-@implementation NSArray (Stein)
+@implementation NSArray (SteinTools)
 
 #pragma mark Enumerable
 
@@ -582,7 +488,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-@implementation NSSet (Stein)
+@implementation NSSet (SteinTools)
 
 #pragma mark Enumerable
 
@@ -646,7 +552,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 #pragma mark -
 
-@implementation NSDictionary (Stein)
+@implementation NSDictionary (SteinTools)
 
 #pragma mark Enumerable
 

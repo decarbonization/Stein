@@ -21,7 +21,7 @@
 #import "STClosure.h"
 #import "STNativeFunctionWrapper.h"
 
-#import "NSObject+Stein.h"
+#import "NSObject+SteinTools.h"
 
 /*!
  @function
@@ -367,7 +367,7 @@ void STExtendClass(Class classToExtend, STList *expressions)
 
 #pragma mark -
 
-BOOL STUndefineClass(Class classToUndefine)
+BOOL STUndefineClass(Class classToUndefine, STScope *scope)
 {
 	NSCParameterAssert(classToUndefine);
 	
@@ -376,18 +376,28 @@ BOOL STUndefineClass(Class classToUndefine)
 	return YES;
 }
 
-BOOL STResetClass(Class classToReset)
-{
-	//TODO: Implement.
-	return NO;
-}
-
-Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions)
+Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions, STScope *scope)
 {
 	NSCParameterAssert(subclassName);
 	NSCParameterAssert(superclass);
 	
-	Class newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
+	Class newClass = Nil;
+#if ST_USE_UNIQUE_RUNTIME_CLASS_NAMES
+	newClass = [[scope valueForVariableNamed:subclassName searchParentScopes:YES] class];
+	if(!newClass)
+	{
+		NSString *className = NSMakeCollectable(CFUUIDCreateString(NULL, CFMakeCollectable(CFUUIDCreate(NULL))));
+		newClass = objc_allocateClassPair(superclass, [className UTF8String], 0);
+		objc_registerClassPair(newClass);
+		
+		[scope setValue:newClass forVariableNamed:subclassName searchParentScopes:NO];
+		[newClass setValue:subclassName forIvarNamed:@"$steinClassName"];
+	}
+	
+	if(expressions)
+		STExtendClass(newClass, expressions);
+#else
+	newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
 	if(newClass)
 		objc_registerClassPair(newClass);
 	else
@@ -395,6 +405,7 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 	
 	if(expressions)
 		STExtendClass(newClass, expressions);
+#endif /* ST_SANDBOX_CLASSES */
 	
 	return newClass;
 }

@@ -9,7 +9,7 @@
 #import "STInterpreter.h"
 
 #import <readline/readline.h>
-#import "NSObject+Stein.h"
+#import "NSObject+SteinTools.h"
 
 #import "STClosure.h"
 #import "STFunction.h"

@@ -7,7 +7,7 @@
 //
 
 #import "STList.h"
-#import "NSObject+Stein.h"
+#import "NSObject+SteinTools.h"
 #import <stdarg.h>
 
 @implementation STList

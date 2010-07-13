@@ -124,7 +124,7 @@ static id let(STList *arguments, STScope *scope)
 			Class superclass = STEvaluate([arguments objectAtIndex:2], scope);
 			STList *declarations = [arguments objectAtIndex:3];
 			
-			return STDefineClass(name, superclass, declarations);
+			return STDefineClass(name, superclass, declarations, scope);
 		}
 		else
 		{

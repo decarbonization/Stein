@@ -9,7 +9,7 @@
 #import "STNativeFunctionWrapper.h"
 #import "STList.h"
 #import "STTypeBridge.h"
-#import "NSObject+Stein.h"
+#import "NSObject+SteinTools.h"
 #import <sys/mman.h>
 
 ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //from STTypeBridge.m

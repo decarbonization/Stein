@@ -8,7 +8,7 @@
 
 #import "STPointer.h"
 #import "STTypeBridge.h"
-#import "NSObject+Stein.h"
+#import "NSObject+SteinTools.h"
 #import "STList.h"
 
 @implementation STPointer

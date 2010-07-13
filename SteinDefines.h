@@ -21,6 +21,14 @@
 
 #define ST_FLAG_IS_SET(bitfield, flag) ((flag & bitfield) == flag)
 
+#pragma mark -
+#pragma mark Options
+
+//Uncomment the following line to have Stein use unique names for classes in the runtime.
+//This should be used whenever multiple Stein interpreters will be running side by side
+//with in the same runtime executable space.
+//#define ST_USE_UNIQUE_RUNTIME_CLASS_NAMES 1
+
 #ifdef __OBJC__
 
 #import <Foundation/Foundation.h>

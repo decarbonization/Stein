@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E1B285311ECD05600100A18 /* NSObject+SteinInternalSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC9317111EAC21300EACB73 /* NSObject+SteinInternalSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1E1B285411ECD05800100A18 /* NSObject+SteinInternalSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC9317211EAC21300EACB73 /* NSObject+SteinInternalSupport.m */; };
 		1E2C542411B970C200068D58 /* STScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E2C536711B9654E00068D58 /* STScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1E2C542511B970C400068D58 /* STScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E2C536811B9654E00068D58 /* STScope.m */; };
 		1EC930D611EABE9000EACB73 /* STInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC9303811EAB6F200EACB73 /* STInterpreter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1EC930D711EABE9200EACB73 /* STInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC9303911EAB6F200EACB73 /* STInterpreter.m */; };
-		1EC9317311EAC21300EACB73 /* NSObject+SteinMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC9317211EAC21300EACB73 /* NSObject+SteinMessaging.m */; };
 		1EC931FD11EAC84400EACB73 /* STBuiltInFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC931B411EAC43C00EACB73 /* STBuiltInFunctions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1EC931FE11EAC84600EACB73 /* STBuiltInFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */; };
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
@@ -22,8 +23,6 @@
 		C808865410E2E00000632257 /* STStringWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = C808865210E2E00000632257 /* STStringWithCode.m */; };
 		C808881F10E3037B00632257 /* STPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = C808881D10E3037B00632257 /* STPointer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C808882010E3037B00632257 /* STPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = C808881E10E3037B00632257 /* STPointer.m */; };
-		C8088ABD10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h in Headers */ = {isa = PBXBuildFile; fileRef = C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */; };
-		C8088ABE10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m in Sources */ = {isa = PBXBuildFile; fileRef = C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */; };
 		C83BD4F610FFC8740005462D /* STNativeFunctionWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */; };
 		C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */; };
 		C83EF1E510D877300037A956 /* STBridgedFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1E310D877300037A956 /* STBridgedFunction.h */; };
@@ -41,7 +40,7 @@
 		C8B3187C10E15E860086468F /* STEnumerable.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3187A10E15E860086468F /* STEnumerable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8B3187D10E15E860086468F /* STEnumerable.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B3187B10E15E860086468F /* STEnumerable.m */; };
 		C8E1641410D57C36003F45A9 /* Stein.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1640A10D57C0E003F45A9 /* Stein.framework */; };
-		C8E1649510D57C55003F45A9 /* NSObject+Stein.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E162C710D56FCA003F45A9 /* NSObject+Stein.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C8E1649510D57C55003F45A9 /* NSObject+SteinTools.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E162C710D56FCA003F45A9 /* NSObject+SteinTools.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649710D57C55003F45A9 /* STClosure.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E1614510D55B59003F45A9 /* STClosure.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649910D57C55003F45A9 /* STFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = C8DB7A8710D343C800EF3D63 /* STFunction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649A10D57C55003F45A9 /* STList.h in Headers */ = {isa = PBXBuildFile; fileRef = C806B70210D2D96C00A64BEE /* STList.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -50,7 +49,7 @@
 		C8E1649D10D57C55003F45A9 /* STStructClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E15F7B10D551B8003F45A9 /* STStructClasses.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649E10D57C55003F45A9 /* STSymbol.h in Headers */ = {isa = PBXBuildFile; fileRef = C806B70510D2D97000A64BEE /* STSymbol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8E1649F10D57C55003F45A9 /* STTypeBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = C8DB7AD910D347F800EF3D63 /* STTypeBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C8E164A210D57C65003F45A9 /* NSObject+Stein.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */; };
+		C8E164A210D57C65003F45A9 /* NSObject+SteinTools.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */; };
 		C8E164A410D57C65003F45A9 /* STClosure.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E1614610D55B59003F45A9 /* STClosure.m */; };
 		C8E164A610D57C65003F45A9 /* STList.m in Sources */ = {isa = PBXBuildFile; fileRef = C806B70310D2D96C00A64BEE /* STList.m */; };
 		C8E164A710D57C65003F45A9 /* STObjectBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */; };
@@ -132,8 +131,8 @@
 		1E2C536811B9654E00068D58 /* STScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STScope.m; sourceTree = "<group>"; };
 		1EC9303811EAB6F200EACB73 /* STInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STInterpreter.h; sourceTree = "<group>"; };
 		1EC9303911EAB6F200EACB73 /* STInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STInterpreter.m; sourceTree = "<group>"; };
-		1EC9317111EAC21300EACB73 /* NSObject+SteinMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinMessaging.h"; sourceTree = "<group>"; };
-		1EC9317211EAC21300EACB73 /* NSObject+SteinMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinMessaging.m"; sourceTree = "<group>"; };
+		1EC9317111EAC21300EACB73 /* NSObject+SteinInternalSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinInternalSupport.h"; sourceTree = "<group>"; };
+		1EC9317211EAC21300EACB73 /* NSObject+SteinInternalSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinInternalSupport.m"; sourceTree = "<group>"; };
 		1EC931B411EAC43C00EACB73 /* STBuiltInFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STBuiltInFunctions.h; sourceTree = "<group>"; };
 		1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STBuiltInFunctions.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stein_Prefix.pch; sourceTree = "<group>"; };
@@ -148,8 +147,6 @@
 		C808865210E2E00000632257 /* STStringWithCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STStringWithCode.m; sourceTree = "<group>"; };
 		C808881D10E3037B00632257 /* STPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPointer.h; sourceTree = "<group>"; };
 		C808881E10E3037B00632257 /* STPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPointer.m; sourceTree = "<group>"; };
-		C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinBuiltInDecorators.h"; sourceTree = "<group>"; };
-		C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinBuiltInDecorators.m"; sourceTree = "<group>"; };
 		C83BD4F410FFC8740005462D /* STNativeFunctionWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeFunctionWrapper.h; sourceTree = "<group>"; };
 		C83BD4F510FFC8740005462D /* STNativeFunctionWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeFunctionWrapper.m; sourceTree = "<group>"; };
 		C83EF1E310D877300037A956 /* STBridgedFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STBridgedFunction.h; sourceTree = "<group>"; };
@@ -177,8 +174,8 @@
 		C8E15FB610D55624003F45A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		C8E1614510D55B59003F45A9 /* STClosure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STClosure.h; sourceTree = "<group>"; };
 		C8E1614610D55B59003F45A9 /* STClosure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STClosure.m; sourceTree = "<group>"; };
-		C8E162C710D56FCA003F45A9 /* NSObject+Stein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Stein.h"; sourceTree = "<group>"; };
-		C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Stein.m"; sourceTree = "<group>"; };
+		C8E162C710D56FCA003F45A9 /* NSObject+SteinTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinTools.h"; sourceTree = "<group>"; };
+		C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinTools.m"; sourceTree = "<group>"; };
 		C8E1640A10D57C0E003F45A9 /* Stein.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Stein.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8E1640B10D57C0E003F45A9 /* Stein-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Stein-Info.plist"; sourceTree = "<group>"; };
 		C8E164DB10D57D5A003F45A9 /* Stein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stein.h; sourceTree = "<group>"; };
@@ -306,12 +303,10 @@
 			children = (
 				C8AC0B0B1104EEC6003B889B /* STIntrospection.h */,
 				C8AC0B0C1104EEC6003B889B /* STIntrospection.m */,
-				C8E162C710D56FCA003F45A9 /* NSObject+Stein.h */,
-				C8E162C810D56FCA003F45A9 /* NSObject+Stein.m */,
-				1EC9317111EAC21300EACB73 /* NSObject+SteinMessaging.h */,
-				1EC9317211EAC21300EACB73 /* NSObject+SteinMessaging.m */,
-				C8088ABB10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h */,
-				C8088ABC10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m */,
+				C8E162C710D56FCA003F45A9 /* NSObject+SteinTools.h */,
+				C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */,
+				1EC9317111EAC21300EACB73 /* NSObject+SteinInternalSupport.h */,
+				1EC9317211EAC21300EACB73 /* NSObject+SteinInternalSupport.m */,
 			);
 			name = "Object Extensions";
 			sourceTree = "<group>";
@@ -415,7 +410,7 @@
 			files = (
 				C8E164DD10D57D80003F45A9 /* Stein.h in Headers */,
 				C8E1657410D58458003F45A9 /* SteinDefines.h in Headers */,
-				C8E1649510D57C55003F45A9 /* NSObject+Stein.h in Headers */,
+				C8E1649510D57C55003F45A9 /* NSObject+SteinTools.h in Headers */,
 				C8E1649710D57C55003F45A9 /* STClosure.h in Headers */,
 				C8E1649910D57C55003F45A9 /* STFunction.h in Headers */,
 				C8E1649A10D57C55003F45A9 /* STList.h in Headers */,
@@ -430,7 +425,6 @@
 				C8B3187C10E15E860086468F /* STEnumerable.h in Headers */,
 				C808865310E2E00000632257 /* STStringWithCode.h in Headers */,
 				C808881F10E3037B00632257 /* STPointer.h in Headers */,
-				C8088ABD10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.h in Headers */,
 				C83BD4F610FFC8740005462D /* STNativeFunctionWrapper.h in Headers */,
 				C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */,
 				C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */,
@@ -438,6 +432,7 @@
 				1E2C542411B970C200068D58 /* STScope.h in Headers */,
 				1EC930D611EABE9000EACB73 /* STInterpreter.h in Headers */,
 				1EC931FD11EAC84400EACB73 /* STBuiltInFunctions.h in Headers */,
+				1E1B285311ECD05600100A18 /* NSObject+SteinInternalSupport.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -524,7 +519,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */,
-				1EC9317311EAC21300EACB73 /* NSObject+SteinMessaging.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,7 +526,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8E164A210D57C65003F45A9 /* NSObject+Stein.m in Sources */,
+				C8E164A210D57C65003F45A9 /* NSObject+SteinTools.m in Sources */,
 				C8E164A410D57C65003F45A9 /* STClosure.m in Sources */,
 				C8E164A610D57C65003F45A9 /* STList.m in Sources */,
 				C8E164A710D57C65003F45A9 /* STObjectBridge.m in Sources */,
@@ -545,7 +539,6 @@
 				C8B3187D10E15E860086468F /* STEnumerable.m in Sources */,
 				C808865410E2E00000632257 /* STStringWithCode.m in Sources */,
 				C808882010E3037B00632257 /* STPointer.m in Sources */,
-				C8088ABE10E3E11D00632257 /* NSObject+SteinBuiltInDecorators.m in Sources */,
 				C863D20110E7F00D00387729 /* SteinDefines.m in Sources */,
 				C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */,
 				C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */,
@@ -553,6 +546,7 @@
 				1E2C542511B970C400068D58 /* STScope.m in Sources */,
 				1EC930D711EABE9200EACB73 /* STInterpreter.m in Sources */,
 				1EC931FE11EAC84600EACB73 /* STBuiltInFunctions.m in Sources */,
+				1E1B285411ECD05800100A18 /* NSObject+SteinInternalSupport.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

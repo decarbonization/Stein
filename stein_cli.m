@@ -10,7 +10,7 @@
 #import <readline/readline.h>
 
 #import <Stein/Stein.h>
-#import <Stein/NSObject+Stein.h> //For -[NSObject prettyDescription]
+#import <Stein/NSObject+SteinTools.h> //For -[NSObject prettyDescription]
 
 #pragma mark Tools
 
