@@ -10,7 +10,9 @@
 
 @class STScope;
 
-/*!
- @abstract	Returns a new scope representing the built in function scope.
- */
+//`
+//	function	STBuiltInFunctionScope
+//	intention	To create a Stein scope that contains all of the \
+//				core functions required for Stein to be useful.
+//`
 ST_EXTERN STScope *STBuiltInFunctionScope();
