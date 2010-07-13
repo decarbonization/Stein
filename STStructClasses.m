@@ -57,7 +57,6 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 #pragma mark -
 #pragma mark Properties
 
-@dynamic location;
 - (void)setLocation:(NSUInteger)location
 {
 	@synchronized(self)
@@ -76,7 +75,6 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 
 #pragma mark -
 
-@dynamic length;
 - (void)setLength:(NSUInteger)length
 {
 	@synchronized(self)
@@ -95,7 +93,6 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 
 #pragma mark -
 
-@dynamic rangeValue;
 - (NSRange)rangeValue
 {
 	@synchronized(self)
@@ -120,6 +117,11 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"<%@:%p { %ld, %ld }>", [self className], self, mRange.location, mRange.length];
+}
+
+- (NSString *)prettyDescription
+{
+	return [NSString stringWithFormat:@"range %ld %ld", mRange.location, mRange.length];
 }
 
 @end
@@ -189,7 +191,6 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 #pragma mark -
 #pragma mark Properties
 
-@dynamic x;
 - (void)setX:(CGFloat)x
 {
 	@synchronized(self)
@@ -208,7 +209,6 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 
 #pragma mark -
 
-@dynamic y;
 - (void)setY:(CGFloat)y
 {
 	@synchronized(self)
@@ -227,7 +227,6 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 
 #pragma mark -
 
-@dynamic pointValue;
 - (CGPoint)pointValue
 {
 	@synchronized(self)
@@ -318,7 +317,6 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 #pragma mark -
 #pragma mark Properties
 
-@dynamic width;
 - (void)setWidth:(CGFloat)width
 {
 	@synchronized(self)
@@ -337,7 +335,6 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 
 #pragma mark -
 
-@dynamic height;
 - (void)setHeight:(CGFloat)height
 {
 	@synchronized(self)
@@ -356,7 +353,6 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 
 #pragma mark -
 
-@dynamic sizeValue;
 - (CGSize)sizeValue
 {
 	@synchronized(self)
@@ -462,7 +458,6 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 
 #pragma mark -
 
-@dynamic rectValue;
 - (CGRect)rectValue
 {
 	return (CGRect){ .origin = mOrigin.pointValue, .size = mSize.sizeValue };

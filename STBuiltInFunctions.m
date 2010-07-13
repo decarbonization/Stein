@@ -7,11 +7,23 @@
 //
 
 #import "STBuiltInFunctions.h"
-#import "STInterpreter.h"
+
 #import "STObjectBridge.h"
+#import "STTypeBridge.h"
+#import "STBridgedFunction.h"
+
+#import "STNativeFunctionWrapper.h"
+#import "STNativeBlock.h"
+#import "STTypeBridge.h"
+#import "STStructClasses.h"
+#import "STPointer.h"
+#import <dlfcn.h>
+
 #import "STList.h"
-#import "STScope.h"
 #import "STSymbol.h"
+
+#import "STInterpreter.h"
+#import "STScope.h"
 
 typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 
@@ -142,7 +154,7 @@ static id plus(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByAdding:rightOperand];
 	}
 	
-	return leftOperand;
+	return leftOperand ?: STNull;
 }
 
 static id minus(STList *arguments, STScope *scope)
@@ -153,7 +165,7 @@ static id minus(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberBySubtracting:rightOperand];
 	}
 	
-	return leftOperand;
+	return leftOperand ?: STNull;
 }
 
 static id multiply(STList *arguments, STScope *scope)
@@ -164,7 +176,7 @@ static id multiply(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByMultiplyingBy:rightOperand];
 	}
 	
-	return leftOperand;
+	return leftOperand ?: STNull;
 }
 
 static id divide(STList *arguments, STScope *scope)
@@ -175,7 +187,7 @@ static id divide(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByDividingBy:rightOperand];
 	}
 	
-	return leftOperand;
+	return leftOperand ?: STNull;
 }
 
 static id power(STList *arguments, STScope *scope)
@@ -186,7 +198,7 @@ static id power(STList *arguments, STScope *scope)
 		leftOperand = [leftOperand decimalNumberByRaisingToPower:[rightOperand unsignedIntegerValue]];
 	}
 	
-	return leftOperand;
+	return leftOperand ?: STNull;
 }
 
 #pragma mark -
@@ -316,9 +328,166 @@ static id and(STList *arguments, STScope *scope)
 static id not(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 1)
-		STRaiseIssue(arguments.creationLocation, @"not requires exactly one parameter.");
+		STRaiseIssue(arguments.creationLocation, @"not requires exactly one parameter (operand).");
 	
 	return [NSNumber numberWithBool:!STIsTrue([arguments head])];
+}
+
+#pragma mark -
+#pragma mark • Bridging
+
+static id _extern(STList *arguments, STScope *scope)
+{
+	if(arguments.count < 2)
+		STRaiseIssue(arguments.creationLocation, @"extern requires at least 2 parameters (type symbol) or (type symbol(type...)).");
+	
+	NSString *symbolType = STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string]);
+	NSString *symbolName = [[arguments objectAtIndex:1] string];
+	
+	id result = STNull;
+	if(arguments.count == 2)
+	{
+		void *value = dlsym(RTLD_DEFAULT, [symbolName UTF8String]);
+		NSCAssert((value != NULL), @"Could not find constant named %@.", symbolName);
+		
+		result = STTypeBridgeConvertValueOfTypeIntoObject(value, [symbolType UTF8String]);
+	}
+	else if(arguments.count == 3)
+	{
+		NSMutableString *signature = [NSMutableString stringWithString:symbolType];
+		for (STSymbol *type in [arguments objectAtIndex:2])
+			[signature appendString:STTypeBridgeGetObjCTypeForHumanReadableType([type string])];
+		
+		result = [[STBridgedFunction alloc] initWithSymbolNamed:symbolName 
+													  signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]];
+	}
+	
+	[scope setValue:result forVariableNamed:symbolName searchParentScopes:NO];
+	
+	return result;
+}
+
+#pragma mark -
+
+static id ref(STList *arguments, STScope *scope)
+{
+	if(arguments.count < 2)
+		STRaiseIssue(arguments.creationLocation, @"ref requires 2 parameters (type, initialValue).");
+	
+	NSString *type = STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string]);
+	
+	STPointer *pointer = [STPointer pointerWithType:[type UTF8String]];
+	pointer.value = STEvaluate([arguments objectAtIndex:1], scope);
+	
+	return pointer;
+}
+
+static id ref_array(STList *arguments, STScope *scope)
+{
+	if(arguments.count < 2)
+		STRaiseIssue(arguments.creationLocation, @"ref-array requires 2 parameters (type, length).");
+	
+	NSString *type = STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string]);
+	NSUInteger length = [STEvaluate([arguments objectAtIndex:1], scope) unsignedIntegerValue];
+	
+	return [STPointer arrayPointerOfLength:length type:[type UTF8String]];
+}
+
+#pragma mark -
+
+static id to_native_function(STList *arguments, STScope *scope)
+{
+	if([arguments count] < 3)
+		STRaiseIssue(arguments.creationLocation, @"to-native-function requires 3 parameters.");
+	
+	NSMutableString *typeString = [NSMutableString stringWithString:STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string])];
+	for (STSymbol *type in [arguments objectAtIndex:1])
+		[typeString appendString:STTypeBridgeGetObjCTypeForHumanReadableType(type.string)];
+	
+	NSObject < STFunction > *function = STEvaluate([arguments objectAtIndex:2], scope);
+	
+	return [[STNativeFunctionWrapper alloc] initWithFunction:function 
+												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
+}
+
+static id to_native_block(STList *arguments, STScope *scope)
+{
+	if([arguments count] < 3)
+		STRaiseIssue(arguments.creationLocation, @"to-native-block requires 3 parameters.");
+	
+	NSMutableString *typeString = [NSMutableString stringWithString:STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string])];
+	
+	//The 'block' parameter.
+	[typeString appendString:@"@"];
+	
+	for (STSymbol *type in [arguments objectAtIndex:1])
+		[typeString appendString:STTypeBridgeGetObjCTypeForHumanReadableType(type.string)];
+	
+	id block = STEvaluate([arguments objectAtIndex:2], scope);
+	
+	return [[STNativeBlock alloc] initWithBlock:block 
+									  signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
+}
+
+#pragma mark -
+#pragma mark • Collection Creation
+
+static id array(STList *arguments, STScope *scope)
+{
+	return [arguments.allObjects mutableCopy];
+}
+
+static id list(STList *arguments, STScope *scope)
+{
+	return [arguments copy];
+}
+
+static id dictionary(STList *arguments, STScope *scope)
+{
+	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+	
+	id key = nil;
+	for (id argument in arguments)
+	{
+		if(!key)
+		{
+			key = argument;
+		}
+		else
+		{
+			if(argument != STNull)
+				[dictionary setObject:argument forKey:key];
+			
+			key = nil;
+		}
+	}
+	
+	return dictionary;
+}
+
+static id set(STList *arguments, STScope *scope)
+{
+	return [NSMutableSet setWithArray:arguments.allObjects];
+}
+
+static id index_set(STList *arguments, STScope *scope)
+{
+	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	for (id argument in arguments)
+	{
+		[indexSet addIndex:[argument unsignedIntegerValue]];
+	}
+	
+	return indexSet;
+}
+
+static id range(STList *arguments, STScope *scope)
+{
+	if(arguments.count < 2)
+		STRaiseIssue(arguments.creationLocation, @"range requires 2 parameters (location, length).");
+	
+	return [[STRange alloc] initWithRange:NSMakeRange([[arguments objectAtIndex:0] unsignedIntegerValue], 
+													  [[arguments objectAtIndex:1] unsignedIntegerValue])];
 }
 
 #pragma mark -
@@ -379,6 +548,43 @@ STScope *STBuiltInFunctionScope()
 		 searchParentScopes:NO];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&not evaluatesOwnArguments:NO] 
 		   forVariableNamed:@"not" 
+		 searchParentScopes:NO];
+	
+	//Bridging
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_extern evaluatesOwnArguments:YES] 
+		   forVariableNamed:@"extern" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref evaluatesOwnArguments:YES] 
+		   forVariableNamed:@"ref" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref_array evaluatesOwnArguments:YES] 
+		   forVariableNamed:@"ref-array" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&to_native_function evaluatesOwnArguments:YES] 
+		   forVariableNamed:@"to-native-function" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&to_native_block evaluatesOwnArguments:YES] 
+		   forVariableNamed:@"to-native-block" 
+		 searchParentScopes:NO];
+	
+	//Collection Creation
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&array evaluatesOwnArguments:NO] 
+		   forVariableNamed:@"array" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&list evaluatesOwnArguments:NO] 
+		   forVariableNamed:@"list" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&dictionary evaluatesOwnArguments:NO] 
+		   forVariableNamed:@"dictionary" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set evaluatesOwnArguments:NO] 
+		   forVariableNamed:@"set" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&index_set evaluatesOwnArguments:NO] 
+		   forVariableNamed:@"index-set" 
+		 searchParentScopes:NO];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&range evaluatesOwnArguments:NO] 
+		   forVariableNamed:@"range" 
 		 searchParentScopes:NO];
 	
 	
