@@ -14,7 +14,6 @@
 #import "NSObject+SteinInternalSupport.h"
 
 #import "STNativeFunctionWrapper.h"
-#import "STNativeBlock.h"
 #import "STTypeBridge.h"
 #import "STStructClasses.h"
 #import "STPointer.h"
@@ -115,6 +114,10 @@ static id let(STList *arguments, STScope *scope)
 			id expression = [arguments sublistFromIndex:2];
 			id value = STEvaluate(expression, scope);
 			[scope setValue:value forVariableNamed:name searchParentScopes:YES];
+			
+			if([value respondsToSelector:@selector(setName:)])
+				[value performSelector:@selector(setName:) withObject:name];
+			
 			return value;
 		}
 		else if([directive isEqualTo:@"extend"])
@@ -169,7 +172,7 @@ static id load(STList *arguments, STScope *scope)
 		fileScope.name = [path lastPathComponent];
 		[fileScope setValue:path forVariableNamed:@"$file" searchParentScopes:NO];
 		
-		NSArray *expressions = STParseString(contents);
+		NSArray *expressions = STParseString(contents, path);
 		lastResult = STEvaluate(expressions, fileScope);
 	}
 	
@@ -210,7 +213,7 @@ static id parse(STList *arguments, STScope *scope)
 	if(arguments.count != 1)
 		STRaiseIssue(arguments.creationLocation, @"parse takes exactly 1 parameter (string-to-parse), %ld given.", arguments.count);
 	
-	return STParseString([[arguments head] string]);
+	return STParseString([[arguments head] string], @"<<parse>>");
 }
 
 static id eval(STList *arguments, STScope *scope)
@@ -477,7 +480,7 @@ static id ref_array(STList *arguments, STScope *scope)
 static id to_native_function(STList *arguments, STScope *scope)
 {
 	if([arguments count] < 3)
-		STRaiseIssue(arguments.creationLocation, @"to-native-function requires 3 parameters.");
+		STRaiseIssue(arguments.creationLocation, @"to-native-function requires 3 parameters (return-type (param-type...) stein-function).");
 	
 	NSMutableString *typeString = [NSMutableString stringWithString:STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string])];
 	for (STSymbol *type in [arguments objectAtIndex:1])
@@ -487,25 +490,6 @@ static id to_native_function(STList *arguments, STScope *scope)
 	
 	return [[STNativeFunctionWrapper alloc] initWithFunction:function 
 												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
-}
-
-static id to_native_block(STList *arguments, STScope *scope)
-{
-	if([arguments count] < 3)
-		STRaiseIssue(arguments.creationLocation, @"to-native-block requires 3 parameters.");
-	
-	NSMutableString *typeString = [NSMutableString stringWithString:STTypeBridgeGetObjCTypeForHumanReadableType([[arguments objectAtIndex:0] string])];
-	
-	//The 'block' parameter.
-	[typeString appendString:@"@"];
-	
-	for (STSymbol *type in [arguments objectAtIndex:1])
-		[typeString appendString:STTypeBridgeGetObjCTypeForHumanReadableType(type.string)];
-	
-	id block = STEvaluate([arguments objectAtIndex:2], scope);
-	
-	return [[STNativeBlock alloc] initWithBlock:block 
-									  signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
 }
 
 #pragma mark -
@@ -583,7 +567,7 @@ STScope *STBuiltInFunctionScope()
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set_ivar evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"set-ivar"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
-		   forConstantNamed:@"load"];
+		   forConstantNamed:@"load!"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"super"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&parse evaluatesOwnArguments:NO] 
@@ -641,7 +625,7 @@ STScope *STBuiltInFunctionScope()
 	
 	//Bridging
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_extern evaluatesOwnArguments:YES] 
-		   forVariableNamed:@"extern" 
+		   forVariableNamed:@"extern!" 
 		 searchParentScopes:NO];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref evaluatesOwnArguments:YES] 
 		   forVariableNamed:@"ref" 
@@ -651,9 +635,6 @@ STScope *STBuiltInFunctionScope()
 		 searchParentScopes:NO];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&to_native_function evaluatesOwnArguments:YES] 
 		   forVariableNamed:@"to-native-function" 
-		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&to_native_block evaluatesOwnArguments:YES] 
-		   forVariableNamed:@"to-native-block" 
 		 searchParentScopes:NO];
 	
 	//Collection Creation

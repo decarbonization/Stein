@@ -21,6 +21,7 @@
 #import "STStringWithCode.h"
 
 #import "STBuiltInFunctions.h"
+#import "SteinException.h"
 
 #pragma mark Evaluation
 
@@ -73,40 +74,51 @@ static id EvaluateList(STList *list, STScope *scope)
 
 id STEvaluate(id expression, STScope *scope)
 {
-	if([expression isKindOfClass:[NSArray class]])
+	@try
 	{
-		id lastResult = nil;
-		for (id subexpression in expression)
-			lastResult = STEvaluate(subexpression, scope);
-		
-		return lastResult;
-	}
-	else if([expression isKindOfClass:[STList class]])
-	{
-		return EvaluateList(expression, scope);
-	}
-	else if([expression isKindOfClass:[STSymbol class]])
-	{
-		if([expression isQuoted])
-			return expression;
-		
-		id result = [scope valueForVariableNamed:[expression string] searchParentScopes:YES];
-		if(!result)
+		if([expression isKindOfClass:[NSArray class]])
 		{
-			result = NSClassFromString([expression string]);
-			if(!result)
-				STRaiseIssue([expression creationLocation], @"Reference to unbound variable %@", [expression string]);
+			id lastResult = nil;
+			for (id subexpression in expression)
+				lastResult = STEvaluate(subexpression, scope);
+			
+			return lastResult;
 		}
-		
-		return result;
+		else if([expression isKindOfClass:[STList class]])
+		{
+			return EvaluateList(expression, scope);
+		}
+		else if([expression isKindOfClass:[STSymbol class]])
+		{
+			if([expression isQuoted])
+				return expression;
+			
+			id result = [scope valueForVariableNamed:[expression string] searchParentScopes:YES];
+			if(!result)
+			{
+				result = NSClassFromString([expression string]);
+				if(!result)
+					STRaiseIssue([expression creationLocation], @"Reference to unbound variable %@", [expression string]);
+			}
+			
+			return result;
+		}
+		else if([expression isKindOfClass:[STStringWithCode class]])
+		{
+			return [expression applyInScope:scope];
+		}
+		else if([expression isKindOfClass:[NSString class]])
+		{
+			return [expression copy];
+		}
 	}
-	else if([expression isKindOfClass:[STStringWithCode class]])
+	@catch (SteinException *e)
 	{
-		return [expression applyInScope:scope];
+		@throw;
 	}
-	else if([expression isKindOfClass:[NSString class]])
+	@catch (NSException *e)
 	{
-		return [expression copy];
+		@throw [[SteinException alloc] initWithException:e];
 	}
 	
 	return expression;
@@ -126,7 +138,7 @@ int STMain(int argc, const char *argv[], NSString *filename)
 	NSString *source = [NSString stringWithContentsOfURL:mainFile encoding:NSUTF8StringEncoding error:&error];
 	NSCAssert((source != nil), @"Could not load file %@ in main bundle. Error {%@}.", filename, error);
 	
-	id result = STEvaluate(STParseString(source), STBuiltInFunctionScope());
+	id result = STEvaluate(STParseString(source, [mainFile path]), STBuiltInFunctionScope());
 	if(!result)
 		return EXIT_SUCCESS;
 	
@@ -239,10 +251,10 @@ void STRunREPL()
 			
 			
 			//Parse and evaluate the data we just read in from the user, and print out the result.
-			id result = STEvaluate(STParseString(line), scope);
+			id result = STEvaluate(STParseString(line, @"<<REPL>>"), scope);
 			fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
 		}
-		@catch (NSException *e)
+		@catch (SteinException *e)
 		{
 			fprintf(stderr, "Error: %s\n", [[e reason] UTF8String]);
 		}

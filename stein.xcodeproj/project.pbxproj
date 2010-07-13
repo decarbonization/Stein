@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1E1B285311ECD05600100A18 /* NSObject+SteinInternalSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC9317111EAC21300EACB73 /* NSObject+SteinInternalSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1E1B285411ECD05800100A18 /* NSObject+SteinInternalSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC9317211EAC21300EACB73 /* NSObject+SteinInternalSupport.m */; };
+		1E1B28E911ECF4E000100A18 /* SteinException.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E1B28E711ECF4E000100A18 /* SteinException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1E1B28EA11ECF4E000100A18 /* SteinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E1B28E811ECF4E000100A18 /* SteinException.m */; };
 		1E2C542411B970C200068D58 /* STScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E2C536711B9654E00068D58 /* STScope.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1E2C542511B970C400068D58 /* STScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E2C536811B9654E00068D58 /* STScope.m */; };
 		1EC930D611EABE9000EACB73 /* STInterpreter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC9303811EAB6F200EACB73 /* STInterpreter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -34,9 +36,6 @@
 		C89D80AA110FCD5D00BCB673 /* libreadline.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1650510D57E6A003F45A9 /* libreadline.dylib */; };
 		C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B0B1104EEC6003B889B /* STIntrospection.h */; };
 		C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B0C1104EEC6003B889B /* STIntrospection.m */; };
-		C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B4E1104F217003B889B /* STNativeBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C8AC0B511104F217003B889B /* STNativeBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B4F1104F217003B889B /* STNativeBlock.m */; };
-		C8AC0B531104F225003B889B /* Block_private.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B521104F225003B889B /* Block_private.h */; };
 		C8B3187C10E15E860086468F /* STEnumerable.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B3187A10E15E860086468F /* STEnumerable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C8B3187D10E15E860086468F /* STEnumerable.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B3187B10E15E860086468F /* STEnumerable.m */; };
 		C8E1641410D57C36003F45A9 /* Stein.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1640A10D57C0E003F45A9 /* Stein.framework */; };
@@ -127,6 +126,8 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* stein_cli.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = stein_cli.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		1E1B28E711ECF4E000100A18 /* SteinException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SteinException.h; sourceTree = "<group>"; };
+		1E1B28E811ECF4E000100A18 /* SteinException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SteinException.m; sourceTree = "<group>"; };
 		1E2C536711B9654E00068D58 /* STScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STScope.h; sourceTree = "<group>"; };
 		1E2C536811B9654E00068D58 /* STScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STScope.m; sourceTree = "<group>"; };
 		1EC9303811EAB6F200EACB73 /* STInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STInterpreter.h; sourceTree = "<group>"; };
@@ -158,9 +159,6 @@
 		C883A31710FD68B400C32F06 /* Imagine.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Imagine.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		C8AC0B0B1104EEC6003B889B /* STIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STIntrospection.h; sourceTree = "<group>"; };
 		C8AC0B0C1104EEC6003B889B /* STIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STIntrospection.m; sourceTree = "<group>"; };
-		C8AC0B4E1104F217003B889B /* STNativeBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeBlock.h; sourceTree = "<group>"; };
-		C8AC0B4F1104F217003B889B /* STNativeBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeBlock.m; sourceTree = "<group>"; };
-		C8AC0B521104F225003B889B /* Block_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Block_private.h; sourceTree = "<group>"; };
 		C8B3187A10E15E860086468F /* STEnumerable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEnumerable.h; sourceTree = "<group>"; };
 		C8B3187B10E15E860086468F /* STEnumerable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STEnumerable.m; sourceTree = "<group>"; };
 		C8DB7A8710D343C800EF3D63 /* STFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFunction.h; sourceTree = "<group>"; };
@@ -260,6 +258,8 @@
 				C8E164DB10D57D5A003F45A9 /* Stein.h */,
 				C8E1656D10D58415003F45A9 /* SteinDefines.h */,
 				C8E165B410D584F5003F45A9 /* SteinDefines.m */,
+				1E1B28E711ECF4E000100A18 /* SteinException.h */,
+				1E1B28E811ECF4E000100A18 /* SteinException.m */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -311,22 +311,11 @@
 			name = "Object Extensions";
 			sourceTree = "<group>";
 		};
-		C8AC0B4D1104F207003B889B /* Block Bridging */ = {
-			isa = PBXGroup;
-			children = (
-				C8AC0B521104F225003B889B /* Block_private.h */,
-				C8AC0B4E1104F217003B889B /* STNativeBlock.h */,
-				C8AC0B4F1104F217003B889B /* STNativeBlock.m */,
-			);
-			name = "Block Bridging";
-			sourceTree = "<group>";
-		};
 		C8E1613B10D55AE1003F45A9 /* Bridge */ = {
 			isa = PBXGroup;
 			children = (
 				C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */,
 				C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */,
-				C8AC0B4D1104F207003B889B /* Block Bridging */,
 				C8AC0B4A1104F1D0003B889B /* Function Bridging */,
 				C8AC0B491104F1BA003B889B /* Type Bridging */,
 			);
@@ -427,12 +416,11 @@
 				C808881F10E3037B00632257 /* STPointer.h in Headers */,
 				C83BD4F610FFC8740005462D /* STNativeFunctionWrapper.h in Headers */,
 				C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */,
-				C8AC0B501104F217003B889B /* STNativeBlock.h in Headers */,
-				C8AC0B531104F225003B889B /* Block_private.h in Headers */,
 				1E2C542411B970C200068D58 /* STScope.h in Headers */,
 				1EC930D611EABE9000EACB73 /* STInterpreter.h in Headers */,
 				1EC931FD11EAC84400EACB73 /* STBuiltInFunctions.h in Headers */,
 				1E1B285311ECD05600100A18 /* NSObject+SteinInternalSupport.h in Headers */,
+				1E1B28E911ECF4E000100A18 /* SteinException.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -542,11 +530,11 @@
 				C863D20110E7F00D00387729 /* SteinDefines.m in Sources */,
 				C83BD4F710FFC8740005462D /* STNativeFunctionWrapper.m in Sources */,
 				C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */,
-				C8AC0B511104F217003B889B /* STNativeBlock.m in Sources */,
 				1E2C542511B970C400068D58 /* STScope.m in Sources */,
 				1EC930D711EABE9200EACB73 /* STInterpreter.m in Sources */,
 				1EC931FE11EAC84600EACB73 /* STBuiltInFunctions.m in Sources */,
 				1E1B285411ECD05800100A18 /* NSObject+SteinInternalSupport.m in Sources */,
+				1E1B28EA11ECF4E000100A18 /* SteinException.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

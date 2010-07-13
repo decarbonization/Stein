@@ -217,7 +217,7 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 	} whatWereLookingFor = kLookingForSelector;
 	for (id expression in [list tail])
 	{
-		if([expression isKindOfClass:[STList class]] && [expression isQuoted])
+		if([expression isKindOfClass:[STList class]] && ST_FLAG_IS_SET([expression flags], kSTListFlagIsQuoted))
 		{
 			implementation = expression;
 			implementation.flags = kSTListFlagsNone;

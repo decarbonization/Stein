@@ -94,12 +94,12 @@ ST_INLINE void STParserStateUpdateCreationLocation(STParserState *parserState, u
 {
 	if(IsCharacterNewline(character))
 	{
-		parserState->creationLocation.offset = 1;
+		parserState->creationLocation.column = 1;
 		parserState->creationLocation.line++;
 	}
 	else
 	{
-		parserState->creationLocation.offset++;
+		parserState->creationLocation.column++;
 	}
 }
 
@@ -298,7 +298,7 @@ static id GetStringAt(STParserState *parserState)
 			STParserState expressionState = {
 				.string = expressionString,
 				.stringLength = [expressionString length],
-				.creationLocation = {1, 1},
+				.creationLocation = {@"<<string>>", 1, 1},
 				.index = 0,
 			};
 			id expression = GetExpressionAt(&expressionState, NO, YES);
@@ -578,7 +578,7 @@ static STList *GetExpressionAt(STParserState *parserState, BOOL usingDoNotation,
 #pragma mark -
 #pragma mark Exported Interface
 
-NSArray *STParseString(NSString *string)
+NSArray *STParseString(NSString *string, NSString *file)
 {
 	NSCParameterAssert(string);
 	
@@ -590,7 +590,7 @@ NSArray *STParseString(NSString *string)
 		
 		.index = 0,
 		
-		.creationLocation = { .line = 1, .offset = 1 },
+		.creationLocation = { .file = file, .line = 1, .column = 1 },
 	};
 	for (; parserState.index < parserState.stringLength; parserState.index++)
 	{

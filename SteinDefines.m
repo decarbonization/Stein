@@ -10,8 +10,6 @@
 #import "SteinDefines.h"
 #import <stdarg.h>
 
-NSString *const SteinException = @"SteinException";
-
 #pragma mark Tools
 
 NSBundle *SteinBundle()
@@ -31,6 +29,6 @@ void STRaiseIssue(STCreationLocation expressionLocation, NSString *format, ...)
 	
 	va_end(formatArguments);
 	
-	[NSException raise:SteinException 
-				format:@"Error on line %ld: %@", expressionLocation.line, errorString];
+	[SteinException raise:NSInternalInconsistencyException 
+				   format:@"Error on line %ld in %@: %@", expressionLocation.line, expressionLocation.file, errorString];
 }

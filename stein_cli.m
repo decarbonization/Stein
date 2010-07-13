@@ -143,7 +143,7 @@ int main (int argc, const char * argv[])
 			
 			@try
 			{
-				id expressions = STParseString(fileContents);
+				id expressions = STParseString(fileContents, path);
 				
 				//
 				//	If we're in parse only mode, we simply print the
