@@ -130,7 +130,7 @@ static BOOL IsSelectorComposedOfOperators(SEL selector)
 
 typedef struct Operation {
 	int originalPosition;
-	char operatorName[3];
+	char operatorName[2];
 } Operation;
 
 static BOOL streq(const char *left, const char *right)
@@ -157,22 +157,17 @@ ST_INLINE int PrecedenceOfOperatorNamed(char operatorName[3])
 	{
 		return 2;
 	}
-	else if(streq(operatorName, "<") || streq(operatorName, "<=") || 
-			streq(operatorName, ">") || streq(operatorName, ">="))
+	if(streq(operatorName, "+") || streq(operatorName, "-"))
 	{
 		return 3;
 	}
-	if(streq(operatorName, "+") || streq(operatorName, "-"))
+	else if(streq(operatorName, "*") || streq(operatorName, "/") || streq(operatorName, "%"))
 	{
 		return 4;
 	}
-	else if(streq(operatorName, "*") || streq(operatorName, "/") || streq(operatorName, "%"))
-	{
-		return 5;
-	}
 	else if(streq(operatorName, "^"))
 	{
-		return 6;
+		return 5;
 	}
 	
 	return 0;
@@ -180,19 +175,7 @@ ST_INLINE int PrecedenceOfOperatorNamed(char operatorName[3])
 
 static int NumberOfOperators(const char *operatorString)
 {
-	int numberOfOperators = 0;
-	for (int index = 0, length = strlen(operatorString); index < length; index++)
-	{
-		char left = operatorString[index];
-		char right = (index + 1 < length)? operatorString[index + 1] : 0;
-		
-		if((left == '<' || left == '>') && right == '=')
-			index++;
-		
-		numberOfOperators++;
-	}
-	
-	return numberOfOperators;
+	return strlen(operatorString);
 }
 
 static int OperationPrecedenceComparator(Operation *left, Operation *right)
@@ -218,21 +201,8 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	{
 		operations[operationOffset].originalPosition = operationOffset;
 		
-		char left = operators[operationOffset];
-		char right = (operationOffset + 1 < operatorsLength)? operators[operationOffset + 1] : 0;
-		if((left == '<' || left == '>') && right == '=')
-		{
-			operations[operationOffset].operatorName[0] = left;
-			operations[operationOffset].operatorName[1] = right;
-			operations[operationOffset].operatorName[2] = '\0';
-			
-			operationOffset++;
-		}
-		else
-		{
-			operations[operationOffset].operatorName[0] = left;
-			operations[operationOffset].operatorName[1] = '\0';
-		}
+		operations[operationOffset].operatorName[0] = operators[operationOffset];
+		operations[operationOffset].operatorName[1] = '\0';
 	}
 	
 	qsort(operations, numberOfOperations, sizeof(Operation), (void *)&OperationPrecedenceComparator);
@@ -269,35 +239,6 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		else if(streq(operation.operatorName, "^"))
 		{
 			result = pow(leftOperand, rightOperand);
-		}
-		else if(streq(operation.operatorName, "&"))
-		{
-			result = leftOperand && rightOperand? rightOperand : 0.0;
-		}
-		else if(streq(operation.operatorName, "|"))
-		{
-			if(leftOperand)
-				result = leftOperand;
-			else if(rightOperand)
-				result = rightOperand;
-			else
-				result = 0.0;
-		}
-		else if(streq(operation.operatorName, "<"))
-		{
-			result = leftOperand < rightOperand? leftOperand : 0.0;
-		}
-		else if(streq(operation.operatorName, "<="))
-		{
-			result = leftOperand <= rightOperand? leftOperand : 0.0;
-		}
-		else if(streq(operation.operatorName, ">"))
-		{
-			result = leftOperand > rightOperand? leftOperand : 0.0;
-		}
-		else if(streq(operation.operatorName, ">="))
-		{
-			result = leftOperand >= rightOperand? leftOperand : 0.0;
 		}
 		
 		NSNumber *resultNumber = [NSNumber numberWithDouble:result];

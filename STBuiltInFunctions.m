@@ -186,6 +186,25 @@ static id _super(STList *message, STScope *scope)
 }
 
 #pragma mark -
+
+static id parse(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 1)
+		STRaiseIssue(arguments.creationLocation, @"parse takes exactly 1 parameter (string-to-parse), %ld given.", arguments.count);
+	
+	return STParseString([[arguments head] string]);
+}
+
+static id eval(STList *arguments, STScope *scope)
+{
+	id lastResult = nil;
+	for (id expression in arguments)
+		lastResult = STEvaluate(expression, scope);
+	
+	return lastResult;
+}
+
+#pragma mark -
 #pragma mark • Mathematics
 
 static id plus(STList *arguments, STScope *scope)
@@ -547,6 +566,10 @@ STScope *STBuiltInFunctionScope()
 		   forConstantNamed:@"load"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"super"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&parse evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"parse"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&eval evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"eval"];
 	
 	//Mathematics
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus evaluatesOwnArguments:NO] 
@@ -562,7 +585,7 @@ STScope *STBuiltInFunctionScope()
 		   forVariableNamed:@"/" 
 		 searchParentScopes:NO];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&power evaluatesOwnArguments:NO] 
-		   forVariableNamed:@"**" 
+		   forVariableNamed:@"^" 
 		 searchParentScopes:NO];
 	
 	//Comparison

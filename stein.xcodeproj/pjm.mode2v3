@@ -271,21 +271,19 @@
 										<string>08FB7795FE84155DC02AAC07</string>
 										<string>C8AC0B4B1104F1E0003B889B</string>
 										<string>C8E1613D10D55AFE003F45A9</string>
-										<string>C8E1613B10D55AE1003F45A9</string>
-										<string>1E1ACB3511595D4500B2BBA9</string>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
-											<integer>35</integer>
-											<integer>33</integer>
+											<integer>11</integer>
+											<integer>7</integer>
 											<integer>6</integer>
 											<integer>4</integer>
 											<integer>0</integer>
 										</array>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-									<string>{{0, 364}, {429, 333}}</string>
+									<string>{{0, 126}, {429, 333}}</string>
 								</dict>
 								<key>PBXTopSmartGroupGIDs</key>
 								<array/>
@@ -490,13 +488,14 @@
 	<integer>0</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>1E1B287A11ECD1CE00100A18</string>
 		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>1E1B27D011ECCAEB00100A18</string>
 		<string>1E1B27D111ECCAEB00100A18</string>
 		<string>1C530D54069F1CE1000CFCEE</string>
 		<string>1C530D52069F1CE1000CFCEE</string>
-		<string>/Users/pjm/Documents/Projects/Stein/Master/stein.xcodeproj</string>
 		<string>1C530D5B069F1CE1000CFCEE</string>
+		<string>/Users/pjm/Documents/Projects/Stein/Master/stein.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>994 459 446 419 0 0 1440 878 </string>

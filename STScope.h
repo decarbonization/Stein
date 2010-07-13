@@ -17,15 +17,19 @@ typedef struct STScopeNode * STScopeNodeRef;
 #pragma mark -
 
 /*!
- @abstract	The STScope class is used to represent levels of scoping in the Stein language.
+ @abstract		The STScope class is used to represent levels of scoping in the Stein language.
+ @discussion	The internal storage of the STStorage class is a doubly linked list where each
+				node contains a key, value, and a flag indicating whether or not the value is
+				readonly. This storage was chosen due to ease of implementation and the ability
+				to make reads and writes atomic, providing a basic amount of thread-safety.
  */
 @interface STScope : NSObject
 {
 @private
 	//Internal:
 	STScope *mParentScope;
-	STScopeNodeRef mHead;
-	STScopeNodeRef mLast;
+	volatile STScopeNodeRef mHead;
+	volatile STScopeNodeRef mLast;
 	
 	//Properties:
 	NSString *mName;
