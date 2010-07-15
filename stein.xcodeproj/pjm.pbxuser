@@ -15,8 +15,8 @@
 			1E1ACB2911595D3200B2BBA9 /* stein */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 300905641;
-			PBXWorkspaceStateSaveDate = 300905641;
+			PBXPerProjectTemplateStateSaveDate = 300907484;
+			PBXWorkspaceStateSaveDate = 300907484;
 		};
 		sourceControlManager = 1E1ACB3611595D4500B2BBA9 /* Source Control */;
 		userBuildSettings = {
@@ -119,7 +119,7 @@
 		hitCount = 0;
 		ignoreCount = 0;
 		location = libobjc.A.dylib;
-		modificationTime = 300599681.356384;
+		modificationTime = 300907277.800445;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 		symbolName = objc_exception_throw;
@@ -134,9 +134,9 @@
 	};
 	1EC9303911EAB6F200EACB73 /* STInterpreter.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 3653}}";
-			sepNavSelRange = "{2444, 0}";
-			sepNavVisRange = "{6323, 985}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 3796}}";
+			sepNavSelRange = "{2328, 0}";
+			sepNavVisRange = "{1822, 1030}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};
@@ -149,26 +149,26 @@
 	};
 	1EC9317211EAC21300EACB73 /* NSObject+SteinInternalSupport.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 3588}}";
-			sepNavSelRange = "{4987, 0}";
-			sepNavVisRange = "{4476, 1194}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 3549}}";
+			sepNavSelRange = "{2414, 0}";
+			sepNavVisRange = "{6349, 902}";
 			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};
 	1EC931B411EAC43C00EACB73 /* STBuiltInFunctions.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {830, 558}}";
-			sepNavSelRange = "{288, 0}";
+			sepNavSelRange = "{393, 0}";
 			sepNavVisRange = "{0, 393}";
 			sepNavWindowFrame = "{{98, 167}, {889, 671}}";
 		};
 	};
 	1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 14612}}";
-			sepNavSelRange = "{4848, 0}";
-			sepNavVisRange = "{4194, 1092}";
-			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 14638}}";
+			sepNavSelRange = "{471, 0}";
+			sepNavVisRange = "{0, 1087}";
+			sepNavWindowFrame = "{{98, 167}, {889, 671}}";
 		};
 	};
 	32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {
@@ -362,9 +362,9 @@
 	};
 	C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {744, 5473}}";
-			sepNavSelRange = "{7748, 0}";
-			sepNavVisRange = "{7465, 343}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 5434}}";
+			sepNavSelRange = "{449, 0}";
+			sepNavVisRange = "{0, 1220}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
@@ -434,17 +434,17 @@
 	};
 	C8E1656D10D58415003F45A9 /* SteinDefines.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1664}}";
-			sepNavSelRange = "{1026, 0}";
-			sepNavVisRange = "{384, 1153}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1599}}";
+			sepNavSelRange = "{399, 0}";
+			sepNavVisRange = "{159, 1151}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};
 	C8E165B410D584F5003F45A9 /* SteinDefines.m */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {830, 558}}";
-			sepNavSelRange = "{326, 25}";
-			sepNavVisRange = "{0, 861}";
+			sepNavSelRange = "{392, 0}";
+			sepNavVisRange = "{0, 902}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};

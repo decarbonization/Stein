@@ -22,19 +22,23 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 + (void)load
 {
+	//Overrides for <STMethodMissing>
 	method_exchangeImplementations(class_getInstanceMethod(self, @selector(respondsToSelector:)), 
 								   class_getInstanceMethod(self, @selector(stein_respondsToSelector:)));
 	
 	method_exchangeImplementations(class_getClassMethod(self, @selector(respondsToSelector:)), 
 								   class_getClassMethod(self, @selector(stein_respondsToSelector:)));
 	
+	
+	//Overrides for Ivar
 	method_exchangeImplementations(class_getInstanceMethod(self, @selector(valueForUndefinedKey:)), 
 								   class_getInstanceMethod(self, @selector(stein_valueForUndefinedKey:)));
 	
 	method_exchangeImplementations(class_getClassMethod(self, @selector(setValue:forUndefinedKey:)), 
 								   class_getClassMethod(self, @selector(stein_setValue:forUndefinedKey:)));
 	
-#if ST_USE_UNIQUE_RUNTIME_CLASS_NAMES
+	
+	//Overrides for kSTUseUniqueRuntimeClassNames
 	method_exchangeImplementations(class_getClassMethod(self, @selector(className)), 
 								   class_getClassMethod(self, @selector(stein_className)));
 	
@@ -43,7 +47,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	
 	method_exchangeImplementations(class_getInstanceMethod(self, @selector(description)), 
 								   class_getInstanceMethod(self, @selector(stein_description)));
-#endif /*ST_USE_UNIQUE_RUNTIME_CLASS_NAMES*/
 }
 
 #pragma mark -
@@ -60,16 +63,16 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 }
 
 #pragma mark -
-#pragma mark • Overrides for ST_USE_UNIQUE_RUNTIME_CLASS_NAMES
+#pragma mark • Overrides for kSTUseUniqueRuntimeClassNames
 
-#if ST_USE_UNIQUE_RUNTIME_CLASS_NAMES
 + (NSString *)stein_className
 {
-	NSString *steinClassName = [self valueForIvarNamed:@"$steinClassName"];
-	if(steinClassName)
-		return steinClassName;
-	
-	return [self stein_className];
+	return [self valueForIvarNamed:@"$steinClassName"] ?: [self stein_className];
+}
+
+- (NSString *)stein_className
+{
+	return [[self class] stein_className];
 }
 
 + (NSString *)stein_description
@@ -81,7 +84,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 {
 	return [NSString stringWithFormat:@"<%@:%p>", [[self class] className], self];
 }
-#endif /*ST_USE_UNIQUE_RUNTIME_CLASS_NAMES*/
 
 #pragma mark -
 #pragma mark • Overrides for Ivar

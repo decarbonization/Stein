@@ -19,6 +19,8 @@ NSBundle *SteinBundle()
 
 NSString *const kSTSuperclassVariableName = @"$__superclass";
 
+BOOL STUseUniqueRuntimeClassNames = NO;
+
 #pragma mark -
 #pragma mark Errors
 

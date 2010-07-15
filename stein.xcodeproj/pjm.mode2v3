@@ -271,19 +271,20 @@
 										<string>08FB7795FE84155DC02AAC07</string>
 										<string>C8AC0B4B1104F1E0003B889B</string>
 										<string>C8E1613D10D55AFE003F45A9</string>
+										<string>1E1ACB3511595D4500B2BBA9</string>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
-											<integer>25</integer>
-											<integer>14</integer>
+											<integer>31</integer>
+											<integer>28</integer>
 											<integer>6</integer>
 											<integer>4</integer>
 											<integer>0</integer>
 										</array>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-									<string>{{0, 200}, {429, 333}}</string>
+									<string>{{0, 294}, {429, 333}}</string>
 								</dict>
 								<key>PBXTopSmartGroupGIDs</key>
 								<array/>
@@ -346,7 +347,7 @@
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
-											<integer>2</integer>
+											<integer>1</integer>
 											<integer>0</integer>
 										</array>
 									</array>
@@ -446,8 +447,8 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>1E1B2B1D11EF74C300100A18</string>
-				<string>1E1B2B1E11EF74C300100A18</string>
+				<string>1E1B2BF311EF7C0C00100A18</string>
+				<string>1E1B2BF411EF7C0C00100A18</string>
 				<string>1C9437FD063B20B00039CFAC</string>
 				<string>1C9437FE063B20B00039CFAC</string>
 				<string>1C9437FF063B20B00039CFAC</string>
@@ -484,7 +485,8 @@
 	<integer>0</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1E1B2B2011EF74C300100A18</string>
+		<string>1E1B2BF511EF7C0C00100A18</string>
+		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>1C530D52069F1CE1000CFCEE</string>
 		<string>/Users/pjm/Documents/Projects/Stein/Master/stein.xcodeproj</string>
 	</array>
@@ -703,7 +705,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D52069F1CE1000CFCEE</string>
-				<string>1E1B2B1F11EF74C300100A18</string>
+				<string>1E1B2BEA11EF7BEA00100A18</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -825,13 +827,13 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D54069F1CE1000CFCEE</string>
-				<string>1E1B2AE211EF723800100A18</string>
+				<string>1E1B2BD611EF7B7900100A18</string>
 				<string>1C162984064C10D400B95A72</string>
-				<string>1E1B2AE311EF723800100A18</string>
-				<string>1E1B2AE411EF723800100A18</string>
-				<string>1E1B2AE511EF723800100A18</string>
-				<string>1E1B2AE611EF723800100A18</string>
-				<string>1E1B2AE711EF723800100A18</string>
+				<string>1E1B2BD711EF7B7900100A18</string>
+				<string>1E1B2BD811EF7B7900100A18</string>
+				<string>1E1B2BD911EF7B7900100A18</string>
+				<string>1E1B2BDA11EF7B7900100A18</string>
+				<string>1E1B2BDB11EF7B7900100A18</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -863,7 +865,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>&lt;No Editor&gt;</string>
+										<string>STObjectBridge.m</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -921,8 +923,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>1E1B2B0511EF746100100A18</string>
-				<string>1E1B2B0611EF746100100A18</string>
+				<string>1E1B2BED11EF7BEA00100A18</string>
+				<string>1E1B2BEE11EF7BEA00100A18</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -987,7 +989,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D5B069F1CE1000CFCEE</string>
-				<string>1E1B2AE811EF723800100A18</string>
+				<string>1E1B2BDC11EF7B7900100A18</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>
@@ -997,7 +999,7 @@
 			<key>WindowToolGUID</key>
 			<string>1C530D5B069F1CE1000CFCEE</string>
 			<key>WindowToolIsVisible</key>
-			<true/>
+			<false/>
 		</dict>
 		<dict>
 			<key>Identifier</key>

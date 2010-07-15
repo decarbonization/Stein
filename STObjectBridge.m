@@ -21,7 +21,7 @@
 #import "STClosure.h"
 #import "STNativeFunctionWrapper.h"
 
-#import "NSObject+SteinTools.h"
+#import "NSObject+SteinInternalSupport.h"
 
 /*!
  @function
@@ -382,30 +382,33 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 	NSCParameterAssert(superclass);
 	
 	Class newClass = Nil;
-#if ST_USE_UNIQUE_RUNTIME_CLASS_NAMES
-	newClass = [[scope valueForVariableNamed:subclassName searchParentScopes:YES] class];
-	if(!newClass)
+	if(STUseUniqueRuntimeClassNames)
 	{
-		NSString *className = NSMakeCollectable(CFUUIDCreateString(NULL, CFMakeCollectable(CFUUIDCreate(NULL))));
-		newClass = objc_allocateClassPair(superclass, [className UTF8String], 0);
-		objc_registerClassPair(newClass);
+		newClass = [[scope valueForVariableNamed:subclassName searchParentScopes:YES] class];
+		if(!newClass)
+		{
+			NSString *className = NSMakeCollectable(CFUUIDCreateString(NULL, CFMakeCollectable(CFUUIDCreate(NULL))));
+			newClass = objc_allocateClassPair(superclass, [className UTF8String], 0);
+			objc_registerClassPair(newClass);
+			
+			[scope setValue:newClass forVariableNamed:subclassName searchParentScopes:NO];
+			[newClass setValue:subclassName forIvarNamed:@"$steinClassName"];
+		}
 		
-		[scope setValue:newClass forVariableNamed:subclassName searchParentScopes:NO];
-		[newClass setValue:subclassName forIvarNamed:@"$steinClassName"];
+		if(expressions)
+			STExtendClass(newClass, expressions);
 	}
-	
-	if(expressions)
-		STExtendClass(newClass, expressions);
-#else
-	newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
-	if(newClass)
-		objc_registerClassPair(newClass);
 	else
-		newClass = objc_getClass([subclassName UTF8String]);
-	
-	if(expressions)
-		STExtendClass(newClass, expressions);
-#endif /* ST_SANDBOX_CLASSES */
+	{
+		newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
+		if(newClass)
+			objc_registerClassPair(newClass);
+		else
+			newClass = objc_getClass([subclassName UTF8String]);
+		
+		if(expressions)
+			STExtendClass(newClass, expressions);
+	}
 	
 	return newClass;
 }

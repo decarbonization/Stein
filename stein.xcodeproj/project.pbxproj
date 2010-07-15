@@ -555,6 +555,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = stein_Prefix.pch;
 				INSTALL_PATH = /usr/local/bin;
+				LD_RUNPATH_SEARCH_PATHS = "/Library/Frameworks ./";
 				PRODUCT_NAME = stein;
 				VALID_ARCHS = "i386 x86_64";
 			};
@@ -570,6 +571,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = stein_Prefix.pch;
 				INSTALL_PATH = /usr/local/bin;
+				LD_RUNPATH_SEARCH_PATHS = "/Library/Frameworks ./";
 				PRODUCT_NAME = stein;
 				VALID_ARCHS = "i386 x86_64";
 			};
@@ -621,7 +623,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Stein_Prefix.pch;
 				INFOPLIST_FILE = "Stein-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = "@rpath";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -650,7 +652,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Stein_Prefix.pch;
 				INFOPLIST_FILE = "Stein-Info.plist";
-				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_PATH = "@rpath";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,

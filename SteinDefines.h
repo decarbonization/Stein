@@ -21,14 +21,6 @@
 
 #define ST_FLAG_IS_SET(bitfield, flag) ((flag & bitfield) == flag)
 
-#pragma mark -
-#pragma mark Options
-
-//Uncomment the following line to have Stein use unique names for classes in the runtime.
-//This should be used whenever multiple Stein interpreters will be running side by side
-//with in the same runtime executable space.
-//#define ST_USE_UNIQUE_RUNTIME_CLASS_NAMES 1
-
 #ifdef __OBJC__
 
 #import <Foundation/Foundation.h>
@@ -49,6 +41,13 @@ ST_EXTERN NSBundle *SteinBundle();
 				to prevent infinite loops in the `super` message-functor.
  */
 ST_EXTERN NSString *const kSTSuperclassVariableName;
+
+/*!
+ @abstract	If set to YES then Stein will use unique names for the classes it registers in the runtime.
+			This option should be enabled if multiple independent instances of Stein are going to be
+			used side by side in a program. Default value is NO.
+ */
+ST_EXTERN BOOL STUseUniqueRuntimeClassNames;
 
 #pragma mark -
 #pragma mark Globals

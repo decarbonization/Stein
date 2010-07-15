@@ -94,6 +94,9 @@ id STEvaluate(id expression, STScope *scope)
 			if([expression isQuoted])
 				return expression;
 			
+			if([expression isEqualTo:@"$_here"])
+				return scope;
+			
 			id result = [scope valueForKeyPath:[expression string]];
 			if(!result)
 			{
