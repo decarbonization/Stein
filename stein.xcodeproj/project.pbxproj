@@ -20,7 +20,6 @@
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* stein.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* stein.1 */; };
-		C808860F10E2D10800632257 /* Prelude.st in Resources */ = {isa = PBXBuildFile; fileRef = C808860E10E2D10800632257 /* Prelude.st */; };
 		C808865310E2E00000632257 /* STStringWithCode.h in Headers */ = {isa = PBXBuildFile; fileRef = C808865110E2E00000632257 /* STStringWithCode.h */; };
 		C808865410E2E00000632257 /* STStringWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = C808865210E2E00000632257 /* STStringWithCode.m */; };
 		C808881F10E3037B00632257 /* STPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = C808881D10E3037B00632257 /* STPointer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -32,7 +31,6 @@
 		C83EF1F710D877960037A956 /* STFunctionInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = C83EF1F510D877960037A956 /* STFunctionInvocation.h */; };
 		C83EF1F810D877960037A956 /* STFunctionInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = C83EF1F610D877960037A956 /* STFunctionInvocation.m */; };
 		C863D20110E7F00D00387729 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E165B410D584F5003F45A9 /* SteinDefines.m */; };
-		C883A31810FD68B400C32F06 /* Imagine.st in Resources */ = {isa = PBXBuildFile; fileRef = C883A31710FD68B400C32F06 /* Imagine.st */; };
 		C89D80AA110FCD5D00BCB673 /* libreadline.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1650510D57E6A003F45A9 /* libreadline.dylib */; };
 		C8AC0B0D1104EEC6003B889B /* STIntrospection.h in Headers */ = {isa = PBXBuildFile; fileRef = C8AC0B0B1104EEC6003B889B /* STIntrospection.h */; };
 		C8AC0B0E1104EEC6003B889B /* STIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = C8AC0B0C1104EEC6003B889B /* STIntrospection.m */; };
@@ -143,7 +141,6 @@
 		C806B70310D2D96C00A64BEE /* STList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STList.m; sourceTree = "<group>"; };
 		C806B70510D2D97000A64BEE /* STSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STSymbol.h; sourceTree = "<group>"; };
 		C806B70610D2D97000A64BEE /* STSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STSymbol.m; sourceTree = "<group>"; };
-		C808860E10E2D10800632257 /* Prelude.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Prelude.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		C808865110E2E00000632257 /* STStringWithCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STStringWithCode.h; sourceTree = "<group>"; };
 		C808865210E2E00000632257 /* STStringWithCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STStringWithCode.m; sourceTree = "<group>"; };
 		C808881D10E3037B00632257 /* STPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPointer.h; sourceTree = "<group>"; };
@@ -156,7 +153,6 @@
 		C83EF1F610D877960037A956 /* STFunctionInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFunctionInvocation.m; sourceTree = "<group>"; };
 		C8791F2C10D2AF8C00EB5D17 /* STParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STParser.h; sourceTree = "<group>"; };
 		C8791F2D10D2AF8C00EB5D17 /* STParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STParser.m; sourceTree = "<group>"; };
-		C883A31710FD68B400C32F06 /* Imagine.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Imagine.st; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.simpleColoring; };
 		C8AC0B0B1104EEC6003B889B /* STIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STIntrospection.h; sourceTree = "<group>"; };
 		C8AC0B0C1104EEC6003B889B /* STIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STIntrospection.m; sourceTree = "<group>"; };
 		C8B3187A10E15E860086468F /* STEnumerable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEnumerable.h; sourceTree = "<group>"; };
@@ -224,8 +220,8 @@
 			children = (
 				C8AC0B4B1104F1E0003B889B /* Object Extensions */,
 				C8E1613D10D55AFE003F45A9 /* Evaluator */,
-				C8E1613C10D55AED003F45A9 /* Parsing */,
 				C8E1613B10D55AE1003F45A9 /* Bridge */,
+				C8E1613C10D55AED003F45A9 /* Parsing */,
 				1E1ACB3511595D4500B2BBA9 /* Other */,
 			);
 			name = Source;
@@ -383,8 +379,6 @@
 		C8E164BE10D57CD3003F45A9 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				C883A31710FD68B400C32F06 /* Imagine.st */,
-				C808860E10E2D10800632257 /* Prelude.st */,
 				C8E1640B10D57C0E003F45A9 /* Stein-Info.plist */,
 			);
 			name = Resources;
@@ -494,8 +488,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C808860F10E2D10800632257 /* Prelude.st in Resources */,
-				C883A31810FD68B400C32F06 /* Imagine.st in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

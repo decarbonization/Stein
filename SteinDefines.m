@@ -17,6 +17,8 @@ NSBundle *SteinBundle()
 	return [NSBundle bundleWithIdentifier:@"com.petermacwhinnie.Stein"];
 }
 
+NSString *const kSTSuperclassVariableName = @"$__superclass";
+
 #pragma mark -
 #pragma mark Errors
 

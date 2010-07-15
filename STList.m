@@ -306,13 +306,11 @@
 
 #pragma mark -
 
-@dynamic count;
 - (NSUInteger)count
 {
 	return [mContents count];
 }
 
-@dynamic allObjects;
 - (NSArray *)allObjects
 {
 	return [NSArray arrayWithArray:mContents];

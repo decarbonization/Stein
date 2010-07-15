@@ -28,6 +28,12 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	method_exchangeImplementations(class_getClassMethod(self, @selector(respondsToSelector:)), 
 								   class_getClassMethod(self, @selector(stein_respondsToSelector:)));
 	
+	method_exchangeImplementations(class_getInstanceMethod(self, @selector(valueForUndefinedKey:)), 
+								   class_getInstanceMethod(self, @selector(stein_valueForUndefinedKey:)));
+	
+	method_exchangeImplementations(class_getClassMethod(self, @selector(setValue:forUndefinedKey:)), 
+								   class_getClassMethod(self, @selector(stein_setValue:forUndefinedKey:)));
+	
 #if ST_USE_UNIQUE_RUNTIME_CLASS_NAMES
 	method_exchangeImplementations(class_getClassMethod(self, @selector(className)), 
 								   class_getClassMethod(self, @selector(stein_className)));
@@ -39,6 +45,9 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 								   class_getInstanceMethod(self, @selector(stein_description)));
 #endif /*ST_USE_UNIQUE_RUNTIME_CLASS_NAMES*/
 }
+
+#pragma mark -
+#pragma mark • Overrides for <STMethodMissing>
 
 + (BOOL)stein_respondsToSelector:(SEL)selector
 {
@@ -73,6 +82,22 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return [NSString stringWithFormat:@"<%@:%p>", [[self class] className], self];
 }
 #endif /*ST_USE_UNIQUE_RUNTIME_CLASS_NAMES*/
+
+#pragma mark -
+#pragma mark • Overrides for Ivar
+
+- (id)stein_valueForUndefinedKey:(NSString *)key
+{
+	return [self valueForIvarNamed:key] ?: [self stein_valueForUndefinedKey:key];
+}
+
+- (void)stein_setValue:(id)value forUndefinedKey:(NSString *)key
+{
+	if([self valueForIvarNamed:key] != nil)
+		[self stein_setValue:value forUndefinedKey:key];
+	else
+		[self setValue:value forIvarNamed:key];
+}
 
 #pragma mark -
 #pragma mark Ivars
@@ -141,9 +166,6 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 #pragma mark -
 #pragma mark Implementing <STMethodMissing>
-
-#pragma mark -
-#pragma mark High-Level Forwarding
 
 + (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {

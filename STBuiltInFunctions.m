@@ -123,10 +123,8 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 //	intention	To allow assignment of variables and creation of new classes
 //	impure
 //	forms {
-//		(name) -> null \
-//			remove any variables with `name`.
 //		(name = value) -> value \
-//			Assign a value to `name`.
+//			Create a readonly binding from `name` to `value` in the current scope, yielding `value`.
 //		(name extend superclass { |SubclassForms| }) -> Class \
 //			Create a new class with `name` whose superclass is named `superclass`
 //			where the methods described in {} are added to it.
@@ -134,91 +132,58 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 //`
 static id let(STList *arguments, STScope *scope)
 {
-	NSUInteger numberOfArguments = arguments.count;
-	if(numberOfArguments == 1)
-	{
-		NSString *name = [[arguments objectAtIndex:0] string];
-		[scope removeValueForVariableNamed:name searchParentScopes:YES];
-	}
-	else if(numberOfArguments >= 3)
-	{
-		NSString *name = [[arguments objectAtIndex:0] string];
-		
-		STSymbol *directive = [arguments objectAtIndex:1];
-		if([directive isEqualTo:@"="])
-		{
-			id expression = [arguments sublistFromIndex:2];
-			id value = STEvaluate(expression, scope);
-			[scope setValue:value forVariableNamed:name searchParentScopes:YES];
-			
-			if([value respondsToSelector:@selector(setName:)])
-				[value performSelector:@selector(setName:) withObject:name];
-			
-			return value;
-		}
-		else if([directive isEqualTo:@"extend"])
-		{
-			NSCAssert((numberOfArguments == 4), 
-					  @"Expected exactly 4 arguments for class declaration, got %ld.", numberOfArguments);
-			
-			Class superclass = STEvaluate([arguments objectAtIndex:2], scope);
-			STList *declarations = [arguments objectAtIndex:3];
-			
-			return STDefineClass(name, superclass, declarations, scope);
-		}
-		else
-		{
-			STRaiseIssue(arguments.creationLocation, @"Malformed let statement, directive {%@} is undefined.", [directive string]);
-		}
-	}
-	else
-	{
-		STRaiseIssue(arguments.creationLocation, @"malformed let statement");
-	}
-}
-
-//`
-//	function	set-ivar
-//	intention	To allow instance variables to be set within the context of an object.
-//	impure
-//	forms {
-//		(name value) -> value \
-//			Assign a given `value` to a given `name` in the value of `self` in the current scope.
-//	}
-//`
-static id set_ivar(STList *arguments, STScope *scope)
-{
-	if(arguments.count != 2)
-		STRaiseIssue(arguments.creationLocation, @"set-ivar requires exactly 2 parameters (name, value), %ld given.", arguments.count);
-	
-	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
-	if(!self)
-		STRaiseIssue(arguments.creationLocation, @"set-ivar called outside of object-context.");
+	if(arguments.count < 3)
+		STRaiseIssue(arguments.creationLocation, @"let requires 3 or more parameters, got %ld.", arguments.count);
 	
 	NSString *name = [[arguments objectAtIndex:0] string];
-	id value = STEvaluate([arguments objectAtIndex:1], scope);
-	[self setValue:value forIvarNamed:name];
-	return value;
+	
+	STSymbol *directive = [arguments objectAtIndex:1];
+	if([directive isEqualTo:@"="])
+	{
+		id expression = [arguments sublistFromIndex:2];
+		id value = STEvaluate(expression, scope);
+		[scope setValue:value forConstantNamed:name];
+		
+		if([value respondsToSelector:@selector(setName:)])
+			[value performSelector:@selector(setName:) withObject:name];
+		
+		return value;
+	}
+	else if([directive isEqualTo:@"extend"])
+	{
+		if(arguments.count < 4)
+			STRaiseIssue(arguments.creationLocation, @"let-extend requires 4 parameters, got %ld", arguments.count);
+		
+		Class superclass = STEvaluate([arguments objectAtIndex:2], scope);
+		STList *declarations = [arguments objectAtIndex:3];
+		
+		return STDefineClass(name, superclass, declarations, scope);
+	}
 }
 
 //`
-//	function	ivar
-//	intention	To allow access to an object's instance variables.
+//	function	set!
+//	intention	To mutate variables in the current scope.
+//	impure
 //	forms {
-//		(ivar name) -> id \
-//			Returns the value associated with `name` in the object known as `self` in the current scope.
+//		(name value) -> id \
+//			Set the variable `name` to `value`, yielding `value`.
 //	}
 //`
-static id ivar(STList *arguments, STScope *scope)
+static id setBang(STList *arguments, STScope *scope)
 {
-	if(arguments.count != 1)
-		STRaiseIssue(arguments.creationLocation, @"ivar requires 1 parameter (name), %ld given.", arguments.count);
+	if(arguments.count != 2)
+		STRaiseIssue(arguments.creationLocation, @"set! requires exactly 2 parameters (name, value), got %ld.", arguments.count);
 	
-	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
-	if(!self)
-		STRaiseIssue(arguments.creationLocation, @"ivar called outside of object-context.");
+	NSString *name = [[arguments objectAtIndex:0] string];
 	
-	return [self valueForIvarNamed:[[arguments head] string]];
+	id value = STEvaluate([arguments objectAtIndex:1], scope);
+	if([value respondsToSelector:@selector(setName:)])
+		[value performSelector:@selector(setName:) withObject:name];
+	
+	[scope setValue:value forKeyPath:name];
+	
+	return value;
 }
 
 #pragma mark -
@@ -265,7 +230,8 @@ static id _super(STList *message, STScope *scope)
 		STRaiseIssue(message.creationLocation, @"super requires a message.");
 	
 	id self = [scope valueForVariableNamed:@"self" searchParentScopes:YES];
-	if(!self)
+	Class superclass = [scope valueForVariableNamed:kSTSuperclassVariableName searchParentScopes:YES];
+	if(!self || !superclass)
 		STRaiseIssue(message.creationLocation, @"super called outside of class context.");
 	
 	NSMutableString *selectorString = [NSMutableString string];
@@ -286,7 +252,7 @@ static id _super(STList *message, STScope *scope)
 		isLookingForLabel = !isLookingForLabel;
 	}
 	
-	return STObjectBridgeSendSuper(self, [self superclass], NSSelectorFromString(selectorString), parameters, scope);
+	return STObjectBridgeSendSuper(self, superclass, NSSelectorFromString(selectorString), parameters, scope);
 }
 
 #pragma mark -
@@ -438,10 +404,10 @@ static id match(STList *arguments, STScope *scope)
 	id leftOperand = STEvaluate([arguments objectAtIndex:0], scope);
 	for (STList *potentialMatch in [arguments objectAtIndex:1])
 	{
-		id rightOperand = STEvaluate([potentialMatch objectAtIndex:0], scope);
+		id rightOperand = STEvaluate([potentialMatch head], scope);
 		if([leftOperand isEqual:rightOperand] || [rightOperand isEqualTo:ST_SYM(@"_")])
 		{
-			id action = [potentialMatch objectAtIndex:1];
+			id action = [potentialMatch tail];
 			if([action respondsToSelector:@selector(flags)] && 
 			   ST_FLAG_IS_SET([action flags], kSTListFlagIsDefinition))
 			{
@@ -1013,10 +979,8 @@ STScope *STBuiltInFunctionScope()
 	//Core
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&let evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"let"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set_ivar evaluatesOwnArguments:YES] 
-		   forConstantNamed:@"set-ivar"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ivar evaluatesOwnArguments:YES] 
-		   forConstantNamed:@"ivar"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&setBang evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"set!"];
 	
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"load"];

@@ -60,6 +60,12 @@
 	
 	[scope setValue:arguments forVariableNamed:@"$_arguments" searchParentScopes:NO];
 	
+	//When a class is created in Stein, every method of that class
+	//has the class's superclass associated with it. This is necessary
+	//to prevent infinite loops in the `super` message-functor.
+	if(mSuperclass)
+		[scope setValue:mSuperclass forVariableNamed:kSTSuperclassVariableName searchParentScopes:NO];
+	
 	id result = nil;
 	for (id expression in mImplementation)
 		result = STEvaluate(expression, scope);

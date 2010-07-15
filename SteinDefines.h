@@ -42,6 +42,14 @@
  */
 ST_EXTERN NSBundle *SteinBundle();
 
+/*!
+ @abstract		The name of the variable used to track a method's superclass.
+ @discussion	When a class is created in Stein, every method of that class
+				has the class's superclass associated with it. This is necessary
+				to prevent infinite loops in the `super` message-functor.
+ */
+ST_EXTERN NSString *const kSTSuperclassVariableName;
+
 #pragma mark -
 #pragma mark Globals
 
