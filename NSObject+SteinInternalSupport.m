@@ -181,16 +181,152 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 }
 
 #pragma mark -
+#pragma mark -
+#pragma mark Infix Notation Support
+
+static BOOL IsCharacterSequenceOperator(unichar left, unichar right)
+{
+	return (left == '+' || left == '-' || left == '*' || left == '/' || left == '^');
+}
+
+static BOOL IsSelectorComposedOfOperators(SEL selector)
+{
+	NSString *selectorString = NSStringFromSelector(selector);
+	for (NSUInteger index = 0, length = [selectorString length]; index < length; index++)
+	{
+		unichar leftCharacter = [selectorString characterAtIndex:index];
+		unichar rightCharacter = (index + 1 < length)? [selectorString characterAtIndex:index + 1] : 0;
+		if(!IsCharacterSequenceOperator(leftCharacter, rightCharacter))
+			return NO;
+		
+		if(rightCharacter != 0)
+			index++;
+	}
+	
+	return YES;
+}
 
 - (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {
-	return NO;
+	return IsSelectorComposedOfOperators(selector);
+}
+
+#pragma mark -
+
+typedef struct Operation {
+	int originalPosition;
+	char operatorName[2];
+} Operation;
+
+static BOOL streq(const char *left, const char *right)
+{
+	if(strlen(left) != strlen(right))
+		return NO;
+	
+	for (int index = 0, length = strlen(left); index < length; index++)
+	{
+		if(left[index] != right[index])
+			return NO;
+	}
+	
+	return YES;
+}
+
+ST_INLINE int PrecedenceOfOperatorNamed(char operatorName[3])
+{
+	if(streq(operatorName, "|"))
+	{
+		return 1;
+	}
+	if(streq(operatorName, "&"))
+	{
+		return 2;
+	}
+	if(streq(operatorName, "+") || streq(operatorName, "-"))
+	{
+		return 3;
+	}
+	else if(streq(operatorName, "*") || streq(operatorName, "/"))
+	{
+		return 4;
+	}
+	else if(streq(operatorName, "^"))
+	{
+		return 5;
+	}
+	
+	return 0;
+}
+
+static int NumberOfOperators(const char *operatorString)
+{
+	return strlen(operatorString);
+}
+
+static int OperationPrecedenceComparator(Operation *left, Operation *right)
+{
+	int leftPrecedence = PrecedenceOfOperatorNamed(left->operatorName);
+	int rightPrecedence = PrecedenceOfOperatorNamed(right->operatorName);
+	
+	if(leftPrecedence > rightPrecedence)
+		return -1;
+	else if(leftPrecedence < rightPrecedence)
+		return 1;
+	
+	return 0;
 }
 
 - (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
 {
-	NSLog(@"[%s %s] called without concrete implementation. Did you forget to override it in your subclass?", class_getName([self class]), sel_getName(selector));
-	return STNull;
+	const char *operators = sel_getName(selector);
+	
+	int numberOfOperations = NumberOfOperators(operators);
+	Operation operations[numberOfOperations];
+	for (int operationOffset = 0, operatorsLength = strlen(operators); operationOffset < operatorsLength; operationOffset++)
+	{
+		operations[operationOffset].originalPosition = operationOffset;
+		
+		operations[operationOffset].operatorName[0] = operators[operationOffset];
+		operations[operationOffset].operatorName[1] = '\0';
+	}
+	
+	qsort(operations, numberOfOperations, sizeof(Operation), (void *)&OperationPrecedenceComparator);
+	
+	NSMutableArray *pool = [NSMutableArray arrayWithArray:arguments];
+	[pool insertObject:self atIndex:0];
+	for (int index = 0; index < numberOfOperations; index++)
+	{
+		Operation operation = operations[index];
+		id leftOperand = [pool objectAtIndex:operation.originalPosition];
+		id rightOperand = [pool objectAtIndex:operation.originalPosition + 1];
+		id result = 0;
+		
+		if(streq(operation.operatorName, "+"))
+		{
+			result = [leftOperand operatorAdd:rightOperand];
+		}
+		else if(streq(operation.operatorName, "-"))
+		{
+			result = [leftOperand operatorSubtract:rightOperand];
+		}
+		else if(streq(operation.operatorName, "*"))
+		{
+			result = [leftOperand operatorMultiply:rightOperand];
+		}
+		else if(streq(operation.operatorName, "/"))
+		{
+			result = [leftOperand operatorDivide:rightOperand];
+		}
+		else if(streq(operation.operatorName, "^"))
+		{
+			result = [leftOperand operatorPower:rightOperand];
+		}
+		
+		[pool replaceObjectAtIndex:operation.originalPosition withObject:result];
+		[pool replaceObjectAtIndex:operation.originalPosition + 1 withObject:result];
+	}
+	
+	return [pool objectAtIndex:operations[numberOfOperations - 1].originalPosition];
 }
 
 #pragma mark -

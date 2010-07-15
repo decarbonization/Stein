@@ -10,66 +10,72 @@
 #import <Stein/STFunction.h>
 #import <Stein/STObjectBridge.h>
 
-/*!
- @abstract		The SteinMessaging category on NSObject makes all instances of
-				NSObject conform to the STFunction protocol.
- @discussion	When an NSObject is applied as a function, the arguments of the function
-				are interpreted as the components of a message.
- */
+//`
+//	category	NSObject+SteinInternalSupport
+//	purpose		To add messaging to NSObject, to add infix notation support through \
+//				the STMethodMissing protocol, and to add high level instance variable \
+//				access/mutation support.
+//`
 @interface NSObject (SteinInternalSupport) <STMethodMissing>
 
 #pragma mark -
 #pragma mark Ivars
 
-/*!
- @method
- @abstract	Sets the ivar of the receiver specified by a given key to a given value.
- @param		value	The value for the ivar identified by the key.
- @param		name	The name of one of the receiver's ivars. May not be nil.
- */
+//`
+//	method		setValue:forIvarNamed:
+//	intention	To assign a given value to an ivar with a specified name.
+//	note		Stein will first look for an ivar with the specified name, \
+//				if it cannot find one it will store it in the object's ivar \
+//				dictionary.
+//`
 - (void)setValue:(id)value forIvarNamed:(NSString *)name;
 + (void)setValue:(id)value forIvarNamed:(NSString *)name;
 
-/*!
- @method
- @abstract	Returns the value for the ivar identified by a given key.
- @param		name	The name of one of the receiver's ivars. May not be nil.
- @result	The value for the ivar identified by `name`.
- */
+//`
+//	method		valueForIvarNamed:
+//	intention	To return the value for an ivar with a given name.
+//	note		Stein will first look for an ivar with the specified name, \
+//				if one cannot be found it will check the object's ivar dictionary.
+//`
 - (id)valueForIvarNamed:(NSString *)name;
 + (id)valueForIvarNamed:(NSString *)name;
 
 #pragma mark -
 #pragma mark Operators
 
-/*!
- @abstract		Add the receiver to another object.
- @discussion	The default implementation of this method is abstract.
- */
+//`
+//	method		operatorAdd:
+//	intention	To provide an object's implementation of the + operator (prefix and infix).
+//	note		The default implementation of this method just raises an exception.
+//`
 - (id)operatorAdd:(id)rightOperand;
 
-/*!
- @abstract		Subtract from the receiver by another object.
- @discussion	The default implementation of this method is abstract.
- */
+//`
+//	method		operatorSubtract:
+//	intention	To provide an object's implementation of the - operator (prefix and infix).
+//	note		The default implementation of this method just raises an exception.
+//`
 - (id)operatorSubtract:(id)rightOperand;
 
-/*!
- @abstract		Multiply the receiver by another object.
- @discussion	The default implementation of this method is abstract.
- */
+//`
+//	method		operatorMultiply:
+//	intention	To provide an object's implementation of the * operator (prefix and infix).
+//	note		The default implementation of this method just raises an exception.
+//`
 - (id)operatorMultiply:(id)rightOperand;
 
-/*!
- @abstract		Divide the receiver with another object.
- @discussion	The default implementation of this method is abstract.
- */
+//`
+//	method		operatorDivide:
+//	intention	To provide an object's implementation of the / operator (prefix and infix).
+//	note		The default implementation of this method just raises an exception.
+//`
 - (id)operatorDivide:(id)rightOperand;
 
-/*!
- @abstract		Raise the receiver to the power of another object.
- @discussion	The default implementation of this method is abstract.
- */
+//`
+//	method		operatorPower:
+//	intention	To provide an object's implementation of the ^ operator (prefix and infix).
+//	note		The default implementation of this method just raises an exception.
+//`
 - (id)operatorPower:(id)rightOperand;
 
 @end

@@ -7,6 +7,9 @@
 //
 
 #import "STStructClasses.h"
+#import "STFunction.h"
+#import "STEnumerable.h"
+#import "STList.h"
 
 static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 {
@@ -99,6 +102,31 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 	{
 		return mRange;
 	}
+}
+
+#pragma mark -
+#pragma mark Implementing <STEnumerable>
+
+- (id)foreach:(id <STFunction>)function
+{
+	for (NSUInteger index = 0, count = mRange.location + mRange.length; index < count; index++)
+	{
+		NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
+		@try
+		{
+			STFunctionApply(function, [STList listWithObject:number]);
+		}
+		@catch (STBreakException *e)
+		{
+			break;
+		}
+		@catch (STContinueException *e)
+		{
+			continue;
+		}
+	}
+	
+	return self;
 }
 
 #pragma mark -

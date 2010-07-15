@@ -52,19 +52,19 @@
 	for (id name in mPrototype)
 	{
 		if(index >= countOfArguments)
-			[scope setValue:STNull forVariableNamed:name searchParentScopes:NO];
+			[scope setValue:STNull forConstantNamed:name];
 		else
-			[scope setValue:[arguments objectAtIndex:index] forVariableNamed:name searchParentScopes:NO];
+			[scope setValue:[arguments objectAtIndex:index] forConstantNamed:name];
 		index++;
 	}
 	
-	[scope setValue:arguments forVariableNamed:@"$_arguments" searchParentScopes:NO];
+	[scope setValue:arguments forConstantNamed:@"$_arguments"];
 	
 	//When a class is created in Stein, every method of that class
 	//has the class's superclass associated with it. This is necessary
 	//to prevent infinite loops in the `super` message-functor.
 	if(mSuperclass)
-		[scope setValue:mSuperclass forVariableNamed:kSTSuperclassVariableName searchParentScopes:NO];
+		[scope setValue:mSuperclass forConstantNamed:kSTSuperclassVariableName];
 	
 	id result = nil;
 	for (id expression in mImplementation)

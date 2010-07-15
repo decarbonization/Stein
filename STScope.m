@@ -390,7 +390,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	if(matchingNode)
 	{
 		STScopeNodeRef previousNode = STScopeNode_getPrevious(matchingNode);
-		STScopeNodeRef nextNode = STScopeNode_getPrevious(matchingNode);
+		STScopeNodeRef nextNode = STScopeNode_getNext(matchingNode);
 		
 		if(nextNode)
 			STScopeNode_setPrevious(nextNode, previousNode);

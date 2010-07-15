@@ -93,154 +93,6 @@
 }
 
 #pragma mark -
-#pragma mark Infix Notation Support
-
-static BOOL IsCharacterSequenceOperator(unichar left, unichar right)
-{
-	return (left == '+' || left == '-' || left == '*' || left == '/' || left == '^');
-}
-
-static BOOL IsSelectorComposedOfOperators(SEL selector)
-{
-	NSString *selectorString = NSStringFromSelector(selector);
-	for (NSUInteger index = 0, length = [selectorString length]; index < length; index++)
-	{
-		unichar leftCharacter = [selectorString characterAtIndex:index];
-		unichar rightCharacter = (index + 1 < length)? [selectorString characterAtIndex:index + 1] : 0;
-		if(!IsCharacterSequenceOperator(leftCharacter, rightCharacter))
-			return NO;
-		
-		if(rightCharacter != 0)
-			index++;
-	}
-	
-	return YES;
-}
-
-- (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
-{
-	return IsSelectorComposedOfOperators(selector);
-}
-
-#pragma mark -
-
-typedef struct Operation {
-	int originalPosition;
-	char operatorName[2];
-} Operation;
-
-static BOOL streq(const char *left, const char *right)
-{
-	if(strlen(left) != strlen(right))
-		return NO;
-	
-	for (int index = 0, length = strlen(left); index < length; index++)
-	{
-		if(left[index] != right[index])
-			return NO;
-	}
-	
-	return YES;
-}
-
-ST_INLINE int PrecedenceOfOperatorNamed(char operatorName[3])
-{
-	if(streq(operatorName, "|"))
-	{
-		return 1;
-	}
-	if(streq(operatorName, "&"))
-	{
-		return 2;
-	}
-	if(streq(operatorName, "+") || streq(operatorName, "-"))
-	{
-		return 3;
-	}
-	else if(streq(operatorName, "*") || streq(operatorName, "/"))
-	{
-		return 4;
-	}
-	else if(streq(operatorName, "^"))
-	{
-		return 5;
-	}
-	
-	return 0;
-}
-
-static int NumberOfOperators(const char *operatorString)
-{
-	return strlen(operatorString);
-}
-
-static int OperationPrecedenceComparator(Operation *left, Operation *right)
-{
-	int leftPrecedence = PrecedenceOfOperatorNamed(left->operatorName);
-	int rightPrecedence = PrecedenceOfOperatorNamed(right->operatorName);
-	
-	if(leftPrecedence > rightPrecedence)
-		return -1;
-	else if(leftPrecedence < rightPrecedence)
-		return 1;
-	
-	return 0;
-}
-
-- (id)handleMissingMethodWithSelector:(SEL)selector arguments:(NSArray *)arguments inScope:(STScope *)scope
-{
-	const char *operators = sel_getName(selector);
-	
-	int numberOfOperations = NumberOfOperators(operators);
-	Operation operations[numberOfOperations];
-	for (int operationOffset = 0, operatorsLength = strlen(operators); operationOffset < operatorsLength; operationOffset++)
-	{
-		operations[operationOffset].originalPosition = operationOffset;
-		
-		operations[operationOffset].operatorName[0] = operators[operationOffset];
-		operations[operationOffset].operatorName[1] = '\0';
-	}
-	
-	qsort(operations, numberOfOperations, sizeof(Operation), (void *)&OperationPrecedenceComparator);
-	
-	NSMutableArray *pool = [NSMutableArray arrayWithArray:arguments];
-	[pool insertObject:self atIndex:0];
-	for (int index = 0; index < numberOfOperations; index++)
-	{
-		Operation operation = operations[index];
-		id leftOperand = [pool objectAtIndex:operation.originalPosition];
-		id rightOperand = [pool objectAtIndex:operation.originalPosition + 1];
-		id result = 0;
-		
-		if(streq(operation.operatorName, "+"))
-		{
-			result = [leftOperand operatorAdd:rightOperand];
-		}
-		else if(streq(operation.operatorName, "-"))
-		{
-			result = [leftOperand operatorSubtract:rightOperand];
-		}
-		else if(streq(operation.operatorName, "*"))
-		{
-			result = [leftOperand operatorMultiply:rightOperand];
-		}
-		else if(streq(operation.operatorName, "/"))
-		{
-			result = [leftOperand operatorDivide:rightOperand];
-		}
-		else if(streq(operation.operatorName, "^"))
-		{
-			result = [leftOperand operatorPower:rightOperand];
-		}
-		
-		[pool replaceObjectAtIndex:operation.originalPosition withObject:result];
-		[pool replaceObjectAtIndex:operation.originalPosition + 1 withObject:result];
-	}
-	
-	return [pool objectAtIndex:operations[numberOfOperations - 1].originalPosition];
-}
-
-#pragma mark -
 #pragma mark Operators
 
 - (id)operatorAdd:(id)rightOperand
@@ -317,6 +169,30 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 }
 
 #pragma mark -
+#pragma mark Operators
+
+- (NSString *)operatorAdd:(NSString *)rightOperand
+{
+	return [self stringByAppendingString:[rightOperand string]];
+}
+
+- (NSString *)operatorSubtract:(NSString *)rightOperand
+{
+	return [self stringByReplacingOccurrencesOfString:rightOperand withString:@""];
+}
+
+- (NSString *)operatorMultiply:(id)rightOperand
+{
+	NSMutableString *result = [NSMutableString string];
+	for (NSInteger time = 0, total = [rightOperand integerValue]; time < total; time++)
+	{
+		[result appendString:self];
+	}
+	
+	return [result copy];
+}
+
+#pragma mark -
 #pragma mark Enumerable
 
 - (id)foreach:(id < STFunction >)function
@@ -369,7 +245,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}
 	
-	return string;
+	return [string copy];
 }
 
 - (id)filter:(id < STFunction >)function
@@ -395,7 +271,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}
 	
-	return string;
+	return [string copy];
 }
 
 @end
@@ -415,6 +291,21 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 @implementation NSArray (SteinTools)
 
+#pragma mark Operators
+
+- (NSArray *)operatorAdd:(NSArray *)rightOperand
+{
+	return [self arrayByAddingObjectsFromArray:rightOperand];
+}
+
+- (NSArray *)operatorSubtract:(NSArray *)rightOperand
+{
+	NSMutableArray *result = [self mutableCopy];
+	[result removeObjectsInArray:rightOperand];
+	return [result copy];
+}
+
+#pragma mark -
 #pragma mark Enumerable
 
 - (id)foreach:(id < STFunction >)function
@@ -462,7 +353,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}
 	
-	return mappedObjects;
+	return [mappedObjects copy];
 }
 
 - (id)filter:(id < STFunction >)function
@@ -486,7 +377,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}
 	
-	return filteredObjects;
+	return [filteredObjects copy];
 }
 
 #pragma mark -
@@ -494,14 +385,14 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 - (NSString *)prettyDescription
 {
-	NSMutableString *description = [NSMutableString stringWithString:@"{\n"];
+	NSMutableString *description = [NSMutableString stringWithString:@"(array"];
 	
 	for (id object in self)
 	{
-		[description appendFormat:@"\t%@\n", [object prettyDescription]];
+		[description appendFormat:@" %@", [object prettyDescription]];
 	}
 	
-	[description appendString:@"}"];
+	[description appendString:@")"];
 	
 	return description;
 }
@@ -547,6 +438,21 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 @implementation NSSet (SteinTools)
 
+#pragma mark Operators
+
+- (NSSet *)operatorAdd:(NSSet *)rightOperand
+{
+	return [self setByAddingObjectsFromSet:rightOperand];
+}
+
+- (NSSet *)operatorSubtract:(NSSet *)rightOperand
+{
+	NSMutableSet *result = [self mutableCopy];
+	[result minusSet:rightOperand];
+	return [result copy];
+}
+
+#pragma mark -
 #pragma mark Enumerable
 
 - (id)foreach:(id < STFunction >)function
@@ -594,7 +500,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}
 	
-	return mappedObjects;
+	return [mappedObjects copy];
 }
 
 - (id)filter:(id < STFunction >)function
@@ -618,7 +524,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}
 	
-	return filteredObjects;
+	return [filteredObjects copy];
 }
 
 #pragma mark -
@@ -626,15 +532,107 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 - (NSString *)prettyDescription
 {
-	NSMutableString *description = [NSMutableString stringWithString:@"{\n"];
+	NSMutableString *description = [NSMutableString stringWithString:@"(set"];
 	
 	for (id object in self)
 	{
-		[description appendFormat:@"\t%@\n", [object prettyDescription]];
+		[description appendFormat:@" %@", [object prettyDescription]];
 	}
 	
-	[description appendString:@"}"];
+	[description appendString:@")"];
 	
+	return description;
+}
+
+@end
+
+#pragma mark -
+
+@implementation NSIndexSet (SteinTools)
+
+#pragma mark Implementing <STEnumerable>
+
+- (id)foreach:(id <STFunction>)function
+{
+	[self enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
+		@try
+		{
+			NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
+			STFunctionApply(function, [STList listWithObject:number]);
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
+	}];
+	
+	return self;
+}
+
+- (id)map:(id <STFunction>)function
+{
+	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	[self enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
+		@try
+		{
+			NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
+			[indexSet addIndex:[STFunctionApply(function, [STList listWithObject:number]) unsignedIntegerValue]];
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
+	}];
+	
+	return [indexSet copy];
+}
+
+- (id)filter:(id <STFunction>)function
+{
+	NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+	[self enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
+		@try
+		{
+			NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
+			if(STIsTrue(STFunctionApply(function, [STList listWithObject:number])))
+				[indexSet addIndex:index];
+		}
+		@catch (STBreakException *e)
+		{
+			*stop = YES;
+			return;
+		}
+		@catch (STContinueException *e)
+		{
+			return;
+		}
+	}];
+	
+	return [indexSet copy];
+}
+
+#pragma mark -
+#pragma mark Pretty Printing
+
+- (NSString *)prettyDescription
+{
+	NSMutableString *description = [NSMutableString stringWithString:@"(index-set"];
+	
+	[self enumerateIndexesUsingBlock:^(NSUInteger index, BOOL *stop) {
+		[description appendFormat:@" %ld", index];
+	}];
+	
+	[description appendString:@")"];
 	return description;
 }
 
@@ -644,6 +642,29 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 @implementation NSDictionary (SteinTools)
 
+#pragma mark Operators
+
+- (NSDictionary *)operatorAdd:(NSDictionary *)rightOperand
+{
+	NSMutableDictionary *result = [self mutableCopy];
+	[result setValuesForKeysWithDictionary:rightOperand];
+	return [result copy];
+}
+
+- (NSDictionary *)operatorSubtract:(id)rightOperand
+{
+	NSMutableDictionary *result = [self mutableCopy];
+	if([rightOperand isKindOfClass:[NSDictionary class]])
+		[result removeObjectsForKeys:[rightOperand allKeys]];
+	else if([rightOperand isKindOfClass:[NSArray class]])
+		[result removeObjectsForKeys:rightOperand];
+	else
+		[result removeObjectsForKeys:[rightOperand allObjects]];
+	
+	return [result copy];
+}
+
+#pragma mark -
 #pragma mark Enumerable
 
 - (id)foreach:(id < STFunction >)function
@@ -689,7 +710,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}];
 	
-	return result;
+	return [result copy];
 }
 
 - (id)filter:(id < STFunction >)function
@@ -713,7 +734,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 		}
 	}];
 	
-	return result;
+	return [result copy];
 }
 
 #pragma mark -
@@ -721,13 +742,13 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 
 - (NSString *)prettyDescription
 {
-	NSMutableString *description = [NSMutableString stringWithString:@"{\n"];
+	NSMutableString *description = [NSMutableString stringWithString:@"(dictionary"];
 	
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-		[description appendFormat:@"\t%@ => %@\n", [key prettyDescription], [value prettyDescription]];
+		[description appendFormat:@" %@ %@", [key prettyDescription], [value prettyDescription]];
 	}];
 	
-	[description appendString:@"}"];
+	[description appendString:@")"];
 	
 	return description;
 }

@@ -128,6 +128,8 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 //		(name extend superclass { |SubclassForms| }) -> Class \
 //			Create a new class with `name` whose superclass is named `superclass`
 //			where the methods described in {} are added to it.
+//		(class continues { |SubclassForms| } -> Class \
+//			Extend `class` with the methods described in {}.
 //	}
 //`
 static id let(STList *arguments, STScope *scope)
@@ -159,6 +161,13 @@ static id let(STList *arguments, STScope *scope)
 		
 		return STDefineClass(name, superclass, declarations, scope);
 	}
+	else if([directive isEqualTo:@"continues"])
+	{
+		Class class = STEvaluate([arguments objectAtIndex:0], scope);
+		STList *declarations = [arguments objectAtIndex:2];
+		STExtendClass(class, declarations);
+		return class;
+	}
 }
 
 //`
@@ -184,6 +193,26 @@ static id setBang(STList *arguments, STScope *scope)
 	[scope setValue:value forKeyPath:name];
 	
 	return value;
+}
+
+//`
+//	function	unset!
+//	intention	To unset value-bindings in the current scope.
+//	impure
+//	forms {
+//		(name) -> null \
+//			Remove any bindings for `name` in the current scope or any scope it inherits from.
+//	}
+//	note		unset! can be used on readonly value-bindings as well as variables, there is no restriction.
+//`
+static id unsetBang(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 1)
+		STRaiseIssue(arguments.creationLocation, @"unset! requires exactly 1 parameter (name), got %ld.", arguments.count);
+	
+	[scope removeValueForVariableNamed:[[arguments objectAtIndex:0] string] searchParentScopes:YES];
+	
+	return STNull;
 }
 
 #pragma mark -
@@ -761,7 +790,7 @@ static id _extern(STList *arguments, STScope *scope)
 													  signature:[NSMethodSignature signatureWithObjCTypes:[signature UTF8String]]];
 	}
 	
-	[scope setValue:result forVariableNamed:symbolName searchParentScopes:NO];
+	[scope setValue:result forConstantNamed:symbolName];
 	
 	return result;
 }
@@ -834,11 +863,11 @@ static id to_native_function(STList *arguments, STScope *scope)
 
 //`
 //	function	array
-//	intention	To create instances of NSMutableArray
+//	intention	To create instances of NSArray
 //	forms {
-//		(null) -> NSMutableArray \
+//		(null) -> NSArray \
 //			Creates an empty array
-//		(value...) -> NSMutableArray \
+//		(value...) -> NSArray \
 //			Creates an array with the specified `value[s]...`
 //	}
 //`
@@ -846,9 +875,9 @@ static id array(STList *arguments, STScope *scope)
 {
 	//Special case for `array ()`
 	if(arguments.count == 1 && [arguments head] == STNull)
-		return [NSMutableArray array];
+		return [NSArray array];
 	
-	return [arguments.allObjects mutableCopy];
+	return [arguments.allObjects copy];
 }
 
 //`
@@ -865,18 +894,18 @@ static id list(STList *arguments, STScope *scope)
 {
 	//Special case for `list ()`
 	if(arguments.count == 1 && [arguments head] == STNull)
-		return [STList new];
+		return [STList list];
 	
 	return [arguments copy];
 }
 
 //`
 //	function	dictionary
-//	intention	To create instances of NSMutableDictionary
+//	intention	To create instances of NSDictionary
 //	forms {
-//		(null) -> NSMutableDictionary \
+//		(null) -> NSDictionary \
 //			Creates an empty dictionary
-//		(key value...) -> NSMutableDictionary \
+//		(key value...) -> NSDictionary \
 //			Creates a dictionary with the specified `key value[s]...`
 //	}
 //`
@@ -884,7 +913,7 @@ static id dictionary(STList *arguments, STScope *scope)
 {
 	//Special case for `dictionary ()`
 	if(arguments.count == 1 && [arguments head] == STNull)
-		return [NSMutableDictionary dictionary];
+		return [NSDictionary dictionary];
 	
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
 	
@@ -904,16 +933,16 @@ static id dictionary(STList *arguments, STScope *scope)
 		}
 	}
 	
-	return dictionary;
+	return [dictionary copy];
 }
 
 //`
 //	function	set
 //	intention	To create instances of NSMutableSet
 //	forms {
-//		(null) -> NSMutableSet \
+//		(null) -> NSSet \
 //			Creates an empty set
-//		(value...) -> NSMutableSet \
+//		(value...) -> NSSet \
 //			Creates a set with the specified `value[s]...`
 //	}
 //`
@@ -921,18 +950,18 @@ static id set(STList *arguments, STScope *scope)
 {
 	//Special case for `set ()`
 	if(arguments.count == 1 && [arguments head] == STNull)
-		return [NSMutableDictionary dictionary];
+		return [NSSet set];
 	
-	return [NSMutableSet setWithArray:arguments.allObjects];
+	return [NSSet setWithArray:arguments.allObjects];
 }
 
 //`
 //	function	index-set
-//	intention	To create instances of NSMutableIndexSet
+//	intention	To create instances of NSIndexSet
 //	forms {
-//		(null) -> NSMutableIndexSet \
+//		(null) -> NSIndexSet \
 //			Creates an empty index set
-//		(value...) -> NSMutableIndexSet \
+//		(value...) -> NSIndexSet \
 //			Creates an index set with the specified `value[s]...`
 //	}
 //`
@@ -948,7 +977,7 @@ static id index_set(STList *arguments, STScope *scope)
 		[indexSet addIndex:[argument unsignedIntegerValue]];
 	}
 	
-	return indexSet;
+	return [indexSet copy];
 }
 
 //`
@@ -981,6 +1010,8 @@ STScope *STBuiltInFunctionScope()
 		   forConstantNamed:@"let"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&setBang evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"set!"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&unsetBang evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"unset!"];
 	
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
 		   forConstantNamed:@"load"];

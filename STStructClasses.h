@@ -15,7 +15,7 @@
  @class
  @abstract	The STRange class is used to describe NSRange and CFRange structs in the Stein programming language.
  */
-@interface STRange : NSObject < STPrimitiveValueWrapper >
+@interface STRange : NSObject <STPrimitiveValueWrapper>
 {
 	NSRange mRange;
 }
@@ -71,7 +71,7 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor;
  @class
  @abstract	The STPoint class is used to describe NSPoint and CGPoint structs in the Stein programming language.
  */
-@interface STPoint : NSObject < STPrimitiveValueWrapper >
+@interface STPoint : NSObject <STPrimitiveValueWrapper>
 {
 	CGPoint mPoint;
 }
@@ -127,7 +127,7 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor;
  @class
  @abstract	The STSize class is used to describe NSSize and CGSize structs in the Stein programming language.
  */
-@interface STSize : NSObject < STPrimitiveValueWrapper >
+@interface STSize : NSObject <STPrimitiveValueWrapper>
 {
 	CGSize mSize;
 }
@@ -183,7 +183,7 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor;
  @class
  @abstract	The STRect class is used to describe NSRect and CGRect structs in the Stein programming language.
  */
-@interface STRect : NSObject < STPrimitiveValueWrapper >
+@interface STRect : NSObject <STPrimitiveValueWrapper>
 {
 	STPoint *mOrigin;
 	STSize *mSize;

@@ -204,6 +204,11 @@
 	[mContents addObject:object];
 }
 
+- (void)addObjectsFromArray:(NSArray *)array
+{
+	[mContents addObjectsFromArray:array];
+}
+
 - (void)insertObject:(id)object atIndex:(NSUInteger)index
 {
 	[mContents insertObject:object atIndex:index];
@@ -214,6 +219,11 @@
 - (void)removeObject:(id)object
 {
 	[mContents removeObject:object];
+}
+
+- (void)removeObjectsInArray:(NSArray *)array
+{
+	[mContents removeObjectsInArray:array];
 }
 
 - (void)removeObjectAtIndex:(NSUInteger)index
@@ -314,6 +324,24 @@
 - (NSArray *)allObjects
 {
 	return [NSArray arrayWithArray:mContents];
+}
+
+#pragma mark -
+#pragma mark Operators
+
+- (STList *)operatorAdd:(STList *)rightOperand
+{
+	STList *list = [STList list];
+	[list addObjectsFromArray:mContents];
+	[list addObjectsFromArray:[rightOperand allObjects]];
+	return list;
+}
+
+- (STList *)operatorSubtract:(STList *)rightOperand
+{
+	STList *list = [self copy];
+	[list removeObjectsInArray:[rightOperand allObjects]];
+	return list;
 }
 
 #pragma mark -

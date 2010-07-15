@@ -138,6 +138,11 @@ typedef NSUInteger STListFlags;
 - (void)addObject:(id)object;
 
 /*!
+ @abstract	Add an array of objects to the receiver.
+ */
+- (void)addObjectsFromArray:(NSArray *)array;
+
+/*!
  @abstract	Insert an object into the receiver at a specified index.
  */
 - (void)insertObject:(id)object atIndex:(NSUInteger)index;
@@ -148,6 +153,11 @@ typedef NSUInteger STListFlags;
  @abstract	Remove a specified object from the receiver.
  */
 - (void)removeObject:(id)object;
+
+/*!
+ @abstract	Remove an array of objects from the receiver.
+ */
+- (void)removeObjectsInArray:(NSArray *)array;
 
 /*!
  @abstract	Remove the object at a specified index from the receiver.

@@ -56,7 +56,7 @@
 #pragma mark -
 
 /*!
- @abstract	This category adds pretty printing and infix notation support to NSNumber.
+ @abstract	This category adds pretty printing and overloaded math operators.
  */
 @interface NSNumber (SteinTools)
 
@@ -122,6 +122,13 @@
  @abstract	This category makes NSSet conform to the STEnumerable protocol.
  */
 @interface NSSet (SteinTools) <STEnumerable>
+
+@end
+
+/*!
+ @abstract	This category makes NSIndexSet conform to the STEnumerable protocol.
+ */
+@interface NSIndexSet (SteinTools) <STEnumerable>
 
 @end
 
