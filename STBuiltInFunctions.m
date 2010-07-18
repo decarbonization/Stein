@@ -25,18 +25,19 @@
 
 #import "STInterpreter.h"
 #import "STScope.h"
+#import "STModule.h"
 
-//`
+//-
 //	typedef		STBuiltInFunctionImplementation
 //	purpose		To describe the form Stein's core library's native functions must take.
-//`
+//-
 typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 
-//`
+//-
 //	class		STBuiltInFunction
 //	purpose		To provide an STFunction-implementing object that calls into native \
 //				functions allowing Stein's core library to be as speedy as possible.
-//`
+//-
 @interface STBuiltInFunction : NSObject <STFunction>
 {
 	STBuiltInFunctionImplementation mImplementation;
@@ -45,21 +46,21 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 
 #pragma mark Initialization
 
-//`
+//-
 //	method		initWithImplementation:evaluatesOwnArguments:
 //	intention	To initialize the receiver with a specified implementation \
 //				and whether or not the implementation intends on evaluating its own arguments.
-//`
+//-
 - (id)initWithImplementation:(STBuiltInFunctionImplementation)implementation evaluatesOwnArguments:(BOOL)evaluatesOwnArguments;
 
 #pragma mark -
 #pragma mark Properties
 
-//`
+//-
 //	property	implementation
 //	description	The native implementation of the STBuiltInFunction.
 //	inaccessible
-//`
+//-
 @property (readonly, nonatomic) STBuiltInFunctionImplementation implementation;
 
 @end
@@ -118,7 +119,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 
 #pragma mark • Core
 
-//`
+//-
 //	function	let
 //	intention	To allow assignment of variables and creation of new classes
 //	impure
@@ -131,7 +132,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 //		(class continues { |SubclassForms| } -> Class \
 //			Extend `class` with the methods described in {}.
 //	}
-//`
+//-
 static id let(STList *arguments, STScope *scope)
 {
 	if(arguments.count < 3)
@@ -161,7 +162,7 @@ static id let(STList *arguments, STScope *scope)
 		
 		return STDefineClass(name, superclass, declarations, scope);
 	}
-	else if([directive isEqualTo:@"continues"])
+	else if([directive isEqualTo:@"continue"])
 	{
 		Class class = STEvaluate([arguments objectAtIndex:0], scope);
 		STList *declarations = [arguments objectAtIndex:2];
@@ -170,7 +171,7 @@ static id let(STList *arguments, STScope *scope)
 	}
 }
 
-//`
+//-
 //	function	set!
 //	intention	To mutate variables in the current scope.
 //	impure
@@ -178,7 +179,7 @@ static id let(STList *arguments, STScope *scope)
 //		(name value) -> id \
 //			Set the variable `name` to `value`, yielding `value`.
 //	}
-//`
+//-
 static id setBang(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 2)
@@ -195,7 +196,7 @@ static id setBang(STList *arguments, STScope *scope)
 	return value;
 }
 
-//`
+//-
 //	function	unset!
 //	intention	To unset value-bindings in the current scope.
 //	impure
@@ -204,7 +205,7 @@ static id setBang(STList *arguments, STScope *scope)
 //			Remove any bindings for `name` in the current scope or any scope it inherits from.
 //	}
 //	note		unset! can be used on readonly value-bindings as well as variables, there is no restriction.
-//`
+//-
 static id unsetBang(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 1)
@@ -217,42 +218,52 @@ static id unsetBang(STList *arguments, STScope *scope)
 
 #pragma mark -
 
-//`
+//-
 //	function	load
-//	intention	To load Stein files and execute them in the current scope
+//	intention	To load all given paths.
 //	forms {
 //		(path...) -> id \
-//			Execute each Stein file at the paths passed as parameters and return the result of executing the last file.
+//			If the path is a directory, it is treated like a bundle and loaded with NSBundle, \
+//			yielding a boolean indicating whether the load was successful. If the path is a file, \
+//			it is treated like a Stein file and loaded, yielding the result of the last expression \
+//			of evaluating the file.
 //	}
-//`
+//-
 static id load(STList *arguments, STScope *scope)
 {
 	id lastResult = nil;
 	for (NSString *path in arguments)
 	{
-		NSError *error = nil;
-		NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-		if(!contents)
-			STRaiseIssue(arguments.creationLocation, @"Could not load file at path %@. Got error «%@».", path, [error localizedDescription]);
+		BOOL isDirectory = NO;
+		if(![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory])
+			STRaiseIssue(arguments.creationLocation, @"Could not load file at path %@, it does not exist.", path);
 		
-		STScope *fileScope = [STScope scopeWithParentScope:scope];
-		fileScope.name = [path lastPathComponent];
-		[fileScope setValue:path forVariableNamed:@"$file" searchParentScopes:NO];
-		
-		NSArray *expressions = STParseString(contents, path);
-		lastResult = STEvaluate(expressions, fileScope);
+		if(isDirectory)
+		{
+			lastResult = [NSNumber numberWithBool:[[NSBundle bundleWithPath:path] load]];
+		}
+		else
+		{
+			NSError *error = nil;
+			NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+			if(!contents)
+				STRaiseIssue(arguments.creationLocation, @"Could not load file at path %@. Got error «%@».", path, [error localizedDescription]);
+			
+			NSArray *expressions = STParseString(contents, path);
+			lastResult = STEvaluate(expressions, scope);
+		}
 	}
 	
 	return lastResult;
 }
 
-//`
+//-
 //	function	super
 //	intention	To allow access to an object's superclass's methods.
 //	forms {
 //		(super |Message|) -> id
 //	}
-//`
+//-
 static id _super(STList *message, STScope *scope)
 {
 	if(message.count == 0)
@@ -287,14 +298,14 @@ static id _super(STList *message, STScope *scope)
 #pragma mark -
 #pragma mark • Core Lisp Functions
 
-//`
+//-
 //	function	parse
 //	intention	To parse a string into an AST
 //	forms {
 //		(string) -> NSArray \
 //			Parses string into an NSArray of STLists, STSymbols NSNumbers, and NSStrings.
 //	}
-//`
+//-
 static id parse(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 1)
@@ -303,7 +314,7 @@ static id parse(STList *arguments, STScope *scope)
 	return STParseString([[arguments head] string], @"<<parse>>");
 }
 
-//`
+//-
 //	function	eval
 //	intention	To evaluate all expressions passed in
 //	impure
@@ -311,7 +322,7 @@ static id parse(STList *arguments, STScope *scope)
 //		(expression...) -> id \
 //			Evaluates each expression and returns the result of evaluating the last expression.
 //	}
-//`
+//-
 static id eval(STList *arguments, STScope *scope)
 {
 	id lastResult = nil;
@@ -321,7 +332,7 @@ static id eval(STList *arguments, STScope *scope)
 	return lastResult;
 }
 
-//`
+//-
 //	function	apply
 //	intention	To apply a function.
 //	impure
@@ -329,7 +340,7 @@ static id eval(STList *arguments, STScope *scope)
 //		(function, parameters) -> id \
 //			Apply the `function` with the `parameters` in the current scope, yielding the result.
 //	}
-//`
+//-
 static id apply(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 2)
@@ -348,20 +359,20 @@ static id apply(STList *arguments, STScope *scope)
 #pragma mark -
 #pragma mark • Control Flow
 
-//`
+//-
 //	function	break
 //	intention	To raise a break exception.
-//`
+//-
 static id _break(STList *arguments, STScope *scope)
 {
 	@throw [STBreakException breakExceptionFrom:arguments.creationLocation];
 	return nil;
 }
 
-//`
+//-
 //	function	continue
 //	intention	To raise a continue exception.
-//`
+//-
 static id _continue(STList *arguments, STScope *scope)
 {
 	@throw [STContinueException continueExceptionFrom:arguments.creationLocation];
@@ -370,7 +381,7 @@ static id _continue(STList *arguments, STScope *scope)
 
 #pragma mark -
 
-//`
+//-
 //	function	decide
 //	intention	To provide basic control flow for Stein.
 //	forms {
@@ -381,7 +392,7 @@ static id _continue(STList *arguments, STScope *scope)
 //			Evaluates the condition and calls true-block if the condition is true, or the \
 //			false-block if the condition is false. The result of the called block is yielded.
 // }
-//`
+//-
 static id decide(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 2 && arguments.count != 3)
@@ -417,14 +428,14 @@ static id decide(STList *arguments, STScope *scope)
 	return STFalse;
 }
 
-//`
+//-
 //	function	match
 //	intention	To match a specified value against a list of values, \
 //				evaluating a specified block based on the result.
 //	forms {
 //		(left-operand { right-operand	expression|{ expressions... }... } -> id
 //	}
-//`
+//-
 static id match(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 2)
@@ -453,16 +464,68 @@ static id match(STList *arguments, STScope *scope)
 }
 
 #pragma mark -
+#pragma mark • Modules
+
+//-
+//	function	module
+//	purpose		To create modules in the Stein programming language.
+//	impure
+//	forms {
+//		(name definitions) -> STModule \
+//			Creates a new module with `name` by evaluating the expressions in `definitions`.
+//	}
+//-
+static id module(STList *arguments, STScope *scope)
+{
+	if(arguments.count != 2)
+		STRaiseIssue(arguments.creationLocation, @"module requires exactly 2 parameters (name, definitions), got %ld.", arguments.count);
+	
+	NSString *name = [[arguments objectAtIndex:0] string];
+	STModule *module = [scope valueForVariableNamed:name searchParentScopes:YES];
+	if(module && ![module isKindOfClass:[STModule class]])
+		STRaiseIssue(arguments.creationLocation, @"attempting to define a module with a name already dedicated to a binding of a different type.");
+	
+	if(!module)
+	{
+		module = [[STModule alloc] initWithName:name superscope:scope];
+		[scope setValue:module forConstantNamed:name];
+	}
+	
+	STEvaluate([[arguments objectAtIndex:1] allObjects], module);
+	
+	return module;
+}
+
+//-
+//	function	include
+//	purpose		To include all of the values of a scope/module into the current scope/module.
+//	impure
+//	forms {
+//		(scope|module...) -> scope|module \
+//			Includes all of the variables for the passed in scope/module objects into the current scope/module.
+//	}
+//-
+static id include(STList *arguments, STScope *scope)
+{
+	for (STScope *module in arguments)
+	{
+		[scope setValuesForVariablesInScope:module];
+	}
+	
+	return [arguments objectAtIndex:arguments.count - 1];
+}
+
+#pragma mark -
 #pragma mark • Mathematics
 
-//`
+//-
 //	function	+
 //	intention	To add the objects given together.
 //	forms {
 //		(operand...) -> id \
 //			Calls operatorAdd: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id plus(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -474,14 +537,14 @@ static id plus(STList *arguments, STScope *scope)
 	return leftOperand;
 }
 
-//`
+//-
 //	function	-
 //	intention	To subtract the objects given from each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls operatorSubtract: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id minus(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -493,14 +556,14 @@ static id minus(STList *arguments, STScope *scope)
 	return leftOperand;
 }
 
-//`
+//-
 //	function	*
 //	intention	To multiply the objects given.
 //	forms {
 //		(operand...) -> id \
 //			Calls operatorMultiply: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id multiply(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -512,14 +575,14 @@ static id multiply(STList *arguments, STScope *scope)
 	return leftOperand;
 }
 
-//`
+//-
 //	function	/
 //	intention	To divide the objects given into each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls operatorDivide: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id divide(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -531,14 +594,14 @@ static id divide(STList *arguments, STScope *scope)
 	return leftOperand;
 }
 
-//`
+//-
 //	function	^
 //	intention	To raise the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls operatorPower: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id power(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -553,14 +616,14 @@ static id power(STList *arguments, STScope *scope)
 #pragma mark -
 #pragma mark Comparison
 
-//`
+//-
 //	function	=
 //	intention	To compare the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls isEqual: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id equal(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -575,14 +638,14 @@ static id equal(STList *arguments, STScope *scope)
 	return STTrue;
 }
 
-//`
+//-
 //	function	≠
 //	intention	To compare the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls !isEqual: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id notEqual(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -597,14 +660,14 @@ static id notEqual(STList *arguments, STScope *scope)
 	return STTrue;
 }
 
-//`
+//-
 //	function	<
 //	intention	To compare the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls compare: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id lessThan(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -620,14 +683,14 @@ static id lessThan(STList *arguments, STScope *scope)
 	return STTrue;
 }
 
-//`
+//-
 //	function	≤
 //	intention	To compare the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls compare: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id lessThanOrEqual(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -643,14 +706,14 @@ static id lessThanOrEqual(STList *arguments, STScope *scope)
 	return STTrue;
 }
 
-//`
+//-
 //	function	>
 //	intention	To compare the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls compare: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id greaterThan(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -666,14 +729,14 @@ static id greaterThan(STList *arguments, STScope *scope)
 	return STTrue;
 }
 
-//`
+//-
 //	function	≥
 //	intention	To compare the objects given to each other.
 //	forms {
 //		(operand...) -> id \
 //			Calls compare: on each operand passed in, collecting and yielding the result.
 //	}
-//`
+//-
 static id greaterThanOrEqual(STList *arguments, STScope *scope)
 {
 	id leftOperand = [arguments head];
@@ -692,14 +755,14 @@ static id greaterThanOrEqual(STList *arguments, STScope *scope)
 #pragma mark -
 #pragma mark • Logical
 
-//`
+//-
 //	function	or
 //	intention	To check the objects given for truthiness.
 //	forms {
 //		(operand...) -> id \
 //			Calls STIsTrue on each operand, returning the first operand that is true, or `false` if no operand is true.
 //	}
-//`
+//-
 static id or(STList *arguments, STScope *scope)
 {
 	if(STIsTrue([arguments head]))
@@ -714,14 +777,14 @@ static id or(STList *arguments, STScope *scope)
 	return STFalse;
 }
 
-//`
+//-
 //	function	and
 //	intention	To check the objects given for truthiness.
 //	forms {
 //		(operand...) -> id \
 //			Calls STIsTrue on each operand, returning false for the first operand that is `false`, or `true` if all of the operands are true.
 //	}
-//`
+//-
 static id and(STList *arguments, STScope *scope)
 {
 	BOOL isTrue = STIsTrue([arguments head]);
@@ -738,10 +801,10 @@ static id and(STList *arguments, STScope *scope)
 	return [NSNumber numberWithBool:isTrue];
 }
 
-//`
+//-
 //	function	not
 //	intention	To invert the truthiness of a given value.
-//`
+//-
 static id not(STList *arguments, STScope *scope)
 {
 	if(arguments.count != 1)
@@ -753,7 +816,7 @@ static id not(STList *arguments, STScope *scope)
 #pragma mark -
 #pragma mark • Bridging
 
-//`
+//-
 //	function	extern
 //	intention	To bring native constants and functions into a Stein execution context.
 //	impure
@@ -763,7 +826,7 @@ static id not(STList *arguments, STScope *scope)
 //		(type symbol-name(parameter-type...)) -> STBridgedFunction \
 //			Looks up the native function specified by `symbol-name`, and if found, it will be wrapped into an STBridgedFunction instance whose return type is `type` and whose parameter types are `parameter-type...`.
 //	}
-//`
+//-
 static id _extern(STList *arguments, STScope *scope)
 {
 	if(arguments.count < 2)
@@ -797,14 +860,14 @@ static id _extern(STList *arguments, STScope *scope)
 
 #pragma mark -
 
-//`
+//-
 //	function	ref
 //	intention	To return a pointer of a specified type for a specified value.
 //	forms {
 //		(type, value) -> STPointer \
 //			Creates an STPointer whose `value` is of `type`.
 //	}
-//`
+//-
 static id ref(STList *arguments, STScope *scope)
 {
 	if(arguments.count < 2)
@@ -818,14 +881,14 @@ static id ref(STList *arguments, STScope *scope)
 	return pointer;
 }
 
-//`
+//-
 //	function	ref-array
 //	intention	To create a pointer array of a specified type and length.
 //	forms {
 //		(type length) -> STPointer \
 //			Creates an STArrayPointer of `type` and of `length`.
 //	}
-//`
+//-
 static id ref_array(STList *arguments, STScope *scope)
 {
 	if(arguments.count < 2)
@@ -839,10 +902,10 @@ static id ref_array(STList *arguments, STScope *scope)
 
 #pragma mark -
 
-//`
+//-
 //	function	to-native-function
 //	intention	To wrap Stein function's into native function wrappers that can be used as C function-pointers.
-//`
+//-
 static id to_native_function(STList *arguments, STScope *scope)
 {
 	if([arguments count] < 3)
@@ -861,7 +924,7 @@ static id to_native_function(STList *arguments, STScope *scope)
 #pragma mark -
 #pragma mark • Collection Creation
 
-//`
+//-
 //	function	array
 //	intention	To create instances of NSArray
 //	forms {
@@ -870,7 +933,7 @@ static id to_native_function(STList *arguments, STScope *scope)
 //		(value...) -> NSArray \
 //			Creates an array with the specified `value[s]...`
 //	}
-//`
+//-
 static id array(STList *arguments, STScope *scope)
 {
 	//Special case for `array ()`
@@ -880,7 +943,7 @@ static id array(STList *arguments, STScope *scope)
 	return [arguments.allObjects copy];
 }
 
-//`
+//-
 //	function	list
 //	intention	To create instances of STList
 //	forms {
@@ -889,7 +952,7 @@ static id array(STList *arguments, STScope *scope)
 //		(value...) -> STList \
 //			Creates a list with the specified `value[s]...`
 //	}
-//`
+//-
 static id list(STList *arguments, STScope *scope)
 {
 	//Special case for `list ()`
@@ -899,7 +962,7 @@ static id list(STList *arguments, STScope *scope)
 	return [arguments copy];
 }
 
-//`
+//-
 //	function	dictionary
 //	intention	To create instances of NSDictionary
 //	forms {
@@ -908,7 +971,7 @@ static id list(STList *arguments, STScope *scope)
 //		(key value...) -> NSDictionary \
 //			Creates a dictionary with the specified `key value[s]...`
 //	}
-//`
+//-
 static id dictionary(STList *arguments, STScope *scope)
 {
 	//Special case for `dictionary ()`
@@ -936,7 +999,7 @@ static id dictionary(STList *arguments, STScope *scope)
 	return [dictionary copy];
 }
 
-//`
+//-
 //	function	set
 //	intention	To create instances of NSMutableSet
 //	forms {
@@ -945,7 +1008,7 @@ static id dictionary(STList *arguments, STScope *scope)
 //		(value...) -> NSSet \
 //			Creates a set with the specified `value[s]...`
 //	}
-//`
+//-
 static id set(STList *arguments, STScope *scope)
 {
 	//Special case for `set ()`
@@ -955,7 +1018,7 @@ static id set(STList *arguments, STScope *scope)
 	return [NSSet setWithArray:arguments.allObjects];
 }
 
-//`
+//-
 //	function	index-set
 //	intention	To create instances of NSIndexSet
 //	forms {
@@ -964,7 +1027,7 @@ static id set(STList *arguments, STScope *scope)
 //		(value...) -> NSIndexSet \
 //			Creates an index set with the specified `value[s]...`
 //	}
-//`
+//-
 static id index_set(STList *arguments, STScope *scope)
 {
 	//Special case for `index-set ()`
@@ -980,14 +1043,14 @@ static id index_set(STList *arguments, STScope *scope)
 	return [indexSet copy];
 }
 
-//`
+//-
 //	function	range
 //	intention	To create instances of STRange
 //	forms {
 //		(location length) -> STRange \
 //			Creates a range with a specified `location` and `length`.
 //	}
-//`
+//-
 static id range(STList *arguments, STScope *scope)
 {
 	if(arguments.count < 2)
@@ -1033,6 +1096,11 @@ STScope *STBuiltInFunctionScope()
 		   forConstantNamed:@"decide"];
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&match evaluatesOwnArguments:YES] 
 		   forConstantNamed:@"match"];
+	
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&module evaluatesOwnArguments:YES] 
+		   forConstantNamed:@"module"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&include evaluatesOwnArguments:NO] 
+		   forConstantNamed:@"include"];
 	
 	//Mathematics
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus evaluatesOwnArguments:NO] 

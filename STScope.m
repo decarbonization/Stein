@@ -311,6 +311,18 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 
 #pragma mark -
 
+- (void)setValuesForVariablesInScope:(STScope *)scope
+{
+	NSParameterAssert(scope);
+	
+	STScopeNode_foreach(scope->mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+		if(STScopeNode_getReadonly(node))
+			[self setValue:value forConstantNamed:key];
+		else
+			[self setValue:value forVariableNamed:key searchParentScopes:YES];
+	});
+}
+
 - (void)setValue:(id)value forVariableNamed:(NSString *)name searchParentScopes:(BOOL)searchParentScopes
 {
 	NSParameterAssert(value);
@@ -424,6 +436,38 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	}
 	
 	return value;
+}
+
+#pragma mark -
+
+- (NSArray *)allVariableNames
+{
+	NSMutableArray *names = [NSMutableArray array];
+	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+		[names addObject:key];
+	});
+	
+	return names;
+}
+
+- (NSArray *)allVariableValues
+{
+	NSMutableArray *values = [NSMutableArray array];
+	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+		[values addObject:value];
+	});
+	
+	return values;
+}
+
+- (void)enumerateNamesAndValuesUsingBlock:(void (^)(NSString *name, id value, BOOL *stop))block
+{
+	if(!block)
+		return;
+	
+	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+		block(key, value, stop);
+	});
 }
 
 #pragma mark -

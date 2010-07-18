@@ -59,6 +59,13 @@ typedef struct STScopeNode * STScopeNodeRef;
 #pragma mark Variables
 
 /*!
+ @abstract		Adds values for all of the variables in a specified scope.
+ @param			scope	The scope to add the values from. Required.
+ @discussion	Parent scopes are searched when setting values.
+ */
+- (void)setValuesForVariablesInScope:(STScope *)scope;
+
+/*!
  @abstract	Sets the value of a variable with a specified name in the receiver.
  @param		value				The value of the variable. Required.
  @param		name				The name to give the variable. Required.
@@ -97,6 +104,23 @@ typedef struct STScopeNode * STScopeNodeRef;
 - (id)valueForVariableNamed:(NSString *)name searchParentScopes:(BOOL)searchParentScopes;
 
 #pragma mark -
+
+/*!
+ @abstract	Returns the names of all of the variables in the receiver.
+ */
+- (NSArray *)allVariableNames;
+
+/*!
+ @abstract	Returns the values of all of the variables in the receiver.
+ */
+- (NSArray *)allVariableValues;
+
+/*!
+ @abstract	Applies a given block object to the entries of the receiver.
+ */
+- (void)enumerateNamesAndValuesUsingBlock:(void (^)(NSString *name, id value, BOOL *stop))block;
+
+#pragma mark -
 #pragma mark Identity
 
 /*!
@@ -110,6 +134,6 @@ typedef struct STScopeNode * STScopeNodeRef;
 /*!
  @abstract	The name of the scope.
  */
-@property (copy) NSString *name;
+@property (readwrite, copy) NSString *name;
 
 @end

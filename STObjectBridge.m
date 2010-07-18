@@ -16,6 +16,7 @@
 #import "STSymbol.h"
 
 #import "STScope.h"
+#import "STModule.h"
 #import "STInterpreter.h"
 
 #import "STClosure.h"
@@ -381,34 +382,34 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 	NSCParameterAssert(subclassName);
 	NSCParameterAssert(superclass);
 	
-	Class newClass = Nil;
+	NSString *runtimeClassName = nil;
 	if(STUseUniqueRuntimeClassNames)
 	{
-		newClass = [[scope valueForVariableNamed:subclassName searchParentScopes:YES] class];
-		if(!newClass)
-		{
-			NSString *className = NSMakeCollectable(CFUUIDCreateString(NULL, CFMakeCollectable(CFUUIDCreate(NULL))));
-			newClass = objc_allocateClassPair(superclass, [className UTF8String], 0);
-			objc_registerClassPair(newClass);
-			
-			[scope setValue:newClass forVariableNamed:subclassName searchParentScopes:NO];
-			[newClass setValue:subclassName forIvarNamed:@"$steinClassName"];
-		}
+		if([scope valueForVariableNamed:subclassName searchParentScopes:NO])
+			STRaiseIssue(expressions.creationLocation, @"Cannot redefine class %@", subclassName);
 		
-		if(expressions)
-			STExtendClass(newClass, expressions);
+		runtimeClassName = NSMakeCollectable(CFUUIDCreateString(NULL, CFMakeCollectable(CFUUIDCreate(NULL))));
 	}
 	else
 	{
-		newClass = objc_allocateClassPair(superclass, [subclassName UTF8String], 0);
-		if(newClass)
-			objc_registerClassPair(newClass);
+		if([scope isKindOfClass:[STModule class]])
+			runtimeClassName = [NSString stringWithFormat:@"%@_%@", scope.name, subclassName];
 		else
-			newClass = objc_getClass([subclassName UTF8String]);
+			runtimeClassName = subclassName;
 		
-		if(expressions)
-			STExtendClass(newClass, expressions);
+		if(objc_getClass([runtimeClassName UTF8String]))
+			STRaiseIssue(expressions.creationLocation, @"Cannot redefine class %@", runtimeClassName);
 	}
+	
+	Class newClass = objc_allocateClassPair(superclass, [runtimeClassName UTF8String], 0);
+	objc_registerClassPair(newClass);
+	
+	[scope setValue:newClass forVariableNamed:subclassName searchParentScopes:NO];
+	if(STUseUniqueRuntimeClassNames)
+		[newClass setValue:subclassName forIvarNamed:@"$steinClassName"];
+	
+	if(expressions)
+		STExtendClass(newClass, expressions);
 	
 	return newClass;
 }

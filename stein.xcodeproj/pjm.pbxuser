@@ -15,8 +15,8 @@
 			1E1ACB2911595D3200B2BBA9 /* stein */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 300910130;
-			PBXWorkspaceStateSaveDate = 300910130;
+			PBXPerProjectTemplateStateSaveDate = 301155993;
+			PBXWorkspaceStateSaveDate = 301155993;
 		};
 		sourceControlManager = 1E1ACB3611595D4500B2BBA9 /* Source Control */;
 		userBuildSettings = {
@@ -94,17 +94,17 @@
 	};
 	1E2C536711B9654E00068D58 /* STScope.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1716}}";
-			sepNavSelRange = "{769, 0}";
-			sepNavVisRange = "{0, 1113}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1859}}";
+			sepNavSelRange = "{1662, 0}";
+			sepNavVisRange = "{1184, 1547}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
 	1E2C536811B9654E00068D58 /* STScope.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 5863}}";
-			sepNavSelRange = "{8949, 0}";
-			sepNavVisRange = "{8521, 1041}";
+			sepNavIntBoundsRect = "{{0, 0}, {297, 6760}}";
+			sepNavSelRange = "{11048, 0}";
+			sepNavVisRange = "{10677, 446}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
@@ -116,10 +116,10 @@
 		continueAfterActions = 0;
 		countType = 0;
 		delayBeforeContinue = 0;
-		hitCount = 0;
+		hitCount = 1;
 		ignoreCount = 0;
 		location = libobjc.A.dylib;
-		modificationTime = 300907277.800445;
+		modificationTime = 301158021.523483;
 		originalNumberOfMultipleMatches = 1;
 		state = 1;
 		symbolName = objc_exception_throw;
@@ -166,10 +166,25 @@
 	};
 	1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 15418}}";
-			sepNavSelRange = "{25540, 0}";
-			sepNavVisRange = "{18537, 910}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 15964}}";
+			sepNavSelRange = "{13761, 0}";
+			sepNavVisRange = "{13096, 1206}";
 			sepNavWindowFrame = "{{98, 167}, {889, 671}}";
+		};
+	};
+	1EECDF3A11F346A300833DB4 /* STModule.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {830, 558}}";
+			sepNavSelRange = "{734, 0}";
+			sepNavVisRange = "{0, 741}";
+		};
+	};
+	1EECDF3B11F346A300833DB4 /* STModule.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {297, 975}}";
+			sepNavSelRange = "{848, 0}";
+			sepNavVisRange = "{543, 594}";
+			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};
 	32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {
@@ -363,9 +378,9 @@
 	};
 	C8DB7AB610D3468100EF3D63 /* STObjectBridge.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 5434}}";
-			sepNavSelRange = "{449, 0}";
-			sepNavVisRange = "{0, 1220}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 5577}}";
+			sepNavSelRange = "{12441, 0}";
+			sepNavVisRange = "{12070, 1300}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
