@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import <libkern/OSAtomic.h>
 
+@class STModule;
+
 /*!
  @abstract	The opaque type used to represent the contents of a STScope object.
  */
@@ -33,6 +35,7 @@ typedef struct STScopeNode * STScopeNodeRef;
 	
 	//Properties:
 	NSString *mName;
+	STModule *mModule;
 }
 
 #pragma mark Initialization
@@ -134,6 +137,11 @@ typedef struct STScopeNode * STScopeNodeRef;
 /*!
  @abstract	The name of the scope.
  */
-@property (readwrite, copy) NSString *name;
+@property (copy) NSString *name;
+
+/*!
+ @abstract	The module that this scope descends from.
+ */
+@property (readonly) STModule *module;
 
 @end

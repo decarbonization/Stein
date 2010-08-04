@@ -230,7 +230,22 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 #pragma mark -
 #pragma mark Scope Chaining
 
-@synthesize parentScope = mParentScope;
+- (void)setParentScope:(STScope *)parentScope
+{
+	@synchronized(self)
+	{
+		mParentScope = parentScope;
+		mModule = parentScope.module;
+	}
+}
+
+- (STScope *)parentScope
+{
+	@synchronized(self)
+	{
+		return mParentScope;
+	}
+}
 
 #pragma mark -
 #pragma mark Identity
@@ -487,5 +502,6 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 #pragma mark Properties
 
 @synthesize name = mName;
+@synthesize module = mModule;
 
 @end
