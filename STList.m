@@ -106,7 +106,7 @@
 	return self;
 }
 
-- (id)initWithObjects:(id)object, ... NS_REQUIRES_NIL_TERMINATION
+- (id)initWithObjects:(id)object, ...
 {
 	va_list arguments;
 	va_start(arguments, object);

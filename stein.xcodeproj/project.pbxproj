@@ -17,8 +17,8 @@
 		1EC930D711EABE9200EACB73 /* STInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC9303911EAB6F200EACB73 /* STInterpreter.m */; };
 		1EC931FD11EAC84400EACB73 /* STBuiltInFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC931B411EAC43C00EACB73 /* STBuiltInFunctions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1EC931FE11EAC84600EACB73 /* STBuiltInFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */; };
-		1EECDF3C11F346A300833DB4 /* STModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EECDF3A11F346A300833DB4 /* STModule.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1EECDF3D11F346A300833DB4 /* STModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EECDF3B11F346A300833DB4 /* STModule.m */; };
+		1EE406C812F4DE30001F19E3 /* STModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EE406C612F4DE30001F19E3 /* STModule.h */; };
+		1EE406C912F4DE30001F19E3 /* STModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EE406C712F4DE30001F19E3 /* STModule.m */; };
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* stein.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* stein.1 */; };
@@ -136,8 +136,8 @@
 		1EC9317211EAC21300EACB73 /* NSObject+SteinInternalSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinInternalSupport.m"; sourceTree = "<group>"; };
 		1EC931B411EAC43C00EACB73 /* STBuiltInFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STBuiltInFunctions.h; sourceTree = "<group>"; };
 		1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STBuiltInFunctions.m; sourceTree = "<group>"; };
-		1EECDF3A11F346A300833DB4 /* STModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STModule.h; sourceTree = "<group>"; };
-		1EECDF3B11F346A300833DB4 /* STModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STModule.m; sourceTree = "<group>"; };
+		1EE406C612F4DE30001F19E3 /* STModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STModule.h; sourceTree = "<group>"; };
+		1EE406C712F4DE30001F19E3 /* STModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STModule.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stein_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* stein */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stein; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859EA3029092ED04C91782 /* stein.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = stein.1; sourceTree = "<group>"; };
@@ -351,8 +351,8 @@
 				C8E1614610D55B59003F45A9 /* STClosure.m */,
 				1EC931B411EAC43C00EACB73 /* STBuiltInFunctions.h */,
 				1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */,
-				1EECDF3A11F346A300833DB4 /* STModule.h */,
-				1EECDF3B11F346A300833DB4 /* STModule.m */,
+				1EE406C612F4DE30001F19E3 /* STModule.h */,
+				1EE406C712F4DE30001F19E3 /* STModule.m */,
 			);
 			name = Evaluator;
 			sourceTree = "<group>";
@@ -421,7 +421,7 @@
 				1EC931FD11EAC84400EACB73 /* STBuiltInFunctions.h in Headers */,
 				1E1B285311ECD05600100A18 /* NSObject+SteinInternalSupport.h in Headers */,
 				1E1B28E911ECF4E000100A18 /* SteinException.h in Headers */,
-				1EECDF3C11F346A300833DB4 /* STModule.h in Headers */,
+				1EE406C812F4DE30001F19E3 /* STModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,7 +479,14 @@
 			};
 			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "stein" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* stein */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -534,7 +541,7 @@
 				1EC931FE11EAC84600EACB73 /* STBuiltInFunctions.m in Sources */,
 				1E1B285411ECD05800100A18 /* NSObject+SteinInternalSupport.m in Sources */,
 				1E1B28EA11ECF4E000100A18 /* SteinException.m in Sources */,
-				1EECDF3D11F346A300833DB4 /* STModule.m in Sources */,
+				1EE406C912F4DE30001F19E3 /* STModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

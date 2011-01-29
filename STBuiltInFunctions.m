@@ -169,6 +169,8 @@ static id let(STList *arguments, STScope *scope)
 		STExtendClass(class, declarations);
 		return class;
 	}
+	
+	return STNull;
 }
 
 //-
