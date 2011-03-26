@@ -7,7 +7,8 @@
  *
  */
 
-#pragma once
+#ifndef SteinDefines_h
+#define SteinDefines_h 1
 
 #pragma mark Goop
 
@@ -111,3 +112,5 @@ typedef struct STCreationLocation {
 ST_EXTERN void STRaiseIssue(STCreationLocation expressionLocation, NSString *format, ...);
 
 #endif /* __OBJC__ */
+
+#endif /* SteinDefines_h */

@@ -9,7 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import <Stein/STTypeBridge.h>
 
-#pragma once
+#ifndef STStructClasses_h
+#define STStructClasses_h 1
 
 /*!
  @class
@@ -239,3 +240,5 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor;
  @abstract	The descriptor for the rect struct wrapper.
  */
 STPrimitiveValueWrapperDescriptor const kSTRectStructWrapperDescriptor;
+
+#endif /* STStructClasses_h */

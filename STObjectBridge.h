@@ -6,7 +6,8 @@
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#pragma once
+#ifndef STObjectBridge
+#define STObjectBridge 1
 
 #import <Cocoa/Cocoa.h>
 
@@ -111,3 +112,5 @@ ST_EXTERN BOOL STUndefineClass(Class classToUndefine, STScope *scope);
  @result	The new class if it could be created without issue; nil otherwise.
  */
 ST_EXTERN Class STDefineClass(NSString *subclassName, Class superclass, STList *expressions, STScope *scope);
+
+#endif /* STObjectBridge */

@@ -8,7 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#pragma once
+#ifndef STSymbol_h
+#define STSymbol_h 1
 
 @class STSymbol;
 
@@ -95,3 +96,5 @@ ST_EXTERN STSymbol *STSymbolCachedSymbolWithName(NSString *name);
 @property STCreationLocation creationLocation;
 
 @end
+
+#endif /* STSymbol_h */

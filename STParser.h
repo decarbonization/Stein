@@ -8,7 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#pragma once
+#ifndef STParser_h
+#define STParser_h 1
 
 /*!
  @abstract		Parse a specified string as Stein code, producing an array of lists, symbols,
@@ -19,3 +20,5 @@
  @discussion	This function is thread safe.
  */
 ST_EXTERN NSArray *STParseString(NSString *string, NSString *file);
+
+#endif /* STParser_h */

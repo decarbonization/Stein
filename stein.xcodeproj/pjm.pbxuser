@@ -3,7 +3,7 @@
 	08FB7793FE84155DC02AAC07 /* Project object */ = {
 		activeBuildConfigurationName = Debug;
 		activeExecutable = 1E1ACB2911595D3200B2BBA9 /* stein */;
-		activeTarget = 8DD76F960486AA7600D96B5E /* stein */;
+		activeTarget = C8E1640910D57C0E003F45A9 /* Stein */;
 		addToTargets = (
 			C8E1640910D57C0E003F45A9 /* Stein */,
 		);
@@ -15,13 +15,16 @@
 			1E1ACB2911595D3200B2BBA9 /* stein */,
 		);
 		perUserDictionary = {
-			PBXPerProjectTemplateStateSaveDate = 318037543;
-			PBXWorkspaceStateSaveDate = 318037543;
+			PBXPerProjectTemplateStateSaveDate = 322837845;
+			PBXWorkspaceStateSaveDate = 322837845;
 		};
 		perUserProjectItems = {
-			1EE406D112F4DEB0001F19E3 /* PBXTextBookmark */ = 1EE406D112F4DEB0001F19E3 /* PBXTextBookmark */;
-			1EE406D212F4DEB0001F19E3 /* XCBuildMessageTextBookmark */ = 1EE406D212F4DEB0001F19E3 /* XCBuildMessageTextBookmark */;
-			1EE406D312F4DEB0001F19E3 /* PBXTextBookmark */ = 1EE406D312F4DEB0001F19E3 /* PBXTextBookmark */;
+			1E7B0AFB133E1D9C003AF813 /* XCBuildMessageTextBookmark */ = 1E7B0AFB133E1D9C003AF813 /* XCBuildMessageTextBookmark */;
+			1E7B0AFC133E1D9C003AF813 /* PBXTextBookmark */ = 1E7B0AFC133E1D9C003AF813 /* PBXTextBookmark */;
+			1E7B0B04133E1DB7003AF813 /* PBXTextBookmark */ = 1E7B0B04133E1DB7003AF813 /* PBXTextBookmark */;
+			1E7B0B0B133E1DFC003AF813 /* PBXTextBookmark */ = 1E7B0B0B133E1DFC003AF813 /* PBXTextBookmark */;
+			1E7B0B0C133E1DFC003AF813 /* PBXTextBookmark */ = 1E7B0B0C133E1DFC003AF813 /* PBXTextBookmark */;
+			1E7B0B0D133E1DFD003AF813 /* PBXTextBookmark */ = 1E7B0B0D133E1DFD003AF813 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 1E1ACB3611595D4500B2BBA9 /* Source Control */;
 		userBuildSettings = {
@@ -129,6 +132,62 @@
 		state = 1;
 		symbolName = objc_exception_throw;
 	};
+	1E7B0AFB133E1D9C003AF813 /* XCBuildMessageTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "Compile /Users/pjm/Documents/Projects/Languages/Stein/NSObject+SteinTools.m";
+		fRef = C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */;
+		fallbackIsa = XCBuildMessageTextBookmark;
+		rLen = 0;
+		rLoc = 0;
+		rType = 1;
+	};
+	1E7B0AFC133E1D9C003AF813 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */;
+		name = "NSObject+SteinTools.m: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 326;
+		vrLoc = 3;
+	};
+	1E7B0B04133E1DB7003AF813 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C8E15F7B10D551B8003F45A9 /* STStructClasses.h */;
+		rLen = 53;
+		rLoc = 201;
+		rType = 0;
+	};
+	1E7B0B0B133E1DFC003AF813 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */;
+		name = "NSObject+SteinTools.m: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 326;
+		vrLoc = 3;
+	};
+	1E7B0B0C133E1DFC003AF813 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C8E15F7B10D551B8003F45A9 /* STStructClasses.h */;
+		name = "STStructClasses.h: 13";
+		rLen = 0;
+		rLoc = 254;
+		rType = 0;
+		vrLen = 260;
+		vrLoc = 0;
+	};
+	1E7B0B0D133E1DFD003AF813 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */;
+		name = "NSObject+SteinTools.m: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 326;
+		vrLoc = 3;
+	};
 	1EC9303811EAB6F200EACB73 /* STInterpreter.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {830, 558}}";
@@ -180,8 +239,9 @@
 	1EE406C612F4DE30001F19E3 /* STModule.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {916, 600}}";
-			sepNavSelRange = "{219, 0}";
+			sepNavSelRange = "{357, 0}";
 			sepNavVisRange = "{0, 357}";
+			sepNavWindowFrame = "{{176, 13}, {975, 713}}";
 		};
 	};
 	1EE406C712F4DE30001F19E3 /* STModule.m */ = {
@@ -191,35 +251,6 @@
 			sepNavVisRange = "{0, 347}";
 			sepNavWindowFrame = "{{153, 34}, {975, 713}}";
 		};
-	};
-	1EE406D112F4DEB0001F19E3 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = C806B70310D2D96C00A64BEE /* STList.m */;
-		name = "STList.m: 109";
-		rLen = 0;
-		rLoc = 1623;
-		rType = 0;
-		vrLen = 232;
-		vrLoc = 1583;
-	};
-	1EE406D212F4DEB0001F19E3 /* XCBuildMessageTextBookmark */ = {
-		isa = PBXTextBookmark;
-		comments = "Method '-initWithName:superscope:' not found (return type defaults to 'id')";
-		fRef = 1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */;
-		fallbackIsa = XCBuildMessageTextBookmark;
-		rLen = 1;
-		rLoc = 491;
-		rType = 1;
-	};
-	1EE406D312F4DEB0001F19E3 /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */;
-		name = "STBuiltInFunctions.m: 493";
-		rLen = 0;
-		rLoc = 14095;
-		rType = 0;
-		vrLen = 498;
-		vrLoc = 13686;
 	};
 	32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {
 		uiCtxt = {
@@ -252,9 +283,9 @@
 	};
 	C806B70510D2D97000A64BEE /* STSymbol.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1261}}";
-			sepNavSelRange = "{734, 0}";
-			sepNavVisRange = "{1043, 933}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1313}}";
+			sepNavSelRange = "{2151, 0}";
+			sepNavVisRange = "{1367, 788}";
 			sepNavWindowFrame = "{{107, 118}, {889, 671}}";
 		};
 	};
@@ -349,8 +380,8 @@
 	C8791F2C10D2AF8C00EB5D17 /* STParser.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {830, 558}}";
-			sepNavSelRange = "{638, 0}";
-			sepNavVisRange = "{0, 643}";
+			sepNavSelRange = "{691, 0}";
+			sepNavVisRange = "{0, 695}";
 			sepNavWindowFrame = "{{15, 202}, {889, 671}}";
 		};
 	};
@@ -404,9 +435,9 @@
 	};
 	C8DB7AB510D3468100EF3D63 /* STObjectBridge.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1625}}";
-			sepNavSelRange = "{820, 0}";
-			sepNavVisRange = "{0, 1578}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1534}}";
+			sepNavSelRange = "{5506, 0}";
+			sepNavVisRange = "{3366, 2144}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
 		};
 	};
@@ -416,6 +447,14 @@
 			sepNavSelRange = "{12441, 0}";
 			sepNavVisRange = "{12070, 1300}";
 			sepNavWindowFrame = "{{61, 160}, {889, 671}}";
+		};
+	};
+	C8DB7AD910D347F800EF3D63 /* STTypeBridge.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {916, 1612}}";
+			sepNavSelRange = "{4720, 0}";
+			sepNavVisRange = "{2826, 1898}";
+			sepNavWindowFrame = "{{38, 139}, {975, 713}}";
 		};
 	};
 	C8DB7ADA10D347F800EF3D63 /* STTypeBridge.m */ = {
@@ -428,9 +467,10 @@
 	};
 	C8E15F7B10D551B8003F45A9 /* STStructClasses.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 3172}}";
-			sepNavSelRange = "{199, 0}";
-			sepNavVisRange = "{0, 841}";
+			sepNavIntBoundsRect = "{{0, 0}, {720, 3224}}";
+			sepNavSelRange = "{254, 0}";
+			sepNavVisRange = "{0, 260}";
+			sepNavWindowFrame = "{{15, 160}, {975, 713}}";
 		};
 	};
 	C8E15F7C10D551B8003F45A9 /* STStructClasses.m */ = {
@@ -467,9 +507,9 @@
 	};
 	C8E162C810D56FCA003F45A9 /* NSObject+SteinTools.m */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 10179}}";
-			sepNavSelRange = "{11694, 0}";
-			sepNavVisRange = "{9311, 723}";
+			sepNavIntBoundsRect = "{{0, 0}, {744, 9620}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{3, 326}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};
@@ -491,9 +531,9 @@
 	};
 	C8E1656D10D58415003F45A9 /* SteinDefines.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {830, 1599}}";
-			sepNavSelRange = "{399, 0}";
-			sepNavVisRange = "{159, 1151}";
+			sepNavIntBoundsRect = "{{0, 0}, {830, 1534}}";
+			sepNavSelRange = "{2646, 0}";
+			sepNavVisRange = "{1878, 1380}";
 			sepNavWindowFrame = "{{38, 181}, {889, 671}}";
 		};
 	};

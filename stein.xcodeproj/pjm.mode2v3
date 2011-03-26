@@ -271,26 +271,20 @@
 										<string>08FB7795FE84155DC02AAC07</string>
 										<string>C8AC0B4B1104F1E0003B889B</string>
 										<string>C8E1613D10D55AFE003F45A9</string>
+										<string>1E1ACB3511595D4500B2BBA9</string>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
-											<integer>26</integer>
-											<integer>14</integer>
-											<integer>6</integer>
-											<integer>4</integer>
-											<integer>0</integer>
-										</array>
-										<array>
-											<integer>27</integer>
-											<integer>14</integer>
+											<integer>33</integer>
+											<integer>30</integer>
 											<integer>6</integer>
 											<integer>4</integer>
 											<integer>0</integer>
 										</array>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-									<string>{{0, 192}, {429, 333}}</string>
+									<string>{{0, 347}, {429, 333}}</string>
 								</dict>
 								<key>PBXTopSmartGroupGIDs</key>
 								<array/>
@@ -348,11 +342,13 @@
 									<key>PBXSmartGroupTreeModuleOutlineStateExpansionKey</key>
 									<array>
 										<string>1C37FBAC04509CD000000102</string>
+										<string>1E7B0B0E133E1DFF003AF813</string>
 										<string>1C37FAAC04509CD000000102</string>
 									</array>
 									<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 									<array>
 										<array>
+											<integer>5</integer>
 											<integer>2</integer>
 											<integer>0</integer>
 										</array>
@@ -453,8 +449,8 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>1EE406D712F4DEB9001F19E3</string>
-				<string>1EE406D812F4DEB9001F19E3</string>
+				<string>1E7B0B0F133E1DFF003AF813</string>
+				<string>1E7B0B10133E1DFF003AF813</string>
 				<string>1C9437FD063B20B00039CFAC</string>
 				<string>1C9437FE063B20B00039CFAC</string>
 				<string>1C9437FF063B20B00039CFAC</string>
@@ -491,13 +487,13 @@
 	<integer>0</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1EE406E012F4DEB9001F19E3</string>
-		<string>1EE406E112F4DEB9001F19E3</string>
-		<string>1C530D54069F1CE1000CFCEE</string>
-		<string>1EE406E212F4DEB9001F19E3</string>
+		<string>1E7B0B11133E1DFF003AF813</string>
+		<string>1C530D57069F1CE1000CFCEE</string>
+		<string>1E7B0B12133E1DFF003AF813</string>
+		<string>1E7B0B13133E1DFF003AF813</string>
 		<string>1C530D52069F1CE1000CFCEE</string>
-		<string>/Users/pjm/Documents/Projects/Stein/stein.xcodeproj</string>
 		<string>1C530D5B069F1CE1000CFCEE</string>
+		<string>/Users/pjm/Documents/Projects/Languages/Stein/stein.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>994 459 446 419 0 0 1440 878 </string>
@@ -716,7 +712,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D52069F1CE1000CFCEE</string>
-				<string>1EE406D412F4DEB0001F19E3</string>
+				<string>1E7B0AFD133E1D9C003AF813</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -876,7 +872,7 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CDD528C0622207200134675</string>
 										<key>PBXProjectModuleLabel</key>
-										<string></string>
+										<string>&lt;No Editor&gt;</string>
 										<key>StatusBarVisibility</key>
 										<true/>
 									</dict>
@@ -934,8 +930,8 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D57069F1CE1000CFCEE</string>
-				<string>1EECDF4311F346EF00833DB4</string>
-				<string>1EECDF4411F346EF00833DB4</string>
+				<string>1E7B0AFF133E1D9C003AF813</string>
+				<string>1E7B0B00133E1D9C003AF813</string>
 				<string>1CDD528C0622207200134675</string>
 				<string>1CD0528E0623707200166675</string>
 			</array>
@@ -1000,7 +996,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C530D5B069F1CE1000CFCEE</string>
-				<string>1EE406DF12F4DEB9001F19E3</string>
+				<string>1E7B0B01133E1D9C003AF813</string>
 				<string>1C78EAAC065D492600B07095</string>
 			</array>
 			<key>ToolbarConfiguration</key>

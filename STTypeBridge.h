@@ -6,7 +6,8 @@
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#pragma once
+#ifndef STTypeBridge_h
+#define STTypeBridge_h 1
 
 #import <Cocoa/Cocoa.h>
 
@@ -117,3 +118,5 @@ ST_EXTERN void STTypeBridgeConvertObjectIntoType(id object, const char *type, vo
  @discussion	Human-readable types are currently only used in method definitions.
  */
 ST_EXTERN NSString *STTypeBridgeGetObjCTypeForHumanReadableType(NSString *type);
+
+#endif /* STTypeBridge_h */
