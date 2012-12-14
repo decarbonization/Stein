@@ -11,14 +11,14 @@
 #ifndef STParser_h
 #define STParser_h 1
 
-/*!
- @abstract		Parse a specified string as Stein code, producing an array of lists, symbols,
-				strings, and numbers suitable for use with an evaluator object.
- @param			string	The string to parse as Stein code. Required.
- @param			file	The path of the file that's being parsed. Optional.
- @result		An array of lists, symbols, strings, and numbers.
- @discussion	This function is thread safe.
- */
+///Parse a specified string as Stein code, producing an array of lists, symbols,
+///strings, and numbers suitable for use with an evaluator object.
+///
+/// \param		string	The string to parse as Stein code. Required.
+/// \param		file	The path of the file that's being parsed. Optional.
+/// \result		An array of lists, symbols, strings, and numbers.
+///
+///This function is thread safe.
 ST_EXTERN NSArray *STParseString(NSString *string, NSString *file);
 
 #endif /* STParser_h */

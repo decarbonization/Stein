@@ -39,7 +39,7 @@ static id LambdaFromDefinition(STList *definition, STScope *scope)
 	}
 	else
 	{
-		prototype = [STList list];
+		prototype = [[STList alloc] init];
 		body = definition;
 	}
 	
@@ -66,7 +66,7 @@ static id EvaluateList(STList *list, STScope *scope)
 	if([target evaluatesOwnArguments])
 		return [target applyWithArguments:[list tail] inScope:scope];
 	
-	STList *evaluatedArguments = [STList list];
+	STList *evaluatedArguments = [[STList alloc] init];
 	for (id expression in [list tail])
 		[evaluatedArguments addObject:STEvaluate(expression, scope)];
 	
@@ -136,8 +136,7 @@ id STEvaluate(id expression, STScope *scope)
 	return expression;
 }
 
-#pragma mark -
-#pragma mark Utilities
+#pragma mark - Utilities
 
 int STMain(int argc, const char *argv[], NSString *filename)
 {
@@ -157,14 +156,13 @@ int STMain(int argc, const char *argv[], NSString *filename)
 	return [result intValue];
 }
 
-/*!
- @function
- @abstract		Analyze a string read from the REPL, and indicate the number of unbalanced parentheses and unbalanced brackets found.
- @param			numberOfUnbalancedParentheses	On return, an integer describing the number of unbalanced parentheses in the specified string.
- @param			numberOfUnbalancedBrackets		On return, an integer describing the number of unbalanced brackets in the specified string.
- @param			string							The string to analyze.
- @discussion	All parameters are required.
- */
+///Analyze a string read from the REPL, and indicate the number of unbalanced parentheses and unbalanced brackets found.
+///
+/// \param		numberOfUnbalancedParentheses	On return, an integer describing the number of unbalanced parentheses in the specified string.
+/// \param		numberOfUnbalancedBrackets		On return, an integer describing the number of unbalanced brackets in the specified string.
+/// \param		string							The string to analyze.
+///
+///All parameters are required.
 static void FindUnbalancedExpressions(NSInteger *numberOfUnbalancedParentheses, NSInteger *numberOfUnbalancedBrackets, NSString *string)
 {
 	NSCParameterAssert(numberOfUnbalancedParentheses);
@@ -262,9 +260,11 @@ void STRunREPL()
 			}
 			
 			
-			//Parse and evaluate the data we just read in from the user, and print out the result.
-			id result = STEvaluate(STParseString(line, @"<<REPL>>"), scope);
-			fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
+            @autoreleasepool {
+                //Parse and evaluate the data we just read in from the user, and print out the result.
+                id result = STEvaluate(STParseString(line, @"<<REPL>>"), scope);
+                fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
+            }
 		}
 		@catch (SteinException *e)
 		{

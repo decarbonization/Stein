@@ -59,13 +59,12 @@ ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType);
 
 #pragma mark -
 
-/*!
- @function
- @abstract		Return the relevant type for a specified Objective-C type string
- @param			objcType	May not be NULL.
- @discussion	Objective-C type strings can contain remote-messaging modifiers. We don't care
-				about those. This function simply returns a string without those modifiers.
- */
+///Return the relevant type for a specified Objective-C type string
+///
+/// \param		objcType	May not be NULL.
+///
+///Objective-C type strings can contain remote-messaging modifiers. We don't care
+///about those. This function simply returns a string without those modifiers.
 static const char *GetRelevantTypeForObjCType(const char *objcType)
 {
 	NSCParameterAssert(objcType);
@@ -82,8 +81,7 @@ static const char *GetRelevantTypeForObjCType(const char *objcType)
 	return objcType;
 }
 
-#pragma mark -
-#pragma mark Size look up
+#pragma mark - Size look up
 
 size_t STTypeBridgeGetSizeOfObjCType(const char *objcType)
 {
@@ -93,8 +91,7 @@ size_t STTypeBridgeGetSizeOfObjCType(const char *objcType)
 	return size;
 }
 
-#pragma mark -
-#pragma mark Converting Values to and from Objects
+#pragma mark - Converting Values to and from Objects
 
 id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 {
@@ -159,7 +156,7 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 			
 		case kObjectiveCTypeClass:
 		case kObjectiveCTypeObject:
-			return *(id *)value ?: STNull;
+			return (__bridge_transfer id)(*(void **)value) ?: STNull;
 			
 		case kObjectiveCTypeSelector:
 			return NSStringFromSelector(*(SEL *)value);
@@ -259,9 +256,9 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 		case kObjectiveCTypeClass:
 		case kObjectiveCTypeObject:
 			if(object == STNull)
-				*(id *)value = nil;
+				*(void **)value = nil;
 			else
-				*(id *)value = object;
+				*(void **)value = (__bridge void *)object;
 			break;
 			
 		case kObjectiveCTypeSelector:
@@ -282,8 +279,7 @@ void STTypeBridgeConvertObjectIntoType(id object, const char *objcType, void **v
 	}
 }
 
-#pragma mark -
-#pragma mark Struct Bridging
+#pragma mark - Struct Bridging
 
 @interface STTypeBridgeGenericStructWrapper : NSObject < STPrimitiveValueWrapper >
 {
@@ -303,7 +299,7 @@ static BOOL GenericStructCanWrapValueWithSignature(const STPrimitiveValueWrapper
 
 static id < STPrimitiveValueWrapper > GenericStructWrapDataWithSignature(const STPrimitiveValueWrapperDescriptor *descriptor, void *data, const char *objcType)
 {
-	return [[[STTypeBridgeGenericStructWrapper alloc] initWithValue:data ofType:objcType] autorelease];
+	return [[STTypeBridgeGenericStructWrapper alloc] initWithValue:data ofType:objcType];
 }
 
 static size_t GenericStructSizeOfPrimitiveValue(const STPrimitiveValueWrapperDescriptor *descriptor, const char *objcType)
@@ -350,8 +346,7 @@ static STPrimitiveValueWrapperDescriptor const kGenericStructWrapperDescriptor =
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Bridging
+#pragma mark - Bridging
 
 - (void)getValue:(void **)buffer forType:(const char *)objcType
 {
@@ -428,7 +423,7 @@ static CFMutableDictionaryRef STTypeBridgeGetStructWrappers()
 void STTypeBridgeRegisterWrapper(NSString *name, const STPrimitiveValueWrapperDescriptor *wrapper)
 {
 	CFMutableDictionaryRef wrappers = STTypeBridgeGetStructWrappers();
-	CFDictionarySetValue(wrappers, name, wrapper);
+	CFDictionarySetValue(wrappers, (__bridge CFStringRef)name, wrapper);
 }
 
 const STPrimitiveValueWrapperDescriptor *STTypeBridgeGetWrapperForType(const char *type)
@@ -449,8 +444,7 @@ const STPrimitiveValueWrapperDescriptor *STTypeBridgeGetWrapperForType(const cha
 	return &kGenericStructWrapperDescriptor;
 }
 
-#pragma mark -
-#pragma mark Type system conversions
+#pragma mark - Type system conversions
 
 static const void *CStringRetainCallBack(CFAllocatorRef allocator, const void *value)
 {
@@ -478,10 +472,7 @@ static CFHashCode CStringHashCallBack(const void *value)
 	return (CFHashCode)(value);
 }
 
-/*!
- @const
- @abstract	Predefined CFDictionaryKeyCallBacks structure containing a set of callbacks appropriate for use when the keys of a CFDictionary are all C string values.
- */
+///Predefined CFDictionaryKeyCallBacks structure containing a set of callbacks appropriate for use when the keys of a CFDictionary are all C string values.
 static CFDictionaryKeyCallBacks const kCStringDictionaryKeyCallbacks = {
 	.version = 0,
 	.retain = CStringRetainCallBack,
@@ -493,14 +484,14 @@ static CFDictionaryKeyCallBacks const kCStringDictionaryKeyCallbacks = {
 
 #pragma mark -
 
-/*!
- @function
- @abstract		Look up the ffi_type for an Objective-C type signature that describes a C struct.
- @param			signature	The Objective-C type signature describing the struct. May not be nil.
- @result		An equivalent ffi_type for the passed in `signature` that is fully initialized and ready for use.
- @discussion	This function caches struct types for use with libFFI. The first time this function is called
- with a unique signature, it will take longer then subsequent calls.
- */
+///Look up the ffi_type for an Objective-C type signature that describes a C struct.
+///
+/// \param		signature	The Objective-C type signature describing the struct. May not be nil.
+///
+/// \result		An equivalent ffi_type for the passed in `signature` that is fully initialized and ready for use.
+///
+///This function caches struct types for use with libFFI. The first time this function is called
+///with a unique signature, it will take longer then subsequent calls.
 static ffi_type *STTypeBridgeGetFFITypeForStruct(const char *objcType)
 {
 	NSCParameterAssert(objcType);
@@ -519,15 +510,14 @@ static ffi_type *STTypeBridgeGetFFITypeForStruct(const char *objcType)
 	
 	//This nested function is used below for finding the end of structure's
 	//in the ObjC type signature passed into this function.
-	/*!
-	 @function	findClosingCharacter
-	 @abstract	This nested function searches a C string for a closing character, ignoring any nested character-pairs.
-	 @param		openChar	The opening character that describes the beginning of a nested character-pair.
-	 @param		closeChar	The closing character that describes the end of nested character-pairs, as well as the initial search started when invoking this function.
-	 @param		start		The index to start the search at.
-	 @param		string		The string to search.
-	 @result	The location of the final closing character, or -1 if it could not be found.
-	 */
+    
+	///This nested function searches a C string for a closing character, ignoring any nested character-pairs.
+	/// \param	openChar	The opening character that describes the beginning of a nested character-pair.
+	/// \param	closeChar	The closing character that describes the end of nested character-pairs, as well as the initial search started when invoking this function.
+	/// \param	start		The index to start the search at.
+	/// \param	string		The string to search.
+    ///
+	/// \result	The location of the final closing character, or -1 if it could not be found.
 	int(^findClosingCharacter)(unichar, unichar, int, const char *) = ^(unichar openChar, unichar closeChar, int start, const char *string) {
 		int closingCharacterIndex = -1;
 		for (int index = start; index < strlen(string); index++)
@@ -782,7 +772,7 @@ NSString *STTypeBridgeGetObjCTypeForHumanReadableType(NSString *type)
 		return @":";
 	
 	CFMutableDictionaryRef wrappers = STTypeBridgeGetStructWrappers();
-	const STPrimitiveValueWrapperDescriptor *descriptor = CFDictionaryGetValue(wrappers, type);
+	const STPrimitiveValueWrapperDescriptor *descriptor = CFDictionaryGetValue(wrappers, (__bridge void *)type);
 	if(descriptor && descriptor->ObjCType)
 		return [NSString stringWithUTF8String:descriptor->ObjCType(descriptor)];
 	

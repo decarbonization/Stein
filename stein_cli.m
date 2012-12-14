@@ -14,29 +14,21 @@
 
 #pragma mark Tools
 
+///Enumerations describing each of the options a user can specify in the Stein CLI.
 typedef enum ProgramOptions {
-	/*!
-	 @enum		ProgramOptions
-	 @abstract	Enumerations describing each of the options a user can specify in the Stein CLI.
-	 
-	 @constant	kProgramOptionParseOnly
-					This field is set when the user has indicated they want each file to be compiled and printed, but not interpreted.
-	 
-	 @constant	kProgramOptionRunREPLInBackground
-					This field is set when the user has indicated they want to run the REPL loop in a background thread, while the files they specified run in the main thread.
-	 */
+    ///This field is set when the user has indicated they want each file to be compiled and printed, but not interpreted.
 	kProgramOptionParseOnly = (1 << 1),
+    
+    ///This field is set when the user has indicated they want to run the REPL loop in a background thread, while the files they specified run in the main thread.
 	kProgramOptionRunREPLInBackground = (1 << 2),
 } ProgramOptions;
 
-/*!
- @function
- @abstract	Analyze the arguments given to the CLI when it was called from the command prompt, reporting the paths and options that were specified by the user in easily processable forms.
- @param		argc		The length of the arguments given.
- @param		argv		The arguments given. May not be NULL.
- @param		outPaths	On return, will contain an array describing the paths the user specified.
- @param		outOptions	On return, will contain a bit-or combined value describing the options the user specified.
- */
+///Analyze the arguments given to the CLI when it was called from the command prompt, reporting the paths and options that were specified by the user in easily processable forms.
+///
+/// \param	argc		The length of the arguments given.
+/// \param	argv		The arguments given. May not be NULL.
+/// \param	outPaths	On return, will contain an array describing the paths the user specified.
+/// \param	outOptions	On return, will contain a bit-or combined value describing the options the user specified.
 static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outPaths, ProgramOptions *outOptions)
 {
 	NSCParameterAssert(argv);
@@ -87,10 +79,7 @@ static void AnalyzeProgramArguments(int argc, const char *argv[], NSArray **outP
 
 #pragma mark -
 
-/*!
- @function
- @abstract	Print the usage information for the Stein command line interface.
- */
+///Print the usage information for the Stein command line interface.
 static void Help()
 {
 	fprintf(stdout, "stein [-pr] [paths...]\n\n");

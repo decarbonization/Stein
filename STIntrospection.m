@@ -24,16 +24,14 @@
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"<%@:%p %@[%@ %@]>", [self class], self, self.isInstanceMethod? @"-" : @"+", self.methodClass, self.name];
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize methodClass = mClass;
 
@@ -94,16 +92,14 @@
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<%@:%p + %d = %@(%@)>", [self class], self, self.offset, self.name, self.typeEncoding];
+	return [NSString stringWithFormat:@"<%@:%p + %ld = %@(%@)>", [self class], self, self.offset, self.name, self.typeEncoding];
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize ivarClass = mClass;
 

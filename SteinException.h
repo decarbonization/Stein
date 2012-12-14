@@ -16,27 +16,18 @@
 
 #pragma mark Initialization
 
-/*!
- @abstract	Initialize the receiver with a specified exception.
- */
+///Initialize the receiver with a specified exception.
 - (id)initWithException:(NSException *)exception;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
-/*!
- @abstract	The exception for which the Stein exception was raised.
- */
+///The exception for which the Stein exception was raised.
 @property (readonly) NSException *originalException;
 
-/*!
- @abstract	Expressions relevant to why this Stein exception was raised.
- */
+///Expressions relevant to why this Stein exception was raised.
 @property (readonly) NSMutableArray *relevantExpressions;
 
-/*!
- @abstract	Adds a relevant expression to the receiver.
- */
+///Adds a relevant expression to the receiver.
 - (void)addRelevantExpression:(id)expression;
 
 @end

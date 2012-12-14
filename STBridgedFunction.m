@@ -9,6 +9,7 @@
 #import "STBridgedFunction.h"
 #import "STFunctionInvocation.h"
 #import "STTypeBridge.h"
+#import "STList.h"
 #import <dlfcn.h>
 
 @implementation STBridgedFunction
@@ -46,21 +47,18 @@
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Descriptions
+#pragma mark - Descriptions
 
 - (NSString *)description
 {
 	return [NSString stringWithFormat:@"<%@:%p %@>", [self className], self, mFunctionName ?: @"[Anonymous]"];
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize functionName = mFunctionName;
 
-#pragma mark -
-#pragma mark STFunction
+#pragma mark - STFunction
 
 - (BOOL)evaluatesOwnArguments
 {

@@ -24,13 +24,11 @@
 
 #import "NSObject+SteinInternalSupport.h"
 
-/*!
- @function
- @abstract		Determines whether or not a specified selector is exempt from null messaging.
- @discussion	Under normal circumstances sending a message to null will result in null, however
-				our control flow operators are implemented as messages, and it would be very bad
-				if they were to stop working even if the receiver is null.
- */
+///Determines whether or not a specified selector is exempt from null messaging.
+///
+///Under normal circumstances sending a message to null will result in null, however
+///our control flow operators are implemented as messages, and it would be very bad
+///if they were to stop working even if the receiver is null.
 ST_INLINE BOOL IsSelectorExemptFromNullMessaging(SEL selector)
 {
 	return (selector == @selector(ifTrue:) || selector == @selector(ifFalse:) || selector == @selector(ifTrue:ifFalse:) ||
@@ -165,11 +163,11 @@ void STClassBeginTrackingFunctionWrapperForSelector(Class class, STNativeFunctio
 	NSCParameterAssert(class);
 	NSCParameterAssert(wrapper);
 	
-	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, kSTClassTrackedFunctionsKey);
+	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, (__bridge const void *)(kSTClassTrackedFunctionsKey));
 	if(!trackedFunctions)
 	{
 		trackedFunctions = [NSMutableDictionary new];
-		objc_setAssociatedObject(class, kSTClassTrackedFunctionsKey, trackedFunctions, OBJC_ASSOCIATION_RETAIN);
+		objc_setAssociatedObject(class, (__bridge const void *)(kSTClassTrackedFunctionsKey), trackedFunctions, OBJC_ASSOCIATION_RETAIN);
 	}
 	
 	[trackedFunctions setObject:wrapper forKey:NSStringFromSelector(selector)];
@@ -180,7 +178,7 @@ void STClassStopTrackingFunctionWrapperForSelector(Class class, SEL selector)
 	NSCParameterAssert(class);
 	NSCParameterAssert(selector);
 	
-	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, kSTClassTrackedFunctionsKey);
+	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, (__bridge const void *)(kSTClassTrackedFunctionsKey));
 	if(!trackedFunctions)
 		return;
 	
@@ -192,7 +190,7 @@ BOOL STClassIsTrackingFunctionWrapperForSelector(Class class, SEL selector)
 	NSCParameterAssert(class);
 	NSCParameterAssert(selector);
 	
-	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, kSTClassTrackedFunctionsKey);
+	NSMutableDictionary *trackedFunctions = objc_getAssociatedObject(class, (__bridge const void *)(kSTClassTrackedFunctionsKey));
 	if(!trackedFunctions)
 		return NO;
 	
@@ -204,7 +202,7 @@ BOOL STClassIsTrackingFunctionWrapperForSelector(Class class, SEL selector)
 static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector, STList **outPrototype, NSString **outTypeSignature, STList **outImplementation)
 {
 	NSMutableString *selectorString = [NSMutableString string];
-	STList *prototype = [STList listWithArray:[NSArray arrayWithObjects:@"self", @"_cmd", nil]];
+	STList *prototype = [[STList alloc] initWithArray:[NSArray arrayWithObjects:@"self", @"_cmd", nil]];
 	
 	NSString *returnType = [[[list head] head] string];
 	NSMutableString *typeSignature = [NSMutableString stringWithFormat:@"%@@:", STTypeBridgeGetObjCTypeForHumanReadableType(returnType)];
@@ -257,7 +255,7 @@ static void GetMethodDefinitionFromListWithTypes(STList *list, SEL *outSelector,
 static void GetMethodDefinitionFromListWithoutTypes(STList *list, SEL *outSelector, STList **outPrototype, NSString **outTypeSignature, STList **outImplementation)
 {
 	NSMutableString *selectorString = [NSMutableString string];
-	STList *prototype = [STList listWithArray:[NSArray arrayWithObjects:@"self", @"_cmd", nil]];
+	STList *prototype = [[STList alloc] initWithArray:[NSArray arrayWithObjects:@"self", @"_cmd", nil]];
 	NSMutableString *typeSignature = [NSMutableString stringWithString:@"@@:"];
 	STList *implementation = nil;
 	
@@ -388,7 +386,7 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 		if([scope valueForVariableNamed:subclassName searchParentScopes:NO])
 			STRaiseIssue(expressions.creationLocation, @"Cannot redefine class %@", subclassName);
 		
-		runtimeClassName = NSMakeCollectable(CFUUIDCreateString(NULL, CFMakeCollectable(CFUUIDCreate(NULL))));
+		runtimeClassName = [[NSUUID UUID] UUIDString];
 	}
 	else
 	{

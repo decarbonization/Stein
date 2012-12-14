@@ -12,10 +12,7 @@
 #ifndef STStructClasses_h
 #define STStructClasses_h 1
 
-/*!
- @class
- @abstract	The STRange class is used to describe NSRange and CFRange structs in the Stein programming language.
- */
+///The STRange class is used to describe NSRange and CFRange structs in the Stein programming language.
 @interface STRange : NSObject <STPrimitiveValueWrapper>
 {
 	NSRange mRange;
@@ -23,55 +20,33 @@
 
 #pragma mark Initialization
 
-/*!
- @method
- @abstract	Initialize the receiver with a specified range value.
- */
+///Initialize the receiver with a specified range value.
 - (id)initWithRange:(NSRange)range;
 
-/*!
- @method
- @abstract	Initialize the receiver with a specified location, and a specified length.
- */
+///Initialize the receiver with a specified location, and a specified length.
 - (id)initWithLocation:(NSUInteger)location length:(NSUInteger)length;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
-/*!
- @property
- @abstract	The location of the range.
- */
+///The location of the range.
 @property NSUInteger location;
 
-/*!
- @property
- @abstract	The length of the range.
- */
+///The length of the range.
 @property NSUInteger length;
 
 #pragma mark -
 
-/*!
- @property
- @abstract	The primitive value of the range.
- */
+///The primitive value of the range.
 @property (readonly) NSRange rangeValue;
 
 @end
 
-/*!
- @const
- @abstract	The descriptor for the range struct wrapper.
- */
+///The descriptor for the range struct wrapper.
 STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor;
 
 #pragma mark -
 
-/*!
- @class
- @abstract	The STPoint class is used to describe NSPoint and CGPoint structs in the Stein programming language.
- */
+///The STPoint class is used to describe NSPoint and CGPoint structs in the Stein programming language.
 @interface STPoint : NSObject <STPrimitiveValueWrapper>
 {
 	CGPoint mPoint;
@@ -79,55 +54,33 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor;
 
 #pragma mark Initialization
 
-/*!
- @method
- @abstract	Initialize the receiver with a specified point value.
- */
+///Initialize the receiver with a specified point value.
 - (id)initWithPoint:(CGPoint)point;
 
-/*!
- @method
- @abstract	Initialize the receiver with a specified x offset, and a specified y offset.
- */
+///Initialize the receiver with a specified x offset, and a specified y offset.
 - (id)initWithX:(CGFloat)x y:(CGFloat)y;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
-/*!
- @property
- @abstract	The x offset of the point.
- */
+///The x offset of the point.
 @property CGFloat x;
 
-/*!
- @property
- @abstract	The y offset of the point.
- */
+///The y offset of the point.
 @property CGFloat y;
 
 #pragma mark -
 
-/*!
- @property
- @abstract	The primitive value of the point.
- */
+///The primitive value of the point.
 @property (readonly) CGPoint pointValue;
 
 @end
 
-/*!
- @const
- @abstract	The descriptor for the point struct wrapper.
- */
+///The descriptor for the point struct wrapper.
 STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor;
 
 #pragma mark -
 
-/*!
- @class
- @abstract	The STSize class is used to describe NSSize and CGSize structs in the Stein programming language.
- */
+///The STSize class is used to describe NSSize and CGSize structs in the Stein programming language.
 @interface STSize : NSObject <STPrimitiveValueWrapper>
 {
 	CGSize mSize;
@@ -135,55 +88,33 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor;
 
 #pragma mark Initialization
 
-/*!
- @method
- @abstract	Initialize the size with a specified size value.
- */
+///Initialize the size with a specified size value.
 - (id)initWithSize:(CGSize)size;
 
-/*!
- @method
- @abstract	Initialize the size with a specified with, and a specified height.
- */
+///Initialize the size with a specified with, and a specified height.
 - (id)initWithWidth:(CGFloat)width height:(CGFloat)height;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
-/*!
- @property
- @abstract	The width of the size.
- */
+///The width of the size.
 @property CGFloat width;
 
-/*!
- @property
- @abstract	The height of the size.
- */
+///The height of the size.
 @property CGFloat height;
 
 #pragma mark -
 
-/*!
- @property
- @abstract	The primitive value of the size.
- */
+///The primitive value of the size.
 @property (readonly) CGSize sizeValue;
 
 @end
 
-/*!
- @const
- @abstract	The descriptor for the size struct wrapper.
- */
+///The descriptor for the size struct wrapper.
 STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor;
 
 #pragma mark -
 
-/*!
- @class
- @abstract	The STRect class is used to describe NSRect and CGRect structs in the Stein programming language.
- */
+///The STRect class is used to describe NSRect and CGRect structs in the Stein programming language.
 @interface STRect : NSObject <STPrimitiveValueWrapper>
 {
 	STPoint *mOrigin;
@@ -192,53 +123,31 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor;
 
 #pragma mark Initialization
 
-/*!
- @method
- @abstract	Initialize the receiver with a specified rect value.
- */
+///Initialize the receiver with a specified rect value.
 - (id)initWithRect:(CGRect)rect;
 
-/*!
- @method
- @abstract	Initialize the receiver with a specified origin, and a specified size.
- */
+///Initialize the receiver with a specified origin, and a specified size.
 - (id)initWithOrigin:(STPoint *)origin size:(STSize *)size;
 
-/*!
- @method
- @abstract	Initialize the receiver with specified x and y coordinates, and width and height values.
- */
+///Initialize the receiver with specified x and y coordinates, and width and height values.
 - (id)initWithX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
-/*!
- @property
- @abstract	The origin of the rect.
- */
+///The origin of the rect.
 @property (retain) STPoint *origin;
 
-/*!
- @property
- @abstract	The size of the rect.
- */
+///The size of the rect.
 @property (retain) STSize *size;
 
 #pragma mark -
 
-/*!
- @property
- @abstract	The primitive value of the rect.
- */
+///The primitive value of the rect.
 @property (readonly) CGRect rectValue;
 
 @end
 
-/*!
- @const
- @abstract	The descriptor for the rect struct wrapper.
- */
+///The descriptor for the rect struct wrapper.
 STPrimitiveValueWrapperDescriptor const kSTRectStructWrapperDescriptor;
 
 #endif /* STStructClasses_h */

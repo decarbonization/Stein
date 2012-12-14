@@ -10,9 +10,5 @@
 
 @class STScope;
 
-//
-//	function	STBuiltInFunctionScope
-//	intention	To create a Stein scope that contains all of the \
-//				core functions required for Stein to be useful.
-//
+///To create a Stein scope that contains all of the core functions required for Stein to be useful.
 ST_EXTERN STScope *STBuiltInFunctionScope();

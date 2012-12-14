@@ -10,7 +10,7 @@
 
 @implementation STBreakException
 
-+ (STBreakException *)breakExceptionFrom:(STCreationLocation)creationLocation
++ (STBreakException *)breakExceptionFrom:(STCreationLocation *)creationLocation
 {
 	STBreakException *e = (STBreakException *)[super exceptionWithName:@"break" reason:@"break" userInfo:nil];
 	e.creationLocation = creationLocation;
@@ -23,7 +23,7 @@
 
 @implementation STContinueException
 
-+ (STContinueException *)continueExceptionFrom:(STCreationLocation)creationLocation
++ (STContinueException *)continueExceptionFrom:(STCreationLocation *)creationLocation
 {
 	STContinueException *e = (STContinueException *)[super exceptionWithName:@"continue" reason:@"continue" userInfo:nil];
 	e.creationLocation = creationLocation;

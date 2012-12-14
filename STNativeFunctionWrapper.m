@@ -18,15 +18,12 @@ ST_EXTERN ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); 
 
 #pragma mark Bridging
 
-/*!
- @function
- @abstract	This function serves as the bridge between libFFI and STNativeFunctionWrapper.
- */
+///This function serves as the bridge between libFFI and STNativeFunctionWrapper.
 static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, void **arguments, void *userData)
 {
-	STNativeFunctionWrapper *self = (STNativeFunctionWrapper *)userData;
+	STNativeFunctionWrapper *self = (__bridge STNativeFunctionWrapper *)userData;
 	
-	STList *argumentsAsObjects = [STList list];
+	STList *argumentsAsObjects = [STList new];
 	NSUInteger numberOfArguments = [self->mSignature numberOfArguments];
 	for (NSUInteger index = 0; index < numberOfArguments; index++)
 		[argumentsAsObjects addObject:STTypeBridgeConvertValueOfTypeIntoObject(arguments[index], [self->mSignature getArgumentTypeAtIndex:index])];
@@ -35,8 +32,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	STTypeBridgeConvertObjectIntoType(resultObject, [self->mSignature methodReturnType], returnBuffer);
 }
 
-#pragma mark -
-#pragma mark Destruction
+#pragma mark - Destruction
 
 - (void)finalize
 {
@@ -58,8 +54,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	[super finalize];
 }
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (id)init
 {
@@ -108,7 +103,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 		status = ffi_prep_closure(mClosure, //inout closure
 								  mClosureInformation, //in closureInformation
 								  &FunctionBridge, //in closureImplementation
-								  self); //in closureImplementationUserInfo
+								  (__bridge void *)(self)); //in closureImplementationUserInfo
 		NSAssert((status == FFI_OK), @"ffi_prep_closure failed with error %d.", status);
 		
 		//Ensure execution on all platforms
@@ -120,8 +115,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize function = mFunction;
 @synthesize signature = mSignature;
@@ -131,8 +125,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return mClosure;
 }
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (BOOL)isEqualTo:(id)object
 {
@@ -155,8 +148,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return [NSString stringWithFormat:@"`Native Function Wrapper for {%@}`", [mFunction prettyDescription]];
 }
 
-#pragma mark -
-#pragma mark Implementing STFunction
+#pragma mark - Implementing STFunction
 
 - (STScope *)superscope
 {

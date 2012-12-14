@@ -27,13 +27,11 @@
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize string = mString;
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (BOOL)isEqualTo:(id)object
 {
@@ -62,8 +60,7 @@
 	return mString;
 }
 
-#pragma mark -
-#pragma mark Adding Ranges
+#pragma mark - Adding Ranges
 
 - (void)addExpression:(id)expression inRange:(NSRange)range
 {
@@ -73,8 +70,7 @@
 	[mCodeRanges addObject:[NSValue valueWithRange:range]];
 }
 
-#pragma mark -
-#pragma mark Application
+#pragma mark - Application
 
 - (id)applyInScope:(STScope *)scope
 {

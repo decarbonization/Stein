@@ -37,8 +37,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 	STTypeBridgeRegisterWrapper(@"Range", &kSTRangeStructWrapperDescriptor);
 }
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (id)initWithRange:(NSRange)range
 {
@@ -57,8 +56,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 - (void)setLocation:(NSUInteger)location
 {
@@ -104,8 +102,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 	}
 }
 
-#pragma mark -
-#pragma mark Implementing <STEnumerable>
+#pragma mark - Implementing <STEnumerable>
 
 - (id)foreach:(id <STFunction>)function
 {
@@ -114,7 +111,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 		NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
 		@try
 		{
-			STFunctionApply(function, [STList listWithObject:number]);
+			STFunctionApply(function, [[STList alloc] initWithObject:number]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -129,8 +126,7 @@ static BOOL _CStringHasPrefix(const char *string, const char *prefix)
 	return self;
 }
 
-#pragma mark -
-#pragma mark Bridging
+#pragma mark - Bridging
 
 - (void)getValue:(void **)buffer forType:(const char *)objcType
 {
@@ -196,8 +192,7 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 	STTypeBridgeRegisterWrapper(@"Point", &kSTPointStructWrapperDescriptor);
 }
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (id)initWithPoint:(CGPoint)point
 {
@@ -216,8 +211,7 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 - (void)setX:(CGFloat)x
 {
@@ -263,8 +257,7 @@ STPrimitiveValueWrapperDescriptor const kSTRangeStructWrapperDescriptor = {
 	}
 }
 
-#pragma mark -
-#pragma mark Bridging
+#pragma mark - Bridging
 
 - (void)getValue:(void **)buffer forType:(const char *)objcType
 {
@@ -322,8 +315,7 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 	STTypeBridgeRegisterWrapper(@"Size", &kSTSizeStructWrapperDescriptor);
 }
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (id)initWithSize:(CGSize)size
 {
@@ -342,8 +334,7 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 - (void)setWidth:(CGFloat)width
 {
@@ -389,8 +380,7 @@ STPrimitiveValueWrapperDescriptor const kSTPointStructWrapperDescriptor = {
 	}
 }
 
-#pragma mark -
-#pragma mark Bridging
+#pragma mark - Bridging
 
 - (void)getValue:(void **)buffer forType:(const char *)objcType
 {
@@ -448,8 +438,7 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 	STTypeBridgeRegisterWrapper(@"Rect", &kSTRectStructWrapperDescriptor);
 }
 
-#pragma mark -
-#pragma mark Initialization
+#pragma mark - Initialization
 
 - (id)initWithRect:(CGRect)rect
 {
@@ -463,8 +452,8 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 {
 	if((self = [super init]))
 	{
-		mOrigin = [origin retain] ?: [STPoint new];
-		mSize = [size retain] ?: [STSize new];
+		mOrigin = origin ?: [STPoint new];
+		mSize = size ?: [STSize new];
 		
 		return self;
 	}
@@ -478,8 +467,7 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 	return [self initWithOrigin:origin size:size];
 }
 
-#pragma mark -
-#pragma mark Size
+#pragma mark - Size
 
 @synthesize origin = mOrigin;
 @synthesize size = mSize;
@@ -491,8 +479,7 @@ STPrimitiveValueWrapperDescriptor const kSTSizeStructWrapperDescriptor = {
 	return (CGRect){ .origin = mOrigin.pointValue, .size = mSize.sizeValue };
 }
 
-#pragma mark -
-#pragma mark Bridging
+#pragma mark - Bridging
 
 - (void)getValue:(void **)buffer forType:(const char *)objcType
 {

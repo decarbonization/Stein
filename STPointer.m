@@ -15,16 +15,16 @@
 
 #pragma mark Initialization
 
-/*!
- @method
- @abstract		Initialize the receiver with a specified size and a specified type.
- @param			size	The size of the pointer's buffer. Must be greater than 0.
- @param			type	The type of the value that will be stored in the pointer's buffer. May not be NULL.
- @result		A fully initialized pointer with a buffer to hold the value described.
- @discussion	You do not generally use this initializer to create a pointer object. Rather, it is
- recommended that you use `pointerWithType:` or `arrayPointerOfLength:type:` to create
- your pointer objects.
- */
+///Initialize the receiver with a specified size and a specified type.
+///
+/// \param		size	The size of the pointer's buffer. Must be greater than 0.
+/// \param		type	The type of the value that will be stored in the pointer's buffer. May not be NULL.
+///
+/// \result		A fully initialized pointer with a buffer to hold the value described.
+///
+///You do not generally use this initializer to create a pointer object. Rather, it is
+///recommended that you use `pointerWithType:` or `arrayPointerOfLength:type:` to create
+///your pointer objects.
 - (id)initWithSize:(size_t)size type:(const char *)type isArray:(BOOL)isArray
 {
 	NSAssert((size > 0), @"Size is 0. You cannot create an empty pointer.");
@@ -53,21 +53,17 @@
 	return nil;
 }
 
-/*!
- @method
- @abstract	Initialize the receiver as a pointer suitable to hold a single object.
- */
+///Initialize the receiver as a pointer suitable to hold a single object.
 - (id)init
 {
 	return [self initWithSize:sizeof(id) type:@encode(id) isArray:NO];
 }
 
-#pragma mark -
-#pragma mark Creation
+#pragma mark - Creation
 
 + (STPointer *)pointerWithType:(const char *)type
 {
-	return [[[self alloc] initWithSize:STTypeBridgeGetSizeOfObjCType(type) type:type isArray:NO] autorelease];
+	return [[self alloc] initWithSize:STTypeBridgeGetSizeOfObjCType(type) type:type isArray:NO];
 }
 
 + (STPointer *)arrayPointerOfLength:(NSUInteger)length type:(const char *)type
@@ -76,11 +72,10 @@
 	NSParameterAssert(type);
 	
 	size_t sizeOfType = STTypeBridgeGetSizeOfObjCType(type);
-	return [[[self alloc] initWithSize:(sizeOfType * length) type:type isArray:YES] autorelease];
+	return [[self alloc] initWithSize:(sizeOfType * length) type:type isArray:YES];
 }
 
-#pragma mark -
-#pragma mark Copying
+#pragma mark - Copying
 
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -90,8 +85,7 @@
 	return pointer;
 }
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (BOOL)isEqualTo:(id)object
 {
@@ -131,8 +125,7 @@
 	return [NSString stringWithFormat:@"ref %@", [self.value prettyDescription]];
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize bytes = mBytes;
 @synthesize type = mType;
@@ -157,8 +150,7 @@
 	return STTypeBridgeConvertValueOfTypeIntoObject(mBytes, mType);
 }
 
-#pragma mark -
-#pragma mark Array Pointers
+#pragma mark - Array Pointers
 
 - (void)setCount:(NSUInteger)count
 {
@@ -198,8 +190,7 @@
 	return STTypeBridgeConvertValueOfTypeIntoObject(primitiveValue, mType);
 }
 
-#pragma mark -
-#pragma mark STEnumerable
+#pragma mark - STEnumerable
 
 - (id)foreach:(id < STFunction >)function
 {
@@ -208,7 +199,7 @@
 	NSUInteger valueCount = self.count;
 	for (NSUInteger index = 0; index < valueCount; index++)
 	{
-		STFunctionApply(function, [STList listWithObject:[self valueAtIndex:index]]);
+		STFunctionApply(function, [[STList alloc] initWithObject:[self valueAtIndex:index]]);
 	}
 	
 	return self;
@@ -223,7 +214,7 @@
 	NSUInteger valueCount = self.count;
 	for (NSUInteger index = 0; index < valueCount; index++)
 	{
-		id mappedValue = STFunctionApply(function, [STList listWithObject:[self valueAtIndex:index]]);
+		id mappedValue = STFunctionApply(function, [[STList alloc] initWithObject:[self valueAtIndex:index]]);
 		[mappedPointerArray setValue:mappedValue atIndex:index];
 	}
 	
@@ -240,7 +231,7 @@
 	for (NSUInteger index = 0; index < valueCount; index++)
 	{
 		id value = [filteredPointerArray valueAtIndex:index];
-		if(STIsTrue(STFunctionApply(function, [STList listWithObject:value])))
+		if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObject:value])))
 		{
 			filteredPointerArray.count++;
 			[filteredPointerArray setValue:value atIndex:filteredPointerArray.count - 1];

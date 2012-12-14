@@ -18,6 +18,7 @@
 #import "STStructClasses.h"
 #import "STPointer.h"
 #import <dlfcn.h>
+#import <objc/message.h>
 
 #import "STParser.h"
 #import "STList.h"
@@ -53,8 +54,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 //-
 - (id)initWithImplementation:(STBuiltInFunctionImplementation)implementation evaluatesOwnArguments:(BOOL)evaluatesOwnArguments;
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 //-
 //	property	implementation
@@ -84,8 +84,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 	return self;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize evaluatesOwnArguments = mEvaluatesOwnArguments;
 @synthesize implementation = mImplementation;
@@ -104,8 +103,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 	return [NSString stringWithFormat:@"<native-function:%p @_%s>", self, info.dli_sname ?: "(unknown)"];
 }
 
-#pragma mark -
-#pragma mark Application
+#pragma mark - Application
 
 - (id)applyWithArguments:(STList *)message inScope:(STScope *)scope
 {
@@ -114,8 +112,7 @@ typedef id(*STBuiltInFunctionImplementation)(STList *arguments, STScope *scope);
 
 @end
 
-#pragma mark -
-#pragma mark Function Implementations
+#pragma mark - Function Implementations
 
 #pragma mark • Core
 
@@ -148,7 +145,7 @@ static id let(STList *arguments, STScope *scope)
 		[scope setValue:value forConstantNamed:name];
 		
 		if([value respondsToSelector:@selector(setName:)])
-			[value performSelector:@selector(setName:) withObject:name];
+            objc_msgSend(value, @selector(setName:), name);
 		
 		return value;
 	}
@@ -191,7 +188,7 @@ static id setBang(STList *arguments, STScope *scope)
 	
 	id value = STEvaluate([arguments objectAtIndex:1], scope);
 	if([value respondsToSelector:@selector(setName:)])
-		[value performSelector:@selector(setName:) withObject:name];
+		objc_msgSend(value, @selector(setName:), name);
 	
 	[scope setValue:value forKeyPath:name];
 	
@@ -298,7 +295,19 @@ static id _super(STList *message, STScope *scope)
 }
 
 #pragma mark -
-#pragma mark • Core Lisp Functions
+
+static id autoreleasepool(STList *arguments, STScope *scope)
+{
+    if(arguments.count != 1)
+		STRaiseIssue(arguments.creationLocation, @"autoreleasepool a function.");
+    
+    @autoreleasepool {
+        id <STFunction> function = [arguments objectAtIndex:1];
+        return STFunctionApply(function, [STList new]);
+    }
+}
+
+#pragma mark - • Core Lisp Functions
 
 //-
 //	function	parse
@@ -351,15 +360,14 @@ static id apply(STList *arguments, STScope *scope)
 	id <STFunction> function = [arguments objectAtIndex:0];
 	id parameters = [arguments objectAtIndex:1];
 	if([parameters isKindOfClass:[NSArray class]])
-		parameters = [STList listWithArray:parameters];
+		parameters = [[STList alloc] initWithArray:parameters];
 	else if(![parameters isKindOfClass:[STList class]])
 		STRaiseIssue(arguments.creationLocation, @"Wrong type given for apply's `parameters`, got %@, expected STList|NSArray.", [parameters className]);
 	
 	return [function applyWithArguments:parameters inScope:scope];
 }
 
-#pragma mark -
-#pragma mark • Control Flow
+#pragma mark - • Control Flow
 
 //-
 //	function	break
@@ -465,8 +473,7 @@ static id match(STList *arguments, STScope *scope)
 	return STFalse;
 }
 
-#pragma mark -
-#pragma mark • Modules
+#pragma mark - • Modules
 
 //-
 //	function	module
@@ -517,8 +524,7 @@ static id include(STList *arguments, STScope *scope)
 	return [arguments objectAtIndex:arguments.count - 1];
 }
 
-#pragma mark -
-#pragma mark • Mathematics
+#pragma mark - • Mathematics
 
 //-
 //	function	+
@@ -615,8 +621,7 @@ static id power(STList *arguments, STScope *scope)
 	return leftOperand;
 }
 
-#pragma mark -
-#pragma mark Comparison
+#pragma mark - Comparison
 
 //-
 //	function	=
@@ -754,8 +759,7 @@ static id greaterThanOrEqual(STList *arguments, STScope *scope)
 	return STTrue;
 }
 
-#pragma mark -
-#pragma mark • Logical
+#pragma mark - • Logical
 
 //-
 //	function	or
@@ -815,8 +819,7 @@ static id not(STList *arguments, STScope *scope)
 	return [NSNumber numberWithBool:!STIsTrue([arguments head])];
 }
 
-#pragma mark -
-#pragma mark • Bridging
+#pragma mark - • Bridging
 
 //-
 //	function	extern
@@ -923,8 +926,7 @@ static id to_native_function(STList *arguments, STScope *scope)
 												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];
 }
 
-#pragma mark -
-#pragma mark • Collection Creation
+#pragma mark - • Collection Creation
 
 //-
 //	function	array
@@ -959,7 +961,7 @@ static id list(STList *arguments, STScope *scope)
 {
 	//Special case for `list ()`
 	if(arguments.count == 1 && [arguments head] == STNull)
-		return [STList list];
+		return [STList new];
 	
 	return [arguments copy];
 }
@@ -1062,8 +1064,7 @@ static id range(STList *arguments, STScope *scope)
 													  [[arguments objectAtIndex:1] unsignedIntegerValue])];
 }
 
-#pragma mark -
-#pragma mark Public Interface
+#pragma mark - Public Interface
 
 STScope *STBuiltInFunctionScope()
 {
@@ -1071,118 +1072,160 @@ STScope *STBuiltInFunctionScope()
 	functionScope.name = @"Global Scope";
 	
 	//Core
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&let evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&let
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"let"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&setBang evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&setBang
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"set!"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&unsetBang evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&unsetBang
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"unset!"];
 	
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&load
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"load"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_super
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"super"];
+    
+    [functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&autoreleasepool
+                                                        evaluatesOwnArguments:YES]
+           forConstantNamed:@"autoreleasepool"];
 	
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&parse evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&parse
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"parse"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&eval evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&eval
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"eval"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&apply evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&apply
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"apply"];
 	
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_break evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_break
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"break"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_continue evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_continue
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"continue"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&decide evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&decide
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"decide"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&match evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&match
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"match"];
 	
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&module evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&module
+                                                        evaluatesOwnArguments:YES]
 		   forConstantNamed:@"module"];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&include evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&include
+                                                        evaluatesOwnArguments:NO]
 		   forConstantNamed:@"include"];
 	
 	//Mathematics
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"+" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&minus evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&minus
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"-" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&multiply evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&multiply
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"*" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&divide evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&divide
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"/" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&power evaluatesOwnArguments:NO] 
-		   forVariableNamed:@"^" 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&power
+                                                        evaluatesOwnArguments:NO]
+		   forVariableNamed:@"^"
 		 searchParentScopes:NO];
 	
 	//Comparison
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&equal evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&equal
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"=" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&notEqual evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&notEqual
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"≠" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&lessThan evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&lessThan
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"<" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&lessThanOrEqual evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&lessThanOrEqual
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"≤" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&greaterThan evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&greaterThan
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@">" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&greaterThanOrEqual evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&greaterThanOrEqual
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"≥" 
 		 searchParentScopes:NO];
 	
 	//Logical
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&or evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&or
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"or" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&and evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&and
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"and" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&not evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&not
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"not" 
 		 searchParentScopes:NO];
 	
 	//Bridging
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_extern evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_extern
+                                                        evaluatesOwnArguments:YES]
 		   forVariableNamed:@"extern" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref
+                                                        evaluatesOwnArguments:YES]
 		   forVariableNamed:@"ref" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref_array evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&ref_array
+                                                        evaluatesOwnArguments:YES]
 		   forVariableNamed:@"ref-array" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&to_native_function evaluatesOwnArguments:YES] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&to_native_function
+                                                        evaluatesOwnArguments:YES]
 		   forVariableNamed:@"to-native-function" 
 		 searchParentScopes:NO];
 	
 	//Collection Creation
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&array evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&array
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"array" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&list evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&list
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"list" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&dictionary evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&dictionary
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"dictionary" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&set
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"set" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&index_set evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&index_set
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"index-set" 
 		 searchParentScopes:NO];
-	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&range evaluatesOwnArguments:NO] 
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&range
+                                                        evaluatesOwnArguments:NO]
 		   forVariableNamed:@"range" 
 		 searchParentScopes:NO];
 	

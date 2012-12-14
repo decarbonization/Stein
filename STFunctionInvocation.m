@@ -54,25 +54,23 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 		
 		mArgumentValues = NSAllocateCollectable(sizeof(void *) * argumentCount, 0);
 		
-		mFunctionSignature = [signature retain];
+		mFunctionSignature = signature;
 		
 		return self;
 	}
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize functionSignature = mFunctionSignature;
 
-#pragma mark -
-#pragma mark Arguments/Return Value
+#pragma mark - Arguments/Return Value
 
 - (void)setArgument:(void *)argument atIndex:(NSUInteger)index
 {
 	NSAssert2((index < [mFunctionSignature numberOfArguments]), 
-			  @"Index %d out of bounds %d", index, [mFunctionSignature numberOfArguments]);
+			  @"Index %ld out of bounds %ld", index, [mFunctionSignature numberOfArguments]);
 	
 	mArgumentValues[index] = argument;
 }
@@ -82,7 +80,7 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 	NSParameterAssert(argument);
 	
 	NSAssert2((index < [mFunctionSignature numberOfArguments]), 
-			  @"Index %d out of bounds %d", index, [mFunctionSignature numberOfArguments]);
+			  @"Index %ld out of bounds %ld", index, [mFunctionSignature numberOfArguments]);
 	
 	*argument = mArgumentValues[index];
 }
@@ -94,8 +92,7 @@ extern ffi_type *STTypeBridgeConvertObjCTypeToFFIType(const char *objcType); //F
 	*returnValue = mResultBuffer;
 }
 
-#pragma mark -
-#pragma mark Invocation
+#pragma mark - Invocation
 
 - (void)apply
 {

@@ -21,15 +21,30 @@ NSString *const kSTSuperclassVariableName = @"$__superclass";
 
 BOOL STUseUniqueRuntimeClassNames = NO;
 
-#pragma mark -
-#pragma mark Errors
+#pragma mark - Types
 
-void STRaiseIssue(STCreationLocation expressionLocation, NSString *format, ...)
+@implementation STCreationLocation
+
+- (id)initWithFile:(NSString *)file
+{
+    if((self = [super init]))
+    {
+        self.file = file;
+    }
+    
+    return self;
+}
+
+@end
+
+#pragma mark - Errors
+
+void STRaiseIssue(STCreationLocation *expressionLocation, NSString *format, ...)
 {
 	va_list formatArguments;
 	va_start(formatArguments, format);
 	
-	NSString *errorString = [[[NSString alloc] initWithFormat:format arguments:formatArguments] autorelease];
+	NSString *errorString = [[NSString alloc] initWithFormat:format arguments:formatArguments];
 	
 	va_end(formatArguments);
 	

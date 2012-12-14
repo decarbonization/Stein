@@ -8,202 +8,110 @@
 
 #import "STScope.h"
 
-#pragma mark STScopeNode
-
-/*!
- @abstract	The STScopeNode type provides the backing for the STScope object
-			in the form of a doubly linked list that stores keys and values.
- @field		previous	The previous node in the list. Readwrite.
- @field		next		The next node in the list. Readwrite.
- @field		key			The key of the node. Readonly.
- @param		readonly	Whether or not the value of the node is readonly. Readonly.
- @field		value		The value of the node. Readwrite.
- */
-struct STScopeNode {
-//private:
-	volatile STScopeNodeRef previous;
-	volatile STScopeNodeRef next;
-	NSString *const key;
-	BOOL const readonly;
-	volatile id value;
-};
-
-#pragma mark Properties
-
-/*!
- @abstract	Set the previous node of a STScopeNode.
- @param		me			The node to modify. Required.
- @param		previous	The new previous. Optional.
- */
-static void STScopeNode_setPrevious(STScopeNodeRef me, STScopeNodeRef previous)
+///The STScopeNode class is a linked list of key-value pairs
+///used to implement the thread-safe STScope storage class.
+@interface STScopeNode : NSObject
 {
-	assert(me != NULL);
-	
-	OSAtomicCompareAndSwapPtrBarrier(me->previous, previous, (void *volatile *)&me->previous);
+    NSString *_key;
+    BOOL _readonly;
 }
 
-/*!
- @abstract	Get the previous node of a STScopeNode.
- @param		me	The node to read from. Optional.
- */
-static STScopeNodeRef STScopeNode_getPrevious(STScopeNodeRef me)
+///Initialized the receiver with a given key and whether or not it is readonly.
+///
+/// \param  key         The key. Required.
+/// \param  readonly    Whether or not the node is readonly.
+///
+/// \param A fully initialized scope node.
+- (id)initWithKey:(NSString *)key readonly:(BOOL)readonly;
+
+#pragma mark - Properties
+
+///The previous scope node in the chain.
+@property (weak) STScopeNode *previous;
+
+///The next scope node in the chain.
+@property STScopeNode *next;
+
+///The key of the scope node.
+@property (readonly, copy) NSString *key;
+
+///Whether or not the scope node is readonly.
+@property (readonly) BOOL readonly;
+
+///The value of the scope node.
+@property id value;
+
+#pragma mark - Identity
+
+///Returns a boolean indicating whether or not the receiver is equal to another scope node.
+- (BOOL)isEqualToScopeNode:(STScopeNode *)otherScopeNode;
+
+// \inherit
+- (NSUInteger)hash;
+
+@end
+
+@implementation STScopeNode
+
+- (id)initWithKey:(NSString *)key readonly:(BOOL)readonly
 {
-	if(!me)
-		return NULL;
-	
-	OSMemoryBarrier();
-	return me->previous;
+    NSParameterAssert(key);
+    
+    if((self = [super init]))
+    {
+        _key = [key copy];
+        _readonly = readonly;
+    }
+    
+    return self;
 }
 
-/*!
- @abstract	Set the next node of a STScopeNode.
- @param		me		The node to modify. Required.
- @param		next	The new next. Optional.
- */
-static void STScopeNode_setNext(STScopeNodeRef me, STScopeNodeRef next)
+#pragma mark - Properties
+
+@synthesize key = _key;
+@synthesize readonly = _readonly;
+
+#pragma mark - Identity
+
+- (BOOL)isEqual:(id)object
 {
-	assert(me != NULL);
-	
-	OSAtomicCompareAndSwapPtrBarrier(me->next, next, (void *volatile *)&me->next);
+    if([object isKindOfClass:[STScopeNode class]])
+        return [self isEqualToScopeNode:object];
+    
+    return NO;
 }
 
-/*!
- @abstract	Get the next node of a STScopeNode.
- @param		me	The node to read from. Optional.
- */
-static STScopeNodeRef STScopeNode_getNext(STScopeNodeRef me)
+- (BOOL)isEqualToScopeNode:(STScopeNode *)otherScopeNode
 {
-	if(!me)
-		return NULL;
-	
-	OSMemoryBarrier();
-	return me->next;
+    return ([self.key isEqualToString:otherScopeNode.key] &&
+			[self.value isEqual:otherScopeNode.value]);
 }
 
-#pragma mark -
-
-/*!
- @abstract	Get the key of a STScopeNode.
- @param		me	The node to read from. Optional.
- */
-static NSString *STScopeNode_getKey(STScopeNodeRef me)
+- (NSUInteger)hash
 {
-	if(!me)
-		return nil;
-	
-	return me->key;
+    return ((NSUInteger)(self) >> 1);
 }
 
-static BOOL STScopeNode_getReadonly(STScopeNodeRef me)
-{
-	if(!me)
-		return YES;
-	
-	return me->readonly;
-}
+@end
 
-#pragma mark -
+#pragma mark - Enumeration
 
-/*!
- @abstract	Set the value of a STScopeNode.
- @param		me		The node to modify. Required.
- @param		value	The value. Optional.
- */
-static void STScopeNode_setValue(STScopeNodeRef me, id value)
-{
-	assert(me != NULL);
-	
-	NSCAssert(!me->readonly, @"Attempting to write to readonly scope node %@", me->key);
-	OSAtomicCompareAndSwapPtrBarrier(me->value, value, (void *volatile *)&me->value);
-}
-
-/*!
- @abstract	Get the value of a STScopeNode.
- @param		me	The node to read from. Optional.
- */
-static id STScopeNode_getValue(STScopeNodeRef me)
-{
-	if(!me)
-		return nil;
-	
-	OSMemoryBarrier();
-	return me->value;
-}
-
-#pragma mark -
-#pragma mark Creation
-
-/*!
- @abstract	Creates and returns a new STScopeNode value.
- @param		previous	The node that precedes the node being created in a chain. Optional.
- @param		next		The node that succeeds the node being created in a chain. Optional.
- @param		key			The key of the node. Required.
- @param		readonly	Whether or not the value of the node is readonly.
- @param		value		The value of the node. Optional.
- @result	A pointer to an STScopeNode struct whose lifecycle is managed by the garbage collector.
- */
-static STScopeNodeRef STScopeNode_new(STScopeNodeRef previous, STScopeNodeRef next, NSString *key, BOOL readonly, id value)
-{
-	assert(key != nil);
-	
-	STScopeNodeRef entry = NSAllocateCollectable(sizeof(struct STScopeNode), NSScannedOption);
-	*entry = (struct STScopeNode){
-		.previous = previous, 
-		.next = next, 
-		.key = key, 
-		.readonly = readonly, 
-		.value = value, 
-	};
-	
-	return entry;
-}
-
-#pragma mark -
-#pragma mark Enumeration
-
-/*!
- @abstract	Iterate a chain of STScopeNode values.
- @param		me			The node to iterate. Optional.
- @param		callback	The block to invoke for each value in the node chain. Optional.
- */
-static void STScopeNode_foreach(STScopeNodeRef me, void(^callback)(STScopeNodeRef node, NSString *key, id value, BOOL *stop))
+///Iterate a chain of STScopeNode values.
+///
+/// \param	me			The node to iterate. Optional.
+/// \param	callback	The block to invoke for each value in the node chain. Optional.
+static void EnumerateScopeNodeChain(STScopeNode *me, void(^callback)(STScopeNode *node, NSString *key, id value, BOOL *stop))
 {
 	if(!me || !callback)
 		return;
 	
 	BOOL stop = NO;
-	for (STScopeNodeRef node = me; node != NULL; node = node->next)
+	for (STScopeNode *node = me; node != nil; node = node.next)
 	{
-		callback(node, node->key, STScopeNode_getValue(node), &stop);
+		callback(node, node.key, node.value, &stop);
 		if(stop)
 			break;
 	}
-}
-
-#pragma mark -
-#pragma mark Equality
-
-/*!
- @abstract	Returns whether or not two STScopeNodes are equal to each other.
- */
-static BOOL STScopeNode_equals(STScopeNodeRef me, STScopeNodeRef other)
-{
-	if((me == NULL && other != NULL) || (me != NULL && other == NULL))
-		return NO;
-	
-	return ([me->key isEqualToString:other->key] && 
-			[STScopeNode_getValue(me) isEqualTo:STScopeNode_getValue(other)]);
-}
-
-/*!
- @abstract	Returns a (weak) hash for a STScopeNode.
- */
-static NSUInteger STScopeNode_hash(STScopeNodeRef me)
-{
-	if(!me)
-		return 0;
-	
-	return ((NSUInteger)(me) >> 1);
 }
 
 #pragma mark -
@@ -227,8 +135,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	return self;
 }
 
-#pragma mark -
-#pragma mark Scope Chaining
+#pragma mark - Scope Chaining
 
 - (void)setParentScope:(STScope *)parentScope
 {
@@ -247,14 +154,13 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	}
 }
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (NSString *)description
 {
 	NSMutableString *description = [NSMutableString stringWithFormat:@"<%@:%p %@ {\n", [self className], self, mName ?: @"(anonymous scope)"];
 	
-	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+	EnumerateScopeNodeChain(mHead, ^(STScopeNode *node, NSString *key, id value, BOOL *stop) {
 		[description appendFormat:@"\t%@: %@\n", [key description], [value description]];
 	});
 	
@@ -270,7 +176,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	if(!mHead && !mLast)
 		return (NSUInteger)([STScope class]);
 	
-	return STScopeNode_hash(mHead) + STScopeNode_hash(mLast);
+	return [mHead hash] + [mLast hash];
 }
 
 #pragma mark -
@@ -294,26 +200,25 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	if(self == scope)
 		return YES;
 	
-	STScopeNodeRef leftNode = NULL, rightNode = NULL;
+	STScopeNode *leftNode = nil, *rightNode = nil;
 	while (leftNode && rightNode)
 	{
-		if(!STScopeNode_equals(leftNode, rightNode))
+		if(![leftNode isEqualToScopeNode:rightNode])
 			return NO;
 		
-		leftNode = leftNode->next;
-		rightNode = rightNode->next;
+		leftNode = leftNode.next;
+		rightNode = rightNode.next;
 	}
 	
 	return YES;
 }
 
-#pragma mark -
-#pragma mark Variables
+#pragma mark - Variables
 
-- (STScopeNodeRef)firstNodeWithKey:(NSString *)name
+- (STScopeNode *)firstNodeWithKey:(NSString *)name
 {
-	__block STScopeNodeRef firstMatchingNode = NULL;
-	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+	__block STScopeNode *firstMatchingNode = nil;
+	EnumerateScopeNodeChain(mHead, ^(STScopeNode *node, NSString *key, id value, BOOL *stop) {
 		if([key isEqualToString:name])
 		{
 			firstMatchingNode = node;
@@ -330,8 +235,8 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 {
 	NSParameterAssert(scope);
 	
-	STScopeNode_foreach(scope->mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
-		if(STScopeNode_getReadonly(node))
+	EnumerateScopeNodeChain(scope->mHead, ^(STScopeNode *node, NSString *key, id value, BOOL *stop) {
+		if(node.readonly)
 			[self setValue:value forConstantNamed:key];
 		else
 			[self setValue:value forVariableNamed:key searchParentScopes:YES];
@@ -345,11 +250,11 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	
 	[self willChangeValueForKey:name];
 	
-	STScopeNodeRef matchingNode = [self firstNodeWithKey:name];
+	STScopeNode *matchingNode = [self firstNodeWithKey:name];
 	if(matchingNode)
 	{
-		NSAssert(!STScopeNode_getReadonly(matchingNode), @"Attempting to set readonly variable %@.", name);
-		STScopeNode_setValue(matchingNode, value);
+		NSAssert(!matchingNode.readonly, @"Attempting to set readonly variable %@.", name);
+		matchingNode.value = value;
 	}
 	else
 	{
@@ -358,9 +263,9 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 			STScope *parentScope = self.parentScope;
 			do {
 				matchingNode = [parentScope firstNodeWithKey:name];
-				if(matchingNode && !STScopeNode_getReadonly(matchingNode))
+				if(matchingNode && !matchingNode.readonly)
 				{
-					STScopeNode_setValue(matchingNode, value);
+					matchingNode.value = value;
 					return;
 				}
 				
@@ -368,9 +273,11 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 			} while (parentScope != nil);
 		}
 		
-		STScopeNodeRef newNode = STScopeNode_new(mLast, nil, name, NO, value);
+        STScopeNode *newNode = [[STScopeNode alloc] initWithKey:name readonly:NO];
+		newNode.value = value;
+        newNode.previous = mLast;
 		if(mLast)
-			STScopeNode_setNext(mLast, newNode);
+			mLast.next = newNode;
 		
 		mLast = newNode;
 		if(!mHead)
@@ -387,17 +294,19 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	
 	[self willChangeValueForKey:name];
 	
-	STScopeNodeRef matchingNode = [self firstNodeWithKey:name];
+	STScopeNode *matchingNode = [self firstNodeWithKey:name];
 	if(matchingNode)
 	{
-		NSAssert(!STScopeNode_getReadonly(matchingNode), @"Attempting to set readonly variable %@.", name);
-		STScopeNode_setValue(matchingNode, value);
+		NSAssert(!matchingNode.readonly, @"Attempting to set readonly variable %@.", name);
+		matchingNode.value = value;
 	}
 	else
 	{
-		STScopeNodeRef newNode = STScopeNode_new(mLast, nil, name, YES, value);
+		STScopeNode *newNode = [[STScopeNode alloc] initWithKey:name readonly:NO];
+		newNode.value = value;
+        newNode.previous = mLast;
 		if(mLast)
-			STScopeNode_setNext(mLast, newNode);
+			mLast.next = newNode;
 		
 		mLast = newNode;
 		if(!mHead)
@@ -413,20 +322,20 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	
 	[self willChangeValueForKey:name];
 	
-	STScopeNodeRef matchingNode = [self firstNodeWithKey:name];
+	STScopeNode *matchingNode = [self firstNodeWithKey:name];
 	if(matchingNode)
 	{
-		STScopeNodeRef previousNode = STScopeNode_getPrevious(matchingNode);
-		STScopeNodeRef nextNode = STScopeNode_getNext(matchingNode);
+		STScopeNode *previousNode = matchingNode.previous;
+		STScopeNode *nextNode = matchingNode.next;
 		
 		if(nextNode)
-			STScopeNode_setPrevious(nextNode, previousNode);
+			nextNode.previous = previousNode;
 		
 		if(previousNode)
-			STScopeNode_setNext(previousNode, nextNode);
+			previousNode.next = nextNode;
 		
 		if(mHead == matchingNode)
-			mHead = NULL;
+			mHead = nil;
 		
 		if(mLast == matchingNode)
 			mLast = previousNode;
@@ -444,7 +353,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 {
 	NSParameterAssert(name);
 	
-	id value = STScopeNode_getValue([self firstNodeWithKey:name]);
+	id value = [self firstNodeWithKey:name].value;
 	if(!value && searchParentScopes)
 	{
 		return [mParentScope valueForVariableNamed:name searchParentScopes:searchParentScopes];
@@ -458,7 +367,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 - (NSArray *)allVariableNames
 {
 	NSMutableArray *names = [NSMutableArray array];
-	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+	EnumerateScopeNodeChain(mHead, ^(STScopeNode *node, NSString *key, id value, BOOL *stop) {
 		[names addObject:key];
 	});
 	
@@ -468,7 +377,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 - (NSArray *)allVariableValues
 {
 	NSMutableArray *values = [NSMutableArray array];
-	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+	EnumerateScopeNodeChain(mHead, ^(STScopeNode *node, NSString *key, id value, BOOL *stop) {
 		[values addObject:value];
 	});
 	
@@ -480,13 +389,12 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	if(!block)
 		return;
 	
-	STScopeNode_foreach(mHead, ^(STScopeNodeRef node, NSString *key, id value, BOOL *stop) {
+	EnumerateScopeNodeChain(mHead, ^(STScopeNode *node, NSString *key, id value, BOOL *stop) {
 		block(key, value, stop);
 	});
 }
 
-#pragma mark -
-#pragma mark KVC
+#pragma mark - KVC
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
@@ -498,8 +406,7 @@ static NSUInteger STScopeNode_hash(STScopeNodeRef me)
 	return [self valueForVariableNamed:key searchParentScopes:YES];
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize name = mName;
 @synthesize module = mModule;

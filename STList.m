@@ -9,6 +9,7 @@
 #import "STList.h"
 #import "NSObject+SteinTools.h"
 #import <stdarg.h>
+#import <objc/message.h>
 
 @implementation STList
 
@@ -25,11 +26,6 @@
 	return nil;
 }
 
-+ (STList *)list
-{
-	return [[self new] autorelease];
-}
-
 #pragma mark -
 
 - (id)initWithArray:(NSArray *)array
@@ -43,11 +39,6 @@
 		return self;
 	}
 	return nil;
-}
-
-+ (STList *)listWithArray:(NSArray *)array
-{
-	return [[[self alloc] initWithArray:array] autorelease];
 }
 
 #pragma mark -
@@ -67,11 +58,6 @@
 	return nil;
 }
 
-+ (STList *)listWithList:(STList *)list
-{
-	return [[[self alloc] initWithList:list] autorelease];
-}
-
 #pragma mark -
 
 - (id)initWithObject:(id)object
@@ -82,11 +68,6 @@
 		return self;
 	}
 	return nil;
-}
-
-+ (STList *)listWithObject:(id)object
-{
-	return [[[self alloc] initWithObject:object] autorelease];
 }
 
 - (id)initWithObjects:(id)object fromVaList:(va_list)list
@@ -116,16 +97,6 @@
 	return self;
 }
 
-+ (id)listWithObjects:(id)object, ...
-{
-	va_list arguments;
-	va_start(arguments, object);
-	STList *list = [[self alloc] initWithObjects:object fromVaList:arguments];
-	va_end(arguments);
-	
-	return list;
-}
-
 #pragma mark -
 
 - (id)copyWithZone:(NSZone *)zone
@@ -133,8 +104,7 @@
 	return [[[self class] allocWithZone:zone] initWithList:self];
 }
 
-#pragma mark -
-#pragma mark Coding
+#pragma mark - Coding
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
@@ -142,7 +112,7 @@
 	
 	if((self = [self init]))
 	{
-		mContents = [[decoder decodeObjectForKey:@"mContents"] retain];
+		mContents = [decoder decodeObjectForKey:@"mContents"];
 		mFlags = [decoder decodeIntegerForKey:@"mFlags"];
 		
 		return self;
@@ -158,8 +128,7 @@
 	[encoder encodeInteger:mFlags forKey:@"mFlags"];
 }
 
-#pragma mark -
-#pragma mark Accessing Objects
+#pragma mark - Accessing Objects
 
 - (id)head
 {
@@ -168,7 +137,7 @@
 
 - (STList *)tail
 {
-	return ([mContents count] > 1)? [self sublistWithRange:NSMakeRange(1, [mContents count] - 1)] : [STList list];
+	return ([mContents count] > 1)? [self sublistWithRange:NSMakeRange(1, [mContents count] - 1)] : [STList new];
 }
 
 #pragma mark -
@@ -180,7 +149,7 @@
 
 - (STList *)sublistWithRange:(NSRange)range
 {
-	STList *sublist = [[[STList alloc] initWithArray:[mContents subarrayWithRange:range]] autorelease];
+	STList *sublist = [[STList alloc] initWithArray:[mContents subarrayWithRange:range]];
 	
 	sublist.creationLocation = mCreationLocation;
 	sublist.flags = mFlags;
@@ -196,8 +165,7 @@
 	return [self sublistWithRange:NSMakeRange(index, [self count] - index)];
 }
 
-#pragma mark -
-#pragma mark Modification
+#pragma mark - Modification
 
 - (void)addObject:(id)object
 {
@@ -238,11 +206,11 @@
 	NSParameterAssert(selector);
 	
 	for (NSInteger index = (self.count - 1); index >= 0; index--)
-		[mContents replaceObjectAtIndex:index withObject:[[mContents objectAtIndex:index] performSelector:selector]];
+		[mContents replaceObjectAtIndex:index
+                             withObject:objc_msgSend([mContents objectAtIndex:index], selector)];
 }
 
-#pragma mark -
-#pragma mark Finding Objects
+#pragma mark - Finding Objects
 
 - (NSUInteger)indexOfObject:(id)object
 {
@@ -254,8 +222,7 @@
 	return [mContents indexOfObjectIdenticalTo:object];
 }
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (BOOL)isEqualTo:(id)object
 {
@@ -308,8 +275,7 @@
 	return description;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize flags = mFlags;
 @synthesize creationLocation = mCreationLocation;
@@ -326,12 +292,11 @@
 	return [NSArray arrayWithArray:mContents];
 }
 
-#pragma mark -
-#pragma mark Operators
+#pragma mark - Operators
 
 - (STList *)operatorAdd:(STList *)rightOperand
 {
-	STList *list = [STList list];
+	STList *list = [STList new];
 	[list addObjectsFromArray:mContents];
 	[list addObjectsFromArray:[rightOperand allObjects]];
 	return list;
@@ -344,12 +309,11 @@
 	return list;
 }
 
-#pragma mark -
-#pragma mark Enumeration
+#pragma mark - Enumeration
 
-- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(__unsafe_unretained id [])buffer count:(NSUInteger)len
 {
-	return [mContents countByEnumeratingWithState:state objects:stackbuf count:len];
+	return [mContents countByEnumeratingWithState:state objects:buffer count:len];
 }
 
 #pragma mark -
@@ -360,7 +324,7 @@
 	{
 		@try
 		{
-			STFunctionApply(function, [STList listWithObject:object]);
+			STFunctionApply(function, [[STList alloc] initWithObject:object]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -377,13 +341,13 @@
 
 - (id)map:(id < STFunction >)function
 {
-	STList *mappedObjects = [STList list];
+	STList *mappedObjects = [STList new];
 	
 	for (id object in self)
 	{
 		@try
 		{
-			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			id mappedObject = STFunctionApply(function, [[STList alloc] initWithObject:object]);
 			if(!mappedObject)
 				continue;
 			
@@ -404,13 +368,13 @@
 
 - (id)filter:(id < STFunction >)function
 {
-	STList *filteredObjects = [STList list];
+	STList *filteredObjects = [STList new];
 	
 	for (id object in self)
 	{
 		@try
 		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObject:object])))
 				[filteredObjects addObject:object];
 		}
 		@catch (STBreakException *e)

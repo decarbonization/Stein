@@ -25,7 +25,7 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 			return cachedSymbol;
 		
 		
-		STSymbol *newSymbol = [STSymbol symbolWithString:name];
+		STSymbol *newSymbol = [[STSymbol alloc] initWithString:name];
 		[symbolCache setObject:newSymbol forKey:name];
 		
 		return newSymbol;
@@ -35,11 +35,6 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 @implementation STSymbol
 
 #pragma mark Creation
-
-+ (STSymbol *)symbolWithString:(NSString *)string
-{
-	return [[[self alloc] initWithString:string] autorelease];
-}
 
 - (id)initWithString:(NSString *)string
 {
@@ -61,8 +56,7 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Coding
+#pragma mark - Coding
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
@@ -70,7 +64,7 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 	
 	if((self = [super init]))
 	{
-		mString = [[decoder decodeObjectForKey:@"mString"] retain];
+		mString = [decoder decodeObjectForKey:@"mString"];
 		mIsQuoted = [decoder decodeBoolForKey:@"mIsQuoted"];
 		
 		return self;
@@ -86,8 +80,7 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 	[encoder encodeBool:mIsQuoted forKey:@"mIsQuoted"];
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize string = mString;
 @synthesize isQuoted = mIsQuoted;
@@ -96,8 +89,7 @@ STSymbol *STSymbolCachedSymbolWithName(NSString *name)
 
 @synthesize creationLocation = mCreationLocation;
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (BOOL)isEqualTo:(id)object
 {

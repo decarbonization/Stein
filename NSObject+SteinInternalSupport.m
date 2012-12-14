@@ -49,8 +49,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 								   class_getInstanceMethod(self, @selector(stein_description)));
 }
 
-#pragma mark -
-#pragma mark • Overrides for <STMethodMissing>
+#pragma mark - • Overrides for <STMethodMissing>
 
 + (BOOL)stein_respondsToSelector:(SEL)selector
 {
@@ -62,8 +61,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return [self stein_respondsToSelector:selector] || [self canHandleMissingMethodWithSelector:selector];
 }
 
-#pragma mark -
-#pragma mark • Overrides for kSTUseUniqueRuntimeClassNames
+#pragma mark - • Overrides for kSTUseUniqueRuntimeClassNames
 
 + (NSString *)stein_className
 {
@@ -85,8 +83,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return [NSString stringWithFormat:@"<%@:%p>", [[self class] className], self];
 }
 
-#pragma mark -
-#pragma mark • Overrides for Ivar
+#pragma mark - • Overrides for Ivar
 
 - (id)stein_valueForUndefinedKey:(NSString *)key
 {
@@ -101,19 +98,18 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 		[self setValue:value forIvarNamed:key];
 }
 
-#pragma mark -
-#pragma mark Ivars
+#pragma mark - Ivars
 
 - (void)setValue:(id)value forIvarNamed:(NSString *)name
 {
 	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
 	if(!ivar)
 	{
-		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, (__bridge const void *)(kNSObjectAdditionalIvarsTableKey));
 		if(!ivarTable)
 		{
 			ivarTable = [NSMutableDictionary dictionary];
-			objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+			objc_setAssociatedObject(self, (__bridge const void *)(kNSObjectAdditionalIvarsTableKey), ivarTable, OBJC_ASSOCIATION_RETAIN);
 		}
 		
 		if(value)
@@ -127,7 +123,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	const char *ivarTypeEncoding = ivar_getTypeEncoding(ivar);
 	Byte buffer[STTypeBridgeGetSizeOfObjCType(ivarTypeEncoding)];
 	STTypeBridgeConvertObjectIntoType(value, ivarTypeEncoding, (void **)&buffer);
-	object_setIvar(self, ivar, (void *)buffer);
+	object_setIvar(self, ivar, (__bridge id)((void *)buffer));
 }
 
 - (id)valueForIvarNamed:(NSString *)name
@@ -135,11 +131,11 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	Ivar ivar = class_getInstanceVariable([self class], [name UTF8String]);
 	if(!ivar)
 	{
-		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+		NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, (__bridge const void *)(kNSObjectAdditionalIvarsTableKey));
 		return [ivarTable objectForKey:name];
 	}
 	
-	void *location = object_getIvar(self, ivar);
+	void *location = (__bridge void *)(object_getIvar(self, ivar));
 	return STTypeBridgeConvertValueOfTypeIntoObject(&location, ivar_getTypeEncoding(ivar));
 }
 
@@ -147,11 +143,11 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 + (void)setValue:(id)value forIvarNamed:(NSString *)name
 {
-	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, (__bridge const void *)(kNSObjectAdditionalIvarsTableKey));
 	if(!ivarTable)
 	{
 		ivarTable = [NSMutableDictionary dictionary];
-		objc_setAssociatedObject(self, kNSObjectAdditionalIvarsTableKey, ivarTable, OBJC_ASSOCIATION_RETAIN);
+		objc_setAssociatedObject(self, (__bridge const void *)(kNSObjectAdditionalIvarsTableKey), ivarTable, OBJC_ASSOCIATION_RETAIN);
 	}
 	
 	if(value)
@@ -162,12 +158,11 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 
 + (id)valueForIvarNamed:(NSString *)name
 {
-	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, kNSObjectAdditionalIvarsTableKey);
+	NSMutableDictionary *ivarTable = objc_getAssociatedObject(self, (__bridge const void *)(kNSObjectAdditionalIvarsTableKey));
 	return [ivarTable objectForKey:name];
 }
 
-#pragma mark -
-#pragma mark Implementing <STMethodMissing>
+#pragma mark - Implementing <STMethodMissing>
 
 + (BOOL)canHandleMissingMethodWithSelector:(SEL)selector
 {
@@ -180,8 +175,7 @@ static NSString *const kNSObjectAdditionalIvarsTableKey = @"NSObject_additionalI
 	return STNull;
 }
 
-#pragma mark -
-#pragma mark -
+#pragma mark - -
 #pragma mark Infix Notation Support
 
 static BOOL IsCharacterSequenceOperator(unichar left, unichar right)
@@ -329,8 +323,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	return [pool objectAtIndex:operations[numberOfOperations - 1].originalPosition];
 }
 
-#pragma mark -
-#pragma mark Implementing <STFunction>
+#pragma mark - Implementing <STFunction>
 
 - (BOOL)evaluatesOwnArguments
 {
@@ -370,8 +363,7 @@ static int OperationPrecedenceComparator(Operation *left, Operation *right)
 	return STObjectBridgeSend(self, NSSelectorFromString(selectorString), parameters, scope);
 }
 
-#pragma mark -
-#pragma mark Operators
+#pragma mark - Operators
 
 - (id)operatorAdd:(id)rightOperand
 {

@@ -33,8 +33,7 @@
 	return self;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize originalException = mOriginalException;
 @synthesize relevantExpressions = mRelevantExpressions;

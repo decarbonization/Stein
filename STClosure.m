@@ -36,8 +36,7 @@
 	return nil;
 }
 
-#pragma mark -
-#pragma mark Stein Function
+#pragma mark - Stein Function
 
 - (BOOL)evaluatesOwnArguments
 {
@@ -73,8 +72,7 @@
 	return result;
 }
 
-#pragma mark -
-#pragma mark Properties
+#pragma mark - Properties
 
 @synthesize superscope = mSuperscope;
 @synthesize superclass = mSuperclass;
@@ -86,8 +84,7 @@
 @synthesize prototype = mPrototype;
 @synthesize implementation = mImplementation;
 
-#pragma mark -
-#pragma mark Identity
+#pragma mark - Identity
 
 - (BOOL)isEqualTo:(id)object
 {
@@ -106,18 +103,17 @@
 	return [NSString stringWithFormat:@"<%@:%p %@ (%@)>", [self className], self, mName ?: @"[Anonymous]", [mPrototype.allObjects componentsJoinedByString:@" "]];
 }
 
-#pragma mark -
-#pragma mark Exception Handling
+#pragma mark - Exception Handling
 
 - (BOOL)onException:(STClosure *)closure
 {
 	@try
 	{
-		STFunctionApply(self, [STList list]);
+		STFunctionApply(self, [STList new]);
 	}
 	@catch (id e)
 	{
-		STList *arguments = [STList list];
+		STList *arguments = [STList new];
 		[arguments addObject:e];
 		STFunctionApply(closure, arguments);
 		

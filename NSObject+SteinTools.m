@@ -72,8 +72,7 @@
 	return description;
 }
 
-#pragma mark -
-#pragma mark Extension
+#pragma mark - Extension
 
 + (Class)extend:(STClosure *)extensions
 {
@@ -92,8 +91,7 @@
 	return [self description];
 }
 
-#pragma mark -
-#pragma mark Operators
+#pragma mark - Operators
 
 - (id)operatorAdd:(id)rightOperand
 {
@@ -168,8 +166,7 @@
 																				 withString:@"\\\""]];
 }
 
-#pragma mark -
-#pragma mark Operators
+#pragma mark - Operators
 
 - (NSString *)operatorAdd:(NSString *)rightOperand
 {
@@ -192,8 +189,7 @@
 	return [result copy];
 }
 
-#pragma mark -
-#pragma mark Enumerable
+#pragma mark - Enumerable
 
 - (id)foreach:(id < STFunction >)function
 {
@@ -202,7 +198,7 @@
 		@try
 		{
 			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
-			STFunctionApply(function, [STList listWithObjects:character, nil]);
+			STFunctionApply(function, [[STList alloc] initWithObjects:character, nil]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -225,7 +221,7 @@
 		@try
 		{
 			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
-			id result = STFunctionApply(function, [STList listWithObjects:character, nil]);
+			id result = STFunctionApply(function, [[STList alloc] initWithObjects:character, nil]);
 			if([result isKindOfClass:[NSNumber class]])
 			{
 				[string appendFormat:@"%C", [result charValue]];
@@ -256,7 +252,7 @@
 		@try
 		{
 			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
-			if(STIsTrue(STFunctionApply(function, [STList listWithObjects:character, nil])))
+			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObjects:character, nil])))
 			{
 				[string appendFormat:@"%C", [character charValue]];
 			}
@@ -305,8 +301,7 @@
 	return [result copy];
 }
 
-#pragma mark -
-#pragma mark Enumerable
+#pragma mark - Enumerable
 
 - (id)foreach:(id < STFunction >)function
 {
@@ -314,7 +309,7 @@
 	{
 		@try
 		{
-			STFunctionApply(function, [STList listWithObject:object]);
+			STFunctionApply(function, [[STList alloc] initWithObject:object]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -337,7 +332,7 @@
 	{
 		@try
 		{
-			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			id mappedObject = STFunctionApply(function, [[STList alloc] initWithObject:object]);
 			if(!mappedObject)
 				continue;
 			
@@ -364,7 +359,7 @@
 	{
 		@try
 		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObject:object])))
 				[filteredObjects addObject:object];
 		}
 		@catch (STBreakException *e)
@@ -380,8 +375,7 @@
 	return [filteredObjects copy];
 }
 
-#pragma mark -
-#pragma mark Pretty Printing
+#pragma mark - Pretty Printing
 
 - (NSString *)prettyDescription
 {
@@ -397,8 +391,7 @@
 	return description;
 }
 
-#pragma mark -
-#pragma mark Array Programming Support
+#pragma mark - Array Programming Support
 
 - (NSArray *)where:(NSArray *)booleans
 {
@@ -452,8 +445,7 @@
 	return [result copy];
 }
 
-#pragma mark -
-#pragma mark Enumerable
+#pragma mark - Enumerable
 
 - (id)foreach:(id < STFunction >)function
 {
@@ -461,7 +453,7 @@
 	{
 		@try
 		{
-			STFunctionApply(function, [STList listWithObject:object]);
+			STFunctionApply(function, [[STList alloc] initWithObject:object]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -484,7 +476,7 @@
 	{
 		@try
 		{
-			id mappedObject = STFunctionApply(function, [STList listWithObject:object]);
+			id mappedObject = STFunctionApply(function, [[STList alloc] initWithObject:object]);
 			if(!mappedObject)
 				continue;
 			
@@ -511,7 +503,7 @@
 	{
 		@try
 		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:object])))
+			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObject:object])))
 				[filteredObjects addObject:object];
 		}
 		@catch (STBreakException *e)
@@ -527,8 +519,7 @@
 	return [filteredObjects copy];
 }
 
-#pragma mark -
-#pragma mark Pretty Printing
+#pragma mark - Pretty Printing
 
 - (NSString *)prettyDescription
 {
@@ -558,7 +549,7 @@
 		@try
 		{
 			NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
-			STFunctionApply(function, [STList listWithObject:number]);
+			STFunctionApply(function, [[STList alloc] initWithObject:number]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -581,7 +572,7 @@
 		@try
 		{
 			NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
-			[indexSet addIndex:[STFunctionApply(function, [STList listWithObject:number]) unsignedIntegerValue]];
+			[indexSet addIndex:[STFunctionApply(function, [[STList alloc] initWithObject:number]) unsignedIntegerValue]];
 		}
 		@catch (STBreakException *e)
 		{
@@ -604,7 +595,7 @@
 		@try
 		{
 			NSNumber *number = [NSNumber numberWithUnsignedInteger:index];
-			if(STIsTrue(STFunctionApply(function, [STList listWithObject:number])))
+			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObject:number])))
 				[indexSet addIndex:index];
 		}
 		@catch (STBreakException *e)
@@ -621,8 +612,7 @@
 	return [indexSet copy];
 }
 
-#pragma mark -
-#pragma mark Pretty Printing
+#pragma mark - Pretty Printing
 
 - (NSString *)prettyDescription
 {
@@ -664,15 +654,14 @@
 	return [result copy];
 }
 
-#pragma mark -
-#pragma mark Enumerable
+#pragma mark - Enumerable
 
 - (id)foreach:(id < STFunction >)function
 {
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 		@try
 		{
-			STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+			STFunctionApply(function, [[STList alloc] initWithArray:[NSArray arrayWithObjects:key, value, nil]]);
 		}
 		@catch (STBreakException *e)
 		{
@@ -695,7 +684,7 @@
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 		@try
 		{
-			id mappedValue = STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]]);
+			id mappedValue = STFunctionApply(function, [[STList alloc] initWithArray:[NSArray arrayWithObjects:key, value, nil]]);
 			if(STIsTrue(mappedValue))
 				[result setObject:mappedValue forKey:key];
 		}
@@ -720,7 +709,7 @@
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 		@try
 		{
-			if(STIsTrue(STFunctionApply(function, [STList listWithArray:[NSArray arrayWithObjects:key, value, nil]])))
+			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithArray:[NSArray arrayWithObjects:key, value, nil]])))
 				[result setObject:value forKey:key];
 		}
 		@catch (STBreakException *e)
@@ -737,8 +726,7 @@
 	return [result copy];
 }
 
-#pragma mark -
-#pragma mark Pretty Printing
+#pragma mark - Pretty Printing
 
 - (NSString *)prettyDescription
 {
