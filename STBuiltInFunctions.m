@@ -28,6 +28,9 @@
 #import "STScope.h"
 #import "STModule.h"
 
+#import "STLibraryLoader.h"
+#import "STFrameworkLoader.h"
+
 //-
 //	typedef		STBuiltInFunctionImplementation
 //	purpose		To describe the form Stein's core library's native functions must take.
@@ -539,7 +542,7 @@ static NSString *const SearchDirectories[] = {
     @"/Library/Frameworks",
     @"/System/Library/Frameworks",
     
-    @"./SteinLibrary"
+    @"./SteinLibrary",
     @"~/Library/SteinLibrary",
     @"/Library/SteinLibrary",
 };
@@ -555,57 +558,14 @@ static NSUInteger const SearchDirectoriesCount = (sizeof(SearchDirectories) / si
 //-
 static id _require(STList *arguments, STScope *scope)
 {
-    NSFileManager *defaultManager = [NSFileManager defaultManager];
-    for (__strong NSString *filename in arguments)
+    for (NSString *filename in arguments)
     {
-        NSString *fullPath = nil;
-        
-        if([filename hasPrefix:@"/"] || [filename hasPrefix:@"."])
-        {
-            fullPath = filename;
-        }
-        else
-        {
-            if(![filename pathExtension])
-            {
-                filename = [filename stringByAppendingPathExtension:@"st"];
-            }
-            
-            for (NSUInteger index = 0; index < SearchDirectoriesCount; index++)
-            {
-                NSString *searchDirectory = SearchDirectories[index];
-                fullPath = [searchDirectory stringByAppendingPathComponent:filename];
-                
-                BOOL isDirectory = NO;
-                if(([defaultManager fileExistsAtPath:fullPath isDirectory:&isDirectory]))
-                {
-                    if(isDirectory)
-                    {
-                        NSString *initPath = [fullPath stringByAppendingPathComponent:@"Prelude.st"];
-                        if([defaultManager fileExistsAtPath:initPath])
-                            fullPath = initPath;
-                        else
-                            STRaiseIssue(arguments.creationLocation, @"Library at path %@ is missing Prelude.st", fullPath);
-                    }
-                    
-                    break;
-                }
-                else
-                {
-                    continue;
-                }
-                
-                NSError *error = nil;
-                NSString *fileContents = [NSString stringWithContentsOfFile:fullPath encoding:NSUTF8StringEncoding error:&error];
-                if(!fileContents)
-                    STRaiseIssue(arguments.creationLocation, @"Could not load file %@ for require", fullPath);
-                
-                STEvaluate(fileContents, scope);
-            }
-        }
+        [[STLibraryLoader sharedLibraryLoader] loadFileWithName:filename
+                                                        inScope:scope
+                                                   fromLocation:arguments.creationLocation];
     }
     
-    return STNull;
+    return STTrue;
 }
 
 //-
@@ -620,41 +580,11 @@ static id framework(STList *arguments, STScope *scope)
 {
     for (__strong NSString *filename in arguments)
     {
-        NSString *fullPath = nil;
-        
-        if([filename hasPrefix:@"/"] || [filename hasPrefix:@"."])
-        {
-            fullPath = filename;
-        }
-        else
-        {
-            if(![filename pathExtension])
-            {
-                filename = [filename stringByAppendingPathExtension:@"framework"];
-            }
-            
-            for (NSUInteger index = 0; index < SearchDirectoriesCount; index++)
-            {
-                NSString *searchDirectory = SearchDirectories[index];
-                fullPath = [searchDirectory stringByAppendingPathComponent:filename];
-                
-                if([[NSFileManager defaultManager] fileExistsAtPath:fullPath])
-                {
-                    break;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-            
-            NSError *error = nil;
-            if(![[NSBundle bundleWithPath:fullPath] loadAndReturnError:&error])
-                STRaiseIssue(arguments.creationLocation, @"Could not load framework. Error %@", error);
-        }
+        [[STFrameworkLoader sharedFrameworkLoader] loadFrameworkWithName:filename
+                                                            fromLocation:arguments.creationLocation];
     }
     
-    return STNull;
+    return STTrue;
 }
 
 #pragma mark - • Mathematics

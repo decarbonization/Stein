@@ -19,6 +19,10 @@
 		1EC931FE11EAC84600EACB73 /* STBuiltInFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */; };
 		1EE406C812F4DE30001F19E3 /* STModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EE406C612F4DE30001F19E3 /* STModule.h */; };
 		1EE406C912F4DE30001F19E3 /* STModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EE406C712F4DE30001F19E3 /* STModule.m */; };
+		8B5945EC167AFD5E00DC5C33 /* STLibraryLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5945E6167AFBA700DC5C33 /* STLibraryLoader.m */; };
+		8B5945ED167AFEEB00DC5C33 /* STFrameworkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5945EA167AFBAF00DC5C33 /* STFrameworkLoader.m */; };
+		8B5945EE167AFEF800DC5C33 /* STLibraryLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5945E5167AFBA700DC5C33 /* STLibraryLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8B5945EF167AFEF800DC5C33 /* STFrameworkLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5945E9167AFBAF00DC5C33 /* STFrameworkLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* stein.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* stein.1 */; };
@@ -139,6 +143,10 @@
 		1EE406C612F4DE30001F19E3 /* STModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STModule.h; sourceTree = "<group>"; };
 		1EE406C712F4DE30001F19E3 /* STModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STModule.m; sourceTree = "<group>"; };
 		32A70AAB03705E1F00C91783 /* Stein_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stein_Prefix.pch; sourceTree = "<group>"; };
+		8B5945E5167AFBA700DC5C33 /* STLibraryLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STLibraryLoader.h; sourceTree = "<group>"; };
+		8B5945E6167AFBA700DC5C33 /* STLibraryLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLibraryLoader.m; sourceTree = "<group>"; };
+		8B5945E9167AFBAF00DC5C33 /* STFrameworkLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFrameworkLoader.h; sourceTree = "<group>"; };
+		8B5945EA167AFBAF00DC5C33 /* STFrameworkLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFrameworkLoader.m; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* stein */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stein; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859EA3029092ED04C91782 /* stein.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = stein.1; sourceTree = "<group>"; };
 		C806B70210D2D96C00A64BEE /* STList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STList.h; sourceTree = "<group>"; };
@@ -353,6 +361,10 @@
 				1EC931B511EAC43C00EACB73 /* STBuiltInFunctions.m */,
 				1EE406C612F4DE30001F19E3 /* STModule.h */,
 				1EE406C712F4DE30001F19E3 /* STModule.m */,
+				8B5945E5167AFBA700DC5C33 /* STLibraryLoader.h */,
+				8B5945E6167AFBA700DC5C33 /* STLibraryLoader.m */,
+				8B5945E9167AFBAF00DC5C33 /* STFrameworkLoader.h */,
+				8B5945EA167AFBAF00DC5C33 /* STFrameworkLoader.m */,
 			);
 			name = Evaluator;
 			sourceTree = "<group>";
@@ -422,6 +434,8 @@
 				1E1B285311ECD05600100A18 /* NSObject+SteinInternalSupport.h in Headers */,
 				1E1B28E911ECF4E000100A18 /* SteinException.h in Headers */,
 				1EE406C812F4DE30001F19E3 /* STModule.h in Headers */,
+				8B5945EE167AFEF800DC5C33 /* STLibraryLoader.h in Headers */,
+				8B5945EF167AFEF800DC5C33 /* STFrameworkLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,6 +557,8 @@
 				1E1B285411ECD05800100A18 /* NSObject+SteinInternalSupport.m in Sources */,
 				1E1B28EA11ECF4E000100A18 /* SteinException.m in Sources */,
 				1EE406C912F4DE30001F19E3 /* STModule.m in Sources */,
+				8B5945EC167AFD5E00DC5C33 /* STLibraryLoader.m in Sources */,
+				8B5945ED167AFEEB00DC5C33 /* STFrameworkLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
