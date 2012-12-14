@@ -156,7 +156,7 @@ id STTypeBridgeConvertValueOfTypeIntoObject(void *value, const char *objcType)
 			
 		case kObjectiveCTypeClass:
 		case kObjectiveCTypeObject:
-			return (__bridge_transfer id)(*(void **)value) ?: STNull;
+			return (__bridge id)(*(void **)value) ?: STNull;
 			
 		case kObjectiveCTypeSelector:
 			return NSStringFromSelector(*(SEL *)value);
