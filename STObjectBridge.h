@@ -9,7 +9,7 @@
 #ifndef STObjectBridge
 #define STObjectBridge 1
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class STList, STScope;
 

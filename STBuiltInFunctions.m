@@ -296,6 +296,13 @@ static id _super(STList *message, STScope *scope)
 
 #pragma mark -
 
+//-
+//  function    autoreleasepool
+//  intention   To encapsulate an area of code in a autorelease pool.
+//  forms {
+//      (autoreleasepool {function}) -> id
+//  }
+//-
 static id autoreleasepool(STList *arguments, STScope *scope)
 {
     if(arguments.count != 1)
@@ -522,6 +529,132 @@ static id include(STList *arguments, STScope *scope)
 	}
 	
 	return [arguments objectAtIndex:arguments.count - 1];
+}
+
+#pragma mark - • Dependencies
+
+static NSString *const SearchDirectories[] = {
+    @"./",
+    @"~/Library/Frameworks",
+    @"/Library/Frameworks",
+    @"/System/Library/Frameworks",
+    
+    @"./SteinLibrary"
+    @"~/Library/SteinLibrary",
+    @"/Library/SteinLibrary",
+};
+static NSUInteger const SearchDirectoriesCount = (sizeof(SearchDirectories) / sizeof(SearchDirectories[0]));
+
+//-
+//  function    require
+//  purpose     To evaluate a list of Stein files passed in.
+//  impure
+//  forms {
+//      (require string...) -> nil
+//  }
+//-
+static id _require(STList *arguments, STScope *scope)
+{
+    NSFileManager *defaultManager = [NSFileManager defaultManager];
+    for (__strong NSString *filename in arguments)
+    {
+        NSString *fullPath = nil;
+        
+        if([filename hasPrefix:@"/"] || [filename hasPrefix:@"."])
+        {
+            fullPath = filename;
+        }
+        else
+        {
+            if(![filename pathExtension])
+            {
+                filename = [filename stringByAppendingPathExtension:@"st"];
+            }
+            
+            for (NSUInteger index = 0; index < SearchDirectoriesCount; index++)
+            {
+                NSString *searchDirectory = SearchDirectories[index];
+                fullPath = [searchDirectory stringByAppendingPathComponent:filename];
+                
+                BOOL isDirectory = NO;
+                if(([defaultManager fileExistsAtPath:fullPath isDirectory:&isDirectory]))
+                {
+                    if(isDirectory)
+                    {
+                        NSString *initPath = [fullPath stringByAppendingPathComponent:@"Prelude.st"];
+                        if([defaultManager fileExistsAtPath:initPath])
+                            fullPath = initPath;
+                        else
+                            STRaiseIssue(arguments.creationLocation, @"Library at path %@ is missing Prelude.st", fullPath);
+                    }
+                    
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+                
+                NSError *error = nil;
+                NSString *fileContents = [NSString stringWithContentsOfFile:fullPath encoding:NSUTF8StringEncoding error:&error];
+                if(!fileContents)
+                    STRaiseIssue(arguments.creationLocation, @"Could not load file %@ for require", fullPath);
+                
+                STEvaluate(fileContents, scope);
+            }
+        }
+    }
+    
+    return STNull;
+}
+
+//-
+//  function    framework
+//  purpose     To import a list of frameworks.
+//  impure
+//  forms {
+//      (framework string...) -> nil
+//  }
+//-
+static id framework(STList *arguments, STScope *scope)
+{
+    for (__strong NSString *filename in arguments)
+    {
+        NSString *fullPath = nil;
+        
+        if([filename hasPrefix:@"/"] || [filename hasPrefix:@"."])
+        {
+            fullPath = filename;
+        }
+        else
+        {
+            if(![filename pathExtension])
+            {
+                filename = [filename stringByAppendingPathExtension:@"framework"];
+            }
+            
+            for (NSUInteger index = 0; index < SearchDirectoriesCount; index++)
+            {
+                NSString *searchDirectory = SearchDirectories[index];
+                fullPath = [searchDirectory stringByAppendingPathComponent:filename];
+                
+                if([[NSFileManager defaultManager] fileExistsAtPath:fullPath])
+                {
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            
+            NSError *error = nil;
+            if(![[NSBundle bundleWithPath:fullPath] loadAndReturnError:&error])
+                STRaiseIssue(arguments.creationLocation, @"Could not load framework. Error %@", error);
+        }
+    }
+    
+    return STNull;
 }
 
 #pragma mark - • Mathematics
@@ -1123,6 +1256,14 @@ STScope *STBuiltInFunctionScope()
                                                         evaluatesOwnArguments:NO]
 		   forConstantNamed:@"include"];
 	
+    //Dependencies
+    [functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&_require
+                                                        evaluatesOwnArguments:NO]
+		   forConstantNamed:@"require"];
+	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&framework
+                                                        evaluatesOwnArguments:NO]
+		   forConstantNamed:@"framework"];
+    
 	//Mathematics
 	[functionScope setValue:[[STBuiltInFunction alloc] initWithImplementation:&plus
                                                         evaluatesOwnArguments:NO]

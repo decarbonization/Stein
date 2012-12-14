@@ -6,7 +6,7 @@
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class STList, STScope;
 

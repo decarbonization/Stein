@@ -9,7 +9,7 @@
 #ifndef STInterpreter_h
 #define STInterpreter_h 1
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class STScope;
 

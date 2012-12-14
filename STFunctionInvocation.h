@@ -6,7 +6,7 @@
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <ffi/ffi.h>
 
 ///The STFunctionInvocation class is an analogue to NSInvocation intended for application of arbitrary functions.

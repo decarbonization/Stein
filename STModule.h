@@ -6,7 +6,7 @@
 //  Copyright 2011 Stein Language. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <Stein/STScope.h>
 
 @interface STModule : STScope

@@ -6,7 +6,7 @@
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #ifndef STParser_h
 #define STParser_h 1

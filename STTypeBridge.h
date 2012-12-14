@@ -9,7 +9,7 @@
 #ifndef STTypeBridge_h
 #define STTypeBridge_h 1
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 typedef struct STPrimitiveValueWrapperDescriptor STPrimitiveValueWrapperDescriptor;
 

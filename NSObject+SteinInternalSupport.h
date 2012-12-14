@@ -6,7 +6,7 @@
 //  Copyright 2010 Stein Language. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <Stein/STFunction.h>
 #import <Stein/STObjectBridge.h>
 
