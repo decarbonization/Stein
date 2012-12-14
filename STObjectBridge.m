@@ -36,6 +36,14 @@ ST_INLINE BOOL IsSelectorExemptFromNullMessaging(SEL selector)
 			selector == @selector(match:));
 }
 
+///Autoreleases a given object, bypassing ARC.
+///
+///This function should be considered dangerous outside of defined use-cases.
+ST_INLINE id STAutoreleaseObject(id object)
+{
+    return objc_msgSend(object, NSSelectorFromString(@"autorelease"));
+}
+
 id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STScope *scope)
 {
 	NSCParameterAssert(selector);
@@ -85,7 +93,19 @@ id STObjectBridgeSend(id target, SEL selector, NSArray *arguments, STScope *scop
 	Byte returnBuffer[STTypeBridgeGetSizeOfObjCType(returnType)];
 	[invocation getReturnValue:returnBuffer];
 	
-	return STTypeBridgeConvertValueOfTypeIntoObject(returnBuffer, returnType);
+	id result = STTypeBridgeConvertValueOfTypeIntoObject(returnBuffer, returnType);
+    
+    //The lifecycle of objects returned from `init` or `new` methods is determined
+    //by the caller. Since we don't want the caller in the script to have to worry
+    //about the lifecycle of the object given back to it in the script, we autorelease
+    //the object here and then return it. If these objects are meant to last beyond
+    //the current scope (e.g. a function, line in the REPL, or AppKit event cycle)
+    //then they will be assigned to variables, which keep the objects around.
+    NSString *selectorString = NSStringFromSelector(selector);
+    if([selectorString hasPrefix:@"init"] || [selectorString hasPrefix:@"new"])
+        STAutoreleaseObject(result);
+    
+    return result;
 }
 
 id STObjectBridgeSendSuper(id target, Class superclass, SEL selector, NSArray *arguments, STScope *scope)
