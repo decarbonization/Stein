@@ -2,7 +2,7 @@
 //  NSObject+SteinTools.h
 //  stein
 //
-//  Created by Peter MacWhinnie on 2009/12/13.
+//  Created by Kevin MacWhinnie on 2009/12/13.
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 

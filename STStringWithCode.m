@@ -2,7 +2,7 @@
 //  STEmbeddedCodeSequences.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 09/12/23.
+//  Created by Kevin MacWhinnie on 09/12/23.
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 

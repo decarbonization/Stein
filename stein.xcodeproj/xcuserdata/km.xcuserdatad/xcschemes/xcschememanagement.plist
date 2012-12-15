@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Svek.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>stein-cli.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -22,6 +27,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>8B594603167B96D600DC5C33</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>8DD76F960486AA7600D96B5E</key>
 		<dict>
 			<key>primary</key>

@@ -2,7 +2,7 @@
 //  STBridgedFunction.h
 //  stein
 //
-//  Created by Peter MacWhinnie on 2009/12/15.
+//  Created by Kevin MacWhinnie on 2009/12/15.
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 

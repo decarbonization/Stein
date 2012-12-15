@@ -2,7 +2,7 @@
 //  STParser.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 2009/12/11.
+//  Created by Kevin MacWhinnie on 2009/12/11.
 //  Copyright 2009 Stein Language. All rights reserved.
 //
 

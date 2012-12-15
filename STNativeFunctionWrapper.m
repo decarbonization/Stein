@@ -2,7 +2,7 @@
 //  STNativeFunctionWrapper.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 10/1/14.
+//  Created by Kevin MacWhinnie on 10/1/14.
 //  Copyright 2010 Stein Language. All rights reserved.
 //
 

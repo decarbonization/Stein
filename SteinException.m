@@ -2,7 +2,7 @@
 //  SteinException.m
 //  stein
 //
-//  Created by Peter MacWhinnie on 7/13/10.
+//  Created by Kevin MacWhinnie on 7/13/10.
 //  Copyright 2010 Stein Language. All rights reserved.
 //
 

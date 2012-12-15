@@ -2,7 +2,7 @@
 //  STModule.h
 //  stein
 //
-//  Created by Peter MacWhinnie on 1/29/11.
+//  Created by Kevin MacWhinnie on 1/29/11.
 //  Copyright 2011 Stein Language. All rights reserved.
 //
 

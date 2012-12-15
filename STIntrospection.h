@@ -2,8 +2,8 @@
 //  STIntrospection.h
 //  Stein
 //
-//  Created by Peter MacWhinnie on 5/26/09.
-//  Copyright 2009 __MyCompanyName__. All rights reserved.
+//  Created by Kevin MacWhinnie on 5/26/09.
+//  Copyright 2009 Kevin MacWhinnie. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

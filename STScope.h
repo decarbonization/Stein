@@ -2,7 +2,7 @@
 //  STScope.h
 //  stein
 //
-//  Created by Peter MacWhinnie on 6/4/10.
+//  Created by Kevin MacWhinnie on 6/4/10.
 //  Copyright 2010 Stein Language. All rights reserved.
 //
 
