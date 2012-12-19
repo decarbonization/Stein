@@ -378,7 +378,7 @@ void STExtendClass(Class classToExtend, STList *expressions)
 					[scope setValue:classToExtend forVariableNamed:@"self" searchParentScopes:NO];
 				}
 				
-				STEvaluate(expression, scope);
+                [(id <STFunction>)classToExtend applyWithArguments:expression inScope:scope];
 			}
 		}
 	}
@@ -399,6 +399,9 @@ Class STDefineClass(NSString *subclassName, Class superclass, STList *expression
 {
 	NSCParameterAssert(subclassName);
 	NSCParameterAssert(superclass);
+    
+    if(!class_conformsToProtocol(superclass, @protocol(NSObject)))
+        STRaiseIssue(expressions.creationLocation, @"Cannot subclass %s, it does not conform to <NSObject>.", class_getName(superclass));
 	
 	NSString *runtimeClassName = nil;
 	if(STUseUniqueRuntimeClassNames)
