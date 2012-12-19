@@ -205,6 +205,8 @@ void STRunREPL()
 	STScope *scope = STBuiltInFunctionScope();
 	
 	printf("stein ready [version %s]\n", [[SteinBundle() objectForInfoDictionaryKey:@"CFBundleShortVersionString"] UTF8String]);
+    
+    NSObject *pool = [NSClassFromString(@"NSAutoreleasePool") new];
 	for (;;)
 	{
 		//Break away if we've been told to quit|exit|EOF.
@@ -215,6 +217,10 @@ void STRunREPL()
 			fprintf(stdout, "goodbye\n");
 			break;
 		}
+        else if(strcmp(rawLine, "collect") == 0)
+        {
+            pool = [NSClassFromString(@"NSAutoreleasePool") new];
+        }
 		
 		@try
 		{
@@ -259,12 +265,9 @@ void STRunREPL()
 				free(partialLine);
 			}
 			
-			
-            @autoreleasepool {
-                //Parse and evaluate the data we just read in from the user, and print out the result.
-                id result = STEvaluate(STParseString(line, @"<<REPL>>"), scope);
-                fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
-            }
+            //Parse and evaluate the data we just read in from the user, and print out the result.
+            id result = STEvaluate(STParseString(line, @"<<REPL>>"), scope);
+            fprintf(stdout, "=> %s\n", [[result prettyDescription] UTF8String]);
 		}
 		@catch (SteinException *e)
 		{

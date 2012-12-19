@@ -26,7 +26,7 @@
 ///then the first parameter should be each key, and the second each value.
 ///
 ///The receiver should expect, and react to both continue and break exceptions as appropriate.
-- (id)foreach:(id < STFunction >)function;
+- (id)foreach:(id <STFunction>)function;
 
 ///Apply a function to each object in the receiver's contents, and collect the result into a new enumerable object.
 ///
@@ -40,7 +40,7 @@
 ///then the first parameter should be each key, and the second each value.
 ///
 ///The receiver should expect, and react to both continue and break exceptions as appropriate.
-- (id)map:(id < STFunction >)function;
+- (id)map:(id <STFunction>)function;
 
 ///Apply a function to each object in the receiver's contents, and filter out every object that the function returns false for.
 ///
@@ -55,7 +55,7 @@
 ///then the first parameter should be each key, and the second each value.
 
 ///The receiver should expect, and react to both continue and break exceptions as appropriate.
-- (id)filter:(id < STFunction >)function;
+- (id)filter:(id <STFunction>)function;
 
 @end
 

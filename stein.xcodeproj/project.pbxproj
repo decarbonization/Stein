@@ -45,6 +45,9 @@
 		8B59466C167BA49900DC5C33 /* ClassesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59466A167BA49900DC5C33 /* ClassesViewController.xib */; };
 		8B59CF7B167BB79500FF1A6E /* MethodsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59CF79167BB79500FF1A6E /* MethodsViewController.m */; };
 		8B59CF7C167BB79500FF1A6E /* MethodsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */; };
+		8B59CF8E167C48FB00FF1A6E /* PromptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59CF8C167C48FB00FF1A6E /* PromptViewController.m */; };
+		8B59CF8F167C48FB00FF1A6E /* PromptViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59CF8D167C48FB00FF1A6E /* PromptViewController.xib */; };
+		8B59CFB8167D491000FF1A6E /* STNativeBlockWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59CFB5167D490D00FF1A6E /* STNativeBlockWrapper.m */; };
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		8DD76F9F0486AA7600D96B5E /* stein.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* stein.1 */; };
@@ -219,6 +222,11 @@
 		8B59CF78167BB79500FF1A6E /* MethodsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MethodsViewController.h; sourceTree = "<group>"; };
 		8B59CF79167BB79500FF1A6E /* MethodsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MethodsViewController.m; sourceTree = "<group>"; };
 		8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MethodsViewController.xib; sourceTree = "<group>"; };
+		8B59CF8B167C48FB00FF1A6E /* PromptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptViewController.h; sourceTree = "<group>"; };
+		8B59CF8C167C48FB00FF1A6E /* PromptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptViewController.m; sourceTree = "<group>"; };
+		8B59CF8D167C48FB00FF1A6E /* PromptViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptViewController.xib; sourceTree = "<group>"; };
+		8B59CFB4167D490D00FF1A6E /* STNativeBlockWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeBlockWrapper.h; sourceTree = "<group>"; };
+		8B59CFB5167D490D00FF1A6E /* STNativeBlockWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeBlockWrapper.m; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* stein */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stein; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6859EA3029092ED04C91782 /* stein.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = stein.1; sourceTree = "<group>"; };
 		C806B70210D2D96C00A64BEE /* STList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STList.h; sourceTree = "<group>"; };
@@ -380,18 +388,7 @@
 			children = (
 				8B594665167BA41200DC5C33 /* Support */,
 				8B594667167BA41A00DC5C33 /* iPhone Navigation Stack */,
-				8B594619167B96D600DC5C33 /* AppDelegate.h */,
-				8B59461A167B96D600DC5C33 /* AppDelegate.m */,
-				8B59461C167B96D600DC5C33 /* MainMenu.xib */,
-				8B59462F167B977C00DC5C33 /* WorkspaceWindowController.h */,
-				8B594630167B977C00DC5C33 /* WorkspaceWindowController.m */,
-				8B594632167B978A00DC5C33 /* WorkspaceWindowController.xib */,
-				8B594668167BA49900DC5C33 /* ClassesViewController.h */,
-				8B594669167BA49900DC5C33 /* ClassesViewController.m */,
-				8B59466A167BA49900DC5C33 /* ClassesViewController.xib */,
-				8B59CF78167BB79500FF1A6E /* MethodsViewController.h */,
-				8B59CF79167BB79500FF1A6E /* MethodsViewController.m */,
-				8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */,
+				8B59CF89167C484E00FF1A6E /* Controllers */,
 				8B59460E167B96D600DC5C33 /* Supporting Files */,
 			);
 			path = Svek;
@@ -441,6 +438,44 @@
 			name = "iPhone Navigation Stack";
 			sourceTree = "<group>";
 		};
+		8B59CF87167C483F00FF1A6E /* Class Navigation Stack */ = {
+			isa = PBXGroup;
+			children = (
+				8B594668167BA49900DC5C33 /* ClassesViewController.h */,
+				8B594669167BA49900DC5C33 /* ClassesViewController.m */,
+				8B59466A167BA49900DC5C33 /* ClassesViewController.xib */,
+				8B59CF78167BB79500FF1A6E /* MethodsViewController.h */,
+				8B59CF79167BB79500FF1A6E /* MethodsViewController.m */,
+				8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */,
+			);
+			name = "Class Navigation Stack";
+			sourceTree = "<group>";
+		};
+		8B59CF89167C484E00FF1A6E /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				8B594619167B96D600DC5C33 /* AppDelegate.h */,
+				8B59461A167B96D600DC5C33 /* AppDelegate.m */,
+				8B59461C167B96D600DC5C33 /* MainMenu.xib */,
+				8B59462F167B977C00DC5C33 /* WorkspaceWindowController.h */,
+				8B594630167B977C00DC5C33 /* WorkspaceWindowController.m */,
+				8B594632167B978A00DC5C33 /* WorkspaceWindowController.xib */,
+				8B59CF87167C483F00FF1A6E /* Class Navigation Stack */,
+				8B59CF8A167C487B00FF1A6E /* Prompt Stack */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		8B59CF8A167C487B00FF1A6E /* Prompt Stack */ = {
+			isa = PBXGroup;
+			children = (
+				8B59CF8B167C48FB00FF1A6E /* PromptViewController.h */,
+				8B59CF8C167C48FB00FF1A6E /* PromptViewController.m */,
+				8B59CF8D167C48FB00FF1A6E /* PromptViewController.xib */,
+			);
+			name = "Prompt Stack";
+			sourceTree = "<group>";
+		};
 		C6859EA2029092E104C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -471,6 +506,8 @@
 				C83EF1E410D877300037A956 /* STBridgedFunction.m */,
 				C83EF1F510D877960037A956 /* STFunctionInvocation.h */,
 				C83EF1F610D877960037A956 /* STFunctionInvocation.m */,
+				8B59CFB4167D490D00FF1A6E /* STNativeBlockWrapper.h */,
+				8B59CFB5167D490D00FF1A6E /* STNativeBlockWrapper.m */,
 			);
 			name = "Function Bridging";
 			sourceTree = "<group>";
@@ -711,6 +748,7 @@
 				8B594633167B978A00DC5C33 /* WorkspaceWindowController.xib in Resources */,
 				8B59466C167BA49900DC5C33 /* ClassesViewController.xib in Resources */,
 				8B59CF7C167BB79500FF1A6E /* MethodsViewController.xib in Resources */,
+				8B59CF8F167C48FB00FF1A6E /* PromptViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -742,6 +780,7 @@
 				8B59465F167B994C00DC5C33 /* RKPromise.m in Sources */,
 				8B59466B167BA49900DC5C33 /* ClassesViewController.m in Sources */,
 				8B59CF7B167BB79500FF1A6E /* MethodsViewController.m in Sources */,
+				8B59CF8E167C48FB00FF1A6E /* PromptViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -781,6 +820,7 @@
 				1EE406C912F4DE30001F19E3 /* STModule.m in Sources */,
 				8B5945EC167AFD5E00DC5C33 /* STLibraryLoader.m in Sources */,
 				8B5945ED167AFEEB00DC5C33 /* STFrameworkLoader.m in Sources */,
+				8B59CFB8167D491000FF1A6E /* STNativeBlockWrapper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

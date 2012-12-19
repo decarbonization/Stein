@@ -10,6 +10,7 @@
 #import "UINavigationController.h"
 
 #import "ClassesViewController.h"
+#import "PromptViewController.h"
 
 @implementation WorkspaceWindowController
 
@@ -29,9 +30,13 @@
     
     [[self window] center];
     
-    self.navigationController = [[UINavigationController alloc] initWithRootViewController:[ClassesViewController new]
-                                                                                  hostView:self.contentView
-                                                                             navigationBar:self.navigationBar];
+    self.classNavigationController = [[UINavigationController alloc] initWithRootViewController:[ClassesViewController new]
+                                                                                  hostView:self.classHostView
+                                                                             navigationBar:self.classNavigationBar];
+    
+    self.promptNavigationController = [[UINavigationController alloc] initWithRootViewController:[PromptViewController new]
+                                                                                        hostView:self.promptHostView
+                                                                                   navigationBar:self.promptNavigationBar];
 }
 
 @end

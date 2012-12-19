@@ -1,31 +1,39 @@
 //
-//  STNativeFunctionWrapper.h
+//  STNativeBlockWrapper.h
 //  stein
 //
-//  Created by Kevin MacWhinnie on 10/1/14.
-//  Copyright 2010 Stein Language. All rights reserved.
+//  Created by Kevin MacWhinnie on 12/15/12.
+//  Copyright (c) 2012 Stein Language. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <Stein/STFunction.h>
-#import <ffi/ffi.h>
 
-///The STNativeFunctionWrapper class is used to create native function wrappers for objects implementing the STFunction protocol.
-///
-///STNativeFunctionWrapper implements the STFunction protocol. This means that a native function wrapper can be used just like any other function. However, you cannot wrap an STNativeFunctionWrapper in another native function wrapper.
-@interface STNativeFunctionWrapper : NSObject <STFunction>
+@class STNativeFunctionWrapper;
+
+enum {
+    BLOCK_HAS_COPY_DISPOSE =  (1 << 25),
+    BLOCK_HAS_CTOR =          (1 << 26),
+    BLOCK_IS_GLOBAL =         (1 << 28),
+    BLOCK_HAS_STRET =         (1 << 29),
+    BLOCK_HAS_SIGNATURE =     (1 << 30),
+};
+
+@interface STNativeBlockWrapper : NSObject <STFunction>
 {
-	NSObject <STFunction> *mFunction;
-	NSMethodSignature *mSignature;
-	
-	ffi_cif *mClosureInformation;
-	
-	ffi_type *mReturnType;
-	ffi_type **mArgumentTypes;
-	
-	ffi_closure *mClosure;
+    int flags;
+    int reserved;
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 {
+        unsigned long int reserved;
+    	unsigned long int size;
+    	void (*copy_helper)(void *dst, void *src);
+    	void (*dispose_helper)(void *src);
+        const char *signature;
+    } *descriptor;
+    
+    STNativeFunctionWrapper *mNativeFunctionWrapper;
 }
-#pragma mark Initialization
 
 ///Initialize the receiver with a specified function object, and a specified type signature.
 ///
@@ -45,8 +53,5 @@
 
 ///The signature of the function that the native function wrapper is wrapping.
 @property (readonly) NSMethodSignature *signature;
-
-///A pointer to the wrapper's native function. This value may be used like any C function pointer.
-@property (readonly) void *functionPointer;
 
 @end

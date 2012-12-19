@@ -62,7 +62,7 @@ static void FunctionBridge(ffi_cif *clossureInformation, void *returnBuffer, voi
 	return nil;
 }
 
-- (id)initWithFunction:(NSObject < STFunction > *)function signature:(NSMethodSignature *)signature
+- (id)initWithFunction:(NSObject <STFunction> *)function signature:(NSMethodSignature *)signature
 {
 	NSParameterAssert(function);
 	NSParameterAssert(signature);

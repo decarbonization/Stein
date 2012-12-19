@@ -12,7 +12,7 @@
 @class STFunctionInvocation;
 
 ///The STBridgedFunction class is used to represent native functions in the Stein programming language.
-@interface STBridgedFunction : NSObject < STFunction >
+@interface STBridgedFunction : NSObject <STFunction>
 {
 	STFunctionInvocation *mInvocation;
 	NSString *mFunctionName;

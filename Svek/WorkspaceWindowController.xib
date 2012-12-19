@@ -87,11 +87,30 @@
 								<object class="NSCustomView" id="175017294">
 									<reference key="NSNextResponder" ref="542852161"/>
 									<int key="NSvFlags">256</int>
-									<array class="NSMutableArray" key="NSSubviews"/>
+									<array class="NSMutableArray" key="NSSubviews">
+										<object class="NSCustomView" id="1018919223">
+											<reference key="NSNextResponder" ref="175017294"/>
+											<int key="NSvFlags">266</int>
+											<string key="NSFrame">{{0, 460}, {452, 40}}</string>
+											<reference key="NSSuperview" ref="175017294"/>
+											<reference key="NSWindow"/>
+											<reference key="NSNextKeyView" ref="7394397"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<string key="NSClassName">UINavigationBar</string>
+										</object>
+										<object class="NSCustomView" id="7394397">
+											<reference key="NSNextResponder" ref="175017294"/>
+											<int key="NSvFlags">274</int>
+											<string key="NSFrameSize">{452, 460}</string>
+											<reference key="NSSuperview" ref="175017294"/>
+											<reference key="NSWindow"/>
+											<string key="NSReuseIdentifierKey">_NS:9</string>
+											<string key="NSClassName">NSView</string>
+										</object>
+									</array>
 									<string key="NSFrame">{{248, 0}, {452, 500}}</string>
 									<reference key="NSSuperview" ref="542852161"/>
 									<reference key="NSWindow"/>
-									<reference key="NSNextKeyView"/>
 									<string key="NSReuseIdentifierKey">_NS:13</string>
 									<string key="NSClassName">NSView</string>
 								</object>
@@ -139,19 +158,35 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">navigationBar</string>
+						<string key="label">classNavigationBar</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="198849190"/>
 					</object>
-					<int key="connectionID">43</int>
+					<int key="connectionID">78</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">contentView</string>
+						<string key="label">classHostView</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="305224585"/>
 					</object>
-					<int key="connectionID">44</int>
+					<int key="connectionID">79</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">promptNavigationBar</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="1018919223"/>
+					</object>
+					<int key="connectionID">82</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">promptHostView</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="7394397"/>
+					</object>
+					<int key="connectionID">83</int>
 				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -218,7 +253,10 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">6</int>
 						<reference key="object" ref="175017294"/>
-						<array class="NSMutableArray" key="children"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="7394397"/>
+							<reference ref="1018919223"/>
+						</array>
 						<reference key="parent" ref="542852161"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -230,6 +268,16 @@
 						<int key="objectID">28</int>
 						<reference key="object" ref="305224585"/>
 						<reference key="parent" ref="745539577"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">80</int>
+						<reference key="object" ref="7394397"/>
+						<reference key="parent" ref="175017294"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">81</int>
+						<reference key="object" ref="1018919223"/>
+						<reference key="parent" ref="175017294"/>
 					</object>
 				</array>
 			</object>
@@ -246,12 +294,14 @@
 				<string key="4.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="6.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="80.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="81.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">77</int>
+			<int key="maxID">83</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -267,16 +317,26 @@
 					<string key="className">WorkspaceWindowController</string>
 					<string key="superclassName">NSWindowController</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="contentView">NSView</string>
-						<string key="navigationBar">UINavigationBar</string>
+						<string key="classHostView">NSView</string>
+						<string key="classNavigationBar">UINavigationBar</string>
+						<string key="promptHostView">NSView</string>
+						<string key="promptNavigationBar">UINavigationBar</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="contentView">
-							<string key="name">contentView</string>
+						<object class="IBToOneOutletInfo" key="classHostView">
+							<string key="name">classHostView</string>
 							<string key="candidateClassName">NSView</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="navigationBar">
-							<string key="name">navigationBar</string>
+						<object class="IBToOneOutletInfo" key="classNavigationBar">
+							<string key="name">classNavigationBar</string>
+							<string key="candidateClassName">UINavigationBar</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="promptHostView">
+							<string key="name">promptHostView</string>
+							<string key="candidateClassName">NSView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="promptNavigationBar">
+							<string key="name">promptNavigationBar</string>
 							<string key="candidateClassName">UINavigationBar</string>
 						</object>
 					</dictionary>

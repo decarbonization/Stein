@@ -318,7 +318,7 @@
 
 #pragma mark -
 
-- (id)foreach:(id < STFunction >)function
+- (id)foreach:(id <STFunction>)function
 {
 	for (id object in self)
 	{
@@ -339,7 +339,7 @@
 	return self;
 }
 
-- (id)map:(id < STFunction >)function
+- (id)map:(id <STFunction>)function
 {
 	STList *mappedObjects = [STList new];
 	
@@ -366,7 +366,7 @@
 	return mappedObjects;
 }
 
-- (id)filter:(id < STFunction >)function
+- (id)filter:(id <STFunction>)function
 {
 	STList *filteredObjects = [STList new];
 	

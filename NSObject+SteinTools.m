@@ -191,7 +191,7 @@
 
 #pragma mark - Enumerable
 
-- (id)foreach:(id < STFunction >)function
+- (id)foreach:(id <STFunction>)function
 {
 	for (NSUInteger index = 0, length = [self length]; index < length; index++)
 	{
@@ -213,7 +213,7 @@
 	return self;
 }
 
-- (id)map:(id < STFunction >)function
+- (id)map:(id <STFunction>)function
 {
 	NSMutableString *string = [NSMutableString string];
 	for (NSUInteger index = 0, length = [self length]; index < length; index++)
@@ -244,7 +244,7 @@
 	return [string copy];
 }
 
-- (id)filter:(id < STFunction >)function
+- (id)filter:(id <STFunction>)function
 {
 	NSMutableString *string = [NSMutableString string];
 	for (NSUInteger index = 0, length = [self length]; index < length; index++)
@@ -303,7 +303,7 @@
 
 #pragma mark - Enumerable
 
-- (id)foreach:(id < STFunction >)function
+- (id)foreach:(id <STFunction>)function
 {
 	for (id object in self)
 	{
@@ -324,7 +324,7 @@
 	return self;
 }
 
-- (id)map:(id < STFunction >)function
+- (id)map:(id <STFunction>)function
 {
 	NSMutableArray *mappedObjects = [NSMutableArray array];
 	
@@ -351,7 +351,7 @@
 	return [mappedObjects copy];
 }
 
-- (id)filter:(id < STFunction >)function
+- (id)filter:(id <STFunction>)function
 {
 	NSMutableArray *filteredObjects = [NSMutableArray array];
 	
@@ -447,7 +447,7 @@
 
 #pragma mark - Enumerable
 
-- (id)foreach:(id < STFunction >)function
+- (id)foreach:(id <STFunction>)function
 {
 	for (id object in self)
 	{
@@ -468,7 +468,7 @@
 	return self;
 }
 
-- (id)map:(id < STFunction >)function
+- (id)map:(id <STFunction>)function
 {
 	NSMutableSet *mappedObjects = [NSMutableSet set];
 	
@@ -495,7 +495,7 @@
 	return [mappedObjects copy];
 }
 
-- (id)filter:(id < STFunction >)function
+- (id)filter:(id <STFunction>)function
 {
 	NSMutableSet *filteredObjects = [NSMutableSet set];
 	
@@ -656,7 +656,7 @@
 
 #pragma mark - Enumerable
 
-- (id)foreach:(id < STFunction >)function
+- (id)foreach:(id <STFunction>)function
 {
 	[self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 		@try
@@ -677,7 +677,7 @@
 	return self;
 }
 
-- (id)map:(id < STFunction >)function
+- (id)map:(id <STFunction>)function
 {
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
 	
@@ -702,7 +702,7 @@
 	return [result copy];
 }
 
-- (id)filter:(id < STFunction >)function
+- (id)filter:(id <STFunction>)function
 {
 	NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:[self count]];
 	

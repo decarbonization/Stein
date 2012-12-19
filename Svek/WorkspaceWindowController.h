@@ -14,12 +14,20 @@
 
 #pragma mark - Outlets
 
-@property (nonatomic, assign) IBOutlet UINavigationBar *navigationBar;
+@property (nonatomic, assign) IBOutlet UINavigationBar *classNavigationBar;
 
-@property (nonatomic, assign) IBOutlet NSView *contentView;
+@property (nonatomic, assign) IBOutlet NSView *classHostView;
+
+#pragma mark -
+
+@property (nonatomic, assign) IBOutlet UINavigationBar *promptNavigationBar;
+
+@property (nonatomic, assign) IBOutlet NSView *promptHostView;
 
 #pragma mark - Properties
 
-@property (nonatomic) UINavigationController *navigationController;
+@property (nonatomic) UINavigationController *classNavigationController;
+
+@property (nonatomic) UINavigationController *promptNavigationController;
 
 @end

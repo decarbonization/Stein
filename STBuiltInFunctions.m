@@ -983,7 +983,7 @@ static id to_native_function(STList *arguments, STScope *scope)
 	for (STSymbol *type in [arguments objectAtIndex:1])
 		[typeString appendString:STTypeBridgeGetObjCTypeForHumanReadableType(type.string)];
 	
-	NSObject < STFunction > *function = STEvaluate([arguments objectAtIndex:2], scope);
+	NSObject <STFunction> *function = STEvaluate([arguments objectAtIndex:2], scope);
 	
 	return [[STNativeFunctionWrapper alloc] initWithFunction:function 
 												   signature:[NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]]];

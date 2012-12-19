@@ -37,7 +37,7 @@
 /// \param	function	The function to apply.
 /// \param	arguments	The arguments to pass to the function.
 /// \result	The result of applying the function.
-ST_INLINE id STFunctionApply(id < STFunction > function, STList *arguments)
+ST_INLINE id STFunctionApply(id <STFunction> function, STList *arguments)
 {
     @autoreleasepool {
         STScope *scope = [STScope scopeWithParentScope:[function superscope]];

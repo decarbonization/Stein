@@ -192,7 +192,7 @@
 
 #pragma mark - STEnumerable
 
-- (id)foreach:(id < STFunction >)function
+- (id)foreach:(id <STFunction>)function
 {
 	NSAssert(mIsArray, @"You cannot enumerate a non-array pointer.");
 	
@@ -205,7 +205,7 @@
 	return self;
 }
 
-- (id)map:(id < STFunction >)function
+- (id)map:(id <STFunction>)function
 {
 	NSAssert(mIsArray, @"You cannot map a non-array pointer.");
 	
@@ -221,7 +221,7 @@
 	return mappedPointerArray;
 }
 
-- (id)filter:(id < STFunction >)function
+- (id)filter:(id <STFunction>)function
 {
 	NSAssert(mIsArray, @"You cannot filter a non-array pointer.");
 	

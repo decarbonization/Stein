@@ -12,7 +12,7 @@
 @class STList, STScope;
 
 ///The STClosure class is responsible for representing closures and functions in Stein.
-@interface STClosure : NSObject < STFunction >
+@interface STClosure : NSObject <STFunction>
 {
 	STScope *mSuperscope;
 	Class mSuperclass;
