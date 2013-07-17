@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>AB6F21AD-C6D0-4848-B29E-F41DF5055E82</string>
+	<key>IDESourceControlProjectName</key>
+	<string>stein</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>290C0850-E2DA-44B1-8040-64A4FE05F043</key>
+		<string>ssh://github.com/decarbonization/Stein.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>stein.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>290C0850-E2DA-44B1-8040-64A4FE05F043</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/decarbonization/Stein.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>290C0850-E2DA-44B1-8040-64A4FE05F043</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>290C0850-E2DA-44B1-8040-64A4FE05F043</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Stein-Lang</string>
+		</dict>
+	</array>
+</dict>
+</plist>

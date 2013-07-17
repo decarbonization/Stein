@@ -23,30 +23,6 @@
 		8B5945ED167AFEEB00DC5C33 /* STFrameworkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5945EA167AFBAF00DC5C33 /* STFrameworkLoader.m */; };
 		8B5945EE167AFEF800DC5C33 /* STLibraryLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5945E5167AFBA700DC5C33 /* STLibraryLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8B5945EF167AFEF800DC5C33 /* STFrameworkLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B5945E9167AFBAF00DC5C33 /* STFrameworkLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8B594608167B96D600DC5C33 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B594607167B96D600DC5C33 /* Cocoa.framework */; };
-		8B594612167B96D600DC5C33 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B594610167B96D600DC5C33 /* InfoPlist.strings */; };
-		8B594614167B96D600DC5C33 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594613167B96D600DC5C33 /* main.m */; };
-		8B59461B167B96D600DC5C33 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59461A167B96D600DC5C33 /* AppDelegate.m */; };
-		8B59461E167B96D600DC5C33 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59461C167B96D600DC5C33 /* MainMenu.xib */; };
-		8B594623167B96EA00DC5C33 /* Stein.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E1640A10D57C0E003F45A9 /* Stein.framework */; };
-		8B594625167B96F400DC5C33 /* Stein.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C8E1640A10D57C0E003F45A9 /* Stein.framework */; };
-		8B594631167B977C00DC5C33 /* WorkspaceWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594630167B977C00DC5C33 /* WorkspaceWindowController.m */; };
-		8B594633167B978A00DC5C33 /* WorkspaceWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B594632167B978A00DC5C33 /* WorkspaceWindowController.xib */; };
-		8B59464F167B988600DC5C33 /* UINavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594643167B988500DC5C33 /* UINavigationController.m */; };
-		8B594650167B988600DC5C33 /* UINavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594645167B988500DC5C33 /* UINavigationBar.m */; };
-		8B594651167B988600DC5C33 /* UINavigationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594647167B988500DC5C33 /* UINavigationItem.m */; };
-		8B594652167B988700DC5C33 /* UIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594649167B988600DC5C33 /* UIViewController.m */; };
-		8B594653167B988700DC5C33 /* UIBarButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59464C167B988600DC5C33 /* UIBarButtonCell.m */; };
-		8B594656167B98F300DC5C33 /* UIBarButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594655167B98F300DC5C33 /* UIBarButton.m */; };
-		8B594659167B993400DC5C33 /* NSBezierPath+MCAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594658167B993400DC5C33 /* NSBezierPath+MCAdditions.m */; };
-		8B59465E167B994C00DC5C33 /* RKPrelude.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59465B167B994B00DC5C33 /* RKPrelude.m */; };
-		8B59465F167B994C00DC5C33 /* RKPromise.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59465D167B994C00DC5C33 /* RKPromise.m */; };
-		8B59466B167BA49900DC5C33 /* ClassesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B594669167BA49900DC5C33 /* ClassesViewController.m */; };
-		8B59466C167BA49900DC5C33 /* ClassesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59466A167BA49900DC5C33 /* ClassesViewController.xib */; };
-		8B59CF7B167BB79500FF1A6E /* MethodsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59CF79167BB79500FF1A6E /* MethodsViewController.m */; };
-		8B59CF7C167BB79500FF1A6E /* MethodsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */; };
-		8B59CF8E167C48FB00FF1A6E /* PromptViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59CF8C167C48FB00FF1A6E /* PromptViewController.m */; };
-		8B59CF8F167C48FB00FF1A6E /* PromptViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B59CF8D167C48FB00FF1A6E /* PromptViewController.xib */; };
 		8B59CFB8167D491000FF1A6E /* STNativeBlockWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B59CFB5167D490D00FF1A6E /* STNativeBlockWrapper.m */; };
 		8DD76F9A0486AA7600D96B5E /* stein_cli.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* stein_cli.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
@@ -140,16 +116,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		8B594624167B96ED00DC5C33 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				8B594625167B96F400DC5C33 /* Stein.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8DD76F9E0486AA7600D96B5E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 8;
@@ -182,49 +148,10 @@
 		8B5945E6167AFBA700DC5C33 /* STLibraryLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STLibraryLoader.m; sourceTree = "<group>"; };
 		8B5945E9167AFBAF00DC5C33 /* STFrameworkLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFrameworkLoader.h; sourceTree = "<group>"; };
 		8B5945EA167AFBAF00DC5C33 /* STFrameworkLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFrameworkLoader.m; sourceTree = "<group>"; };
-		8B594604167B96D600DC5C33 /* Svek.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Svek.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B594607167B96D600DC5C33 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		8B59460A167B96D600DC5C33 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		8B59460B167B96D600DC5C33 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8B59460C167B96D600DC5C33 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		8B59460F167B96D600DC5C33 /* Svek-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Svek-Info.plist"; sourceTree = "<group>"; };
-		8B594611167B96D600DC5C33 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		8B594613167B96D600DC5C33 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		8B594615167B96D600DC5C33 /* Svek-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Svek-Prefix.pch"; sourceTree = "<group>"; };
-		8B594619167B96D600DC5C33 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		8B59461A167B96D600DC5C33 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		8B59461D167B96D600DC5C33 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		8B59462F167B977C00DC5C33 /* WorkspaceWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkspaceWindowController.h; sourceTree = "<group>"; };
-		8B594630167B977C00DC5C33 /* WorkspaceWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WorkspaceWindowController.m; sourceTree = "<group>"; };
-		8B594632167B978A00DC5C33 /* WorkspaceWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WorkspaceWindowController.xib; sourceTree = "<group>"; };
-		8B594642167B988500DC5C33 /* UINavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UINavigationController.h; sourceTree = "<group>"; };
-		8B594643167B988500DC5C33 /* UINavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UINavigationController.m; sourceTree = "<group>"; };
-		8B594644167B988500DC5C33 /* UINavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UINavigationBar.h; sourceTree = "<group>"; };
-		8B594645167B988500DC5C33 /* UINavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UINavigationBar.m; sourceTree = "<group>"; };
-		8B594646167B988500DC5C33 /* UINavigationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UINavigationItem.h; sourceTree = "<group>"; };
-		8B594647167B988500DC5C33 /* UINavigationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UINavigationItem.m; sourceTree = "<group>"; };
-		8B594648167B988600DC5C33 /* UIViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewController.h; sourceTree = "<group>"; };
-		8B594649167B988600DC5C33 /* UIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewController.m; sourceTree = "<group>"; };
-		8B59464A167B988600DC5C33 /* UIViewController_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewController_Private.h; sourceTree = "<group>"; };
-		8B59464B167B988600DC5C33 /* UIBarButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBarButtonCell.h; sourceTree = "<group>"; };
-		8B59464C167B988600DC5C33 /* UIBarButtonCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBarButtonCell.m; sourceTree = "<group>"; };
-		8B59464D167B988600DC5C33 /* UIBarButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBarButton.h; sourceTree = "<group>"; };
-		8B594655167B98F300DC5C33 /* UIBarButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBarButton.m; sourceTree = "<group>"; };
-		8B594657167B993400DC5C33 /* NSBezierPath+MCAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBezierPath+MCAdditions.h"; sourceTree = "<group>"; };
-		8B594658167B993400DC5C33 /* NSBezierPath+MCAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBezierPath+MCAdditions.m"; sourceTree = "<group>"; };
-		8B59465A167B994B00DC5C33 /* RKPrelude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPrelude.h; sourceTree = "<group>"; };
-		8B59465B167B994B00DC5C33 /* RKPrelude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPrelude.m; sourceTree = "<group>"; };
-		8B59465C167B994C00DC5C33 /* RKPromise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPromise.h; sourceTree = "<group>"; };
-		8B59465D167B994C00DC5C33 /* RKPromise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPromise.m; sourceTree = "<group>"; };
-		8B594668167BA49900DC5C33 /* ClassesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassesViewController.h; sourceTree = "<group>"; };
-		8B594669167BA49900DC5C33 /* ClassesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClassesViewController.m; sourceTree = "<group>"; };
-		8B59466A167BA49900DC5C33 /* ClassesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ClassesViewController.xib; sourceTree = "<group>"; };
-		8B59CF78167BB79500FF1A6E /* MethodsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MethodsViewController.h; sourceTree = "<group>"; };
-		8B59CF79167BB79500FF1A6E /* MethodsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MethodsViewController.m; sourceTree = "<group>"; };
-		8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MethodsViewController.xib; sourceTree = "<group>"; };
-		8B59CF8B167C48FB00FF1A6E /* PromptViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptViewController.h; sourceTree = "<group>"; };
-		8B59CF8C167C48FB00FF1A6E /* PromptViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptViewController.m; sourceTree = "<group>"; };
-		8B59CF8D167C48FB00FF1A6E /* PromptViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptViewController.xib; sourceTree = "<group>"; };
 		8B59CFB4167D490D00FF1A6E /* STNativeBlockWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeBlockWrapper.h; sourceTree = "<group>"; };
 		8B59CFB5167D490D00FF1A6E /* STNativeBlockWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeBlockWrapper.m; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* stein */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stein; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -271,15 +198,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8B594601167B96D600DC5C33 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8B594623167B96EA00DC5C33 /* Stein.framework in Frameworks */,
-				8B594608167B96D600DC5C33 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8DD76F9B0486AA7600D96B5E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -308,7 +226,6 @@
 			isa = PBXGroup;
 			children = (
 				C8E164AD10D57C6B003F45A9 /* Stein CLI */,
-				8B59460D167B96D600DC5C33 /* Svek */,
 				C8E164B410D57C9D003F45A9 /* Stein Framework */,
 				C6859EA2029092E104C91782 /* Documentation */,
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
@@ -346,7 +263,6 @@
 			children = (
 				8DD76FA10486AA7600D96B5E /* stein */,
 				C8E1640A10D57C0E003F45A9 /* Stein.framework */,
-				8B594604167B96D600DC5C33 /* Svek.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -381,99 +297,6 @@
 				8B59460C167B96D600DC5C33 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		8B59460D167B96D600DC5C33 /* Svek */ = {
-			isa = PBXGroup;
-			children = (
-				8B594665167BA41200DC5C33 /* Support */,
-				8B594667167BA41A00DC5C33 /* iPhone Navigation Stack */,
-				8B59CF89167C484E00FF1A6E /* Controllers */,
-				8B59460E167B96D600DC5C33 /* Supporting Files */,
-			);
-			path = Svek;
-			sourceTree = "<group>";
-		};
-		8B59460E167B96D600DC5C33 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				8B59460F167B96D600DC5C33 /* Svek-Info.plist */,
-				8B594610167B96D600DC5C33 /* InfoPlist.strings */,
-				8B594613167B96D600DC5C33 /* main.m */,
-				8B594615167B96D600DC5C33 /* Svek-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		8B594665167BA41200DC5C33 /* Support */ = {
-			isa = PBXGroup;
-			children = (
-				8B59465A167B994B00DC5C33 /* RKPrelude.h */,
-				8B59465B167B994B00DC5C33 /* RKPrelude.m */,
-				8B59465C167B994C00DC5C33 /* RKPromise.h */,
-				8B59465D167B994C00DC5C33 /* RKPromise.m */,
-				8B594657167B993400DC5C33 /* NSBezierPath+MCAdditions.h */,
-				8B594658167B993400DC5C33 /* NSBezierPath+MCAdditions.m */,
-			);
-			name = Support;
-			sourceTree = "<group>";
-		};
-		8B594667167BA41A00DC5C33 /* iPhone Navigation Stack */ = {
-			isa = PBXGroup;
-			children = (
-				8B594642167B988500DC5C33 /* UINavigationController.h */,
-				8B594643167B988500DC5C33 /* UINavigationController.m */,
-				8B594644167B988500DC5C33 /* UINavigationBar.h */,
-				8B594645167B988500DC5C33 /* UINavigationBar.m */,
-				8B594646167B988500DC5C33 /* UINavigationItem.h */,
-				8B594647167B988500DC5C33 /* UINavigationItem.m */,
-				8B594648167B988600DC5C33 /* UIViewController.h */,
-				8B594649167B988600DC5C33 /* UIViewController.m */,
-				8B59464A167B988600DC5C33 /* UIViewController_Private.h */,
-				8B59464B167B988600DC5C33 /* UIBarButtonCell.h */,
-				8B59464C167B988600DC5C33 /* UIBarButtonCell.m */,
-				8B59464D167B988600DC5C33 /* UIBarButton.h */,
-				8B594655167B98F300DC5C33 /* UIBarButton.m */,
-			);
-			name = "iPhone Navigation Stack";
-			sourceTree = "<group>";
-		};
-		8B59CF87167C483F00FF1A6E /* Class Navigation Stack */ = {
-			isa = PBXGroup;
-			children = (
-				8B594668167BA49900DC5C33 /* ClassesViewController.h */,
-				8B594669167BA49900DC5C33 /* ClassesViewController.m */,
-				8B59466A167BA49900DC5C33 /* ClassesViewController.xib */,
-				8B59CF78167BB79500FF1A6E /* MethodsViewController.h */,
-				8B59CF79167BB79500FF1A6E /* MethodsViewController.m */,
-				8B59CF7A167BB79500FF1A6E /* MethodsViewController.xib */,
-			);
-			name = "Class Navigation Stack";
-			sourceTree = "<group>";
-		};
-		8B59CF89167C484E00FF1A6E /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				8B594619167B96D600DC5C33 /* AppDelegate.h */,
-				8B59461A167B96D600DC5C33 /* AppDelegate.m */,
-				8B59461C167B96D600DC5C33 /* MainMenu.xib */,
-				8B59462F167B977C00DC5C33 /* WorkspaceWindowController.h */,
-				8B594630167B977C00DC5C33 /* WorkspaceWindowController.m */,
-				8B594632167B978A00DC5C33 /* WorkspaceWindowController.xib */,
-				8B59CF87167C483F00FF1A6E /* Class Navigation Stack */,
-				8B59CF8A167C487B00FF1A6E /* Prompt Stack */,
-			);
-			name = Controllers;
-			sourceTree = "<group>";
-		};
-		8B59CF8A167C487B00FF1A6E /* Prompt Stack */ = {
-			isa = PBXGroup;
-			children = (
-				8B59CF8B167C48FB00FF1A6E /* PromptViewController.h */,
-				8B59CF8C167C48FB00FF1A6E /* PromptViewController.m */,
-				8B59CF8D167C48FB00FF1A6E /* PromptViewController.xib */,
-			);
-			name = "Prompt Stack";
 			sourceTree = "<group>";
 		};
 		C6859EA2029092E104C91782 /* Documentation */ = {
@@ -648,24 +471,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		8B594603167B96D600DC5C33 /* Svek */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8B594621167B96D600DC5C33 /* Build configuration list for PBXNativeTarget "Svek" */;
-			buildPhases = (
-				8B594600167B96D600DC5C33 /* Sources */,
-				8B594624167B96ED00DC5C33 /* CopyFiles */,
-				8B594601167B96D600DC5C33 /* Frameworks */,
-				8B594602167B96D600DC5C33 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Svek;
-			productName = Svek;
-			productReference = 8B594604167B96D600DC5C33 /* Svek.app */;
-			productType = "com.apple.product-type.application";
-		};
 		8DD76F960486AA7600D96B5E /* stein */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "stein" */;
@@ -733,25 +538,11 @@
 			targets = (
 				8DD76F960486AA7600D96B5E /* stein */,
 				C8E1640910D57C0E003F45A9 /* Stein */,
-				8B594603167B96D600DC5C33 /* Svek */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8B594602167B96D600DC5C33 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8B594612167B96D600DC5C33 /* InfoPlist.strings in Resources */,
-				8B59461E167B96D600DC5C33 /* MainMenu.xib in Resources */,
-				8B594633167B978A00DC5C33 /* WorkspaceWindowController.xib in Resources */,
-				8B59466C167BA49900DC5C33 /* ClassesViewController.xib in Resources */,
-				8B59CF7C167BB79500FF1A6E /* MethodsViewController.xib in Resources */,
-				8B59CF8F167C48FB00FF1A6E /* PromptViewController.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C8E1640610D57C0E003F45A9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -762,28 +553,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8B594600167B96D600DC5C33 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8B594614167B96D600DC5C33 /* main.m in Sources */,
-				8B59461B167B96D600DC5C33 /* AppDelegate.m in Sources */,
-				8B594631167B977C00DC5C33 /* WorkspaceWindowController.m in Sources */,
-				8B59464F167B988600DC5C33 /* UINavigationController.m in Sources */,
-				8B594650167B988600DC5C33 /* UINavigationBar.m in Sources */,
-				8B594651167B988600DC5C33 /* UINavigationItem.m in Sources */,
-				8B594652167B988700DC5C33 /* UIViewController.m in Sources */,
-				8B594653167B988700DC5C33 /* UIBarButtonCell.m in Sources */,
-				8B594656167B98F300DC5C33 /* UIBarButton.m in Sources */,
-				8B594659167B993400DC5C33 /* NSBezierPath+MCAdditions.m in Sources */,
-				8B59465E167B994C00DC5C33 /* RKPrelude.m in Sources */,
-				8B59465F167B994C00DC5C33 /* RKPromise.m in Sources */,
-				8B59466B167BA49900DC5C33 /* ClassesViewController.m in Sources */,
-				8B59CF7B167BB79500FF1A6E /* MethodsViewController.m in Sources */,
-				8B59CF8E167C48FB00FF1A6E /* PromptViewController.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8DD76F990486AA7600D96B5E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -833,25 +602,6 @@
 			targetProxy = C8E1641210D57C33003F45A9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		8B594610167B96D600DC5C33 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8B594611167B96D600DC5C33 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		8B59461C167B96D600DC5C33 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8B59461D167B96D600DC5C33 /* en */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB927508733DD40010E9CD /* Debug */ = {
@@ -914,61 +664,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
-			};
-			name = Release;
-		};
-		8B59461F167B96D600DC5C33 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Svek/Svek-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "Svek/Svek-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		8B594620167B96D600DC5C33 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Svek/Svek-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "Svek/Svek-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
@@ -1048,15 +743,6 @@
 			buildConfigurations = (
 				1DEB927908733DD40010E9CD /* Debug */,
 				1DEB927A08733DD40010E9CD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8B594621167B96D600DC5C33 /* Build configuration list for PBXNativeTarget "Svek" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8B59461F167B96D600DC5C33 /* Debug */,
-				8B594620167B96D600DC5C33 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -224,7 +224,7 @@
 			id result = STFunctionApply(function, [[STList alloc] initWithObjects:character, nil]);
 			if([result isKindOfClass:[NSNumber class]])
 			{
-				[string appendFormat:@"%C", [result charValue]];
+				[string appendFormat:@"%c", [result charValue]];
 			}
 			else
 			{
@@ -254,7 +254,7 @@
 			NSNumber *character = [NSNumber numberWithChar:[self characterAtIndex:index]];
 			if(STIsTrue(STFunctionApply(function, [[STList alloc] initWithObjects:character, nil])))
 			{
-				[string appendFormat:@"%C", [character charValue]];
+				[string appendFormat:@"%c", [character charValue]];
 			}
 		}
 		@catch (STBreakException *e)
