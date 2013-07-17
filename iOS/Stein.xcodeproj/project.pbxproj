@@ -1,0 +1,692 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8B15E1E01734886A00605418 /* PRTProjectCreationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B15E1DE1734886A00605418 /* PRTProjectCreationViewController.m */; };
+		8B15E1E11734886A00605418 /* PRTProjectCreationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B15E1DF1734886A00605418 /* PRTProjectCreationViewController.xib */; };
+		8B15E1E41734927C00605418 /* PRTProjectDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B15E1E31734927C00605418 /* PRTProjectDetailViewController.m */; };
+		8B51BF10172C849F00DF2890 /* PRTProjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF0F172C849F00DF2890 /* PRTProjectManager.m */; };
+		8B51BF3C172C85A400DF2890 /* RKActivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF13172C85A400DF2890 /* RKActivityManager.m */; };
+		8B51BF3D172C85A400DF2890 /* RKAwait.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF15172C85A400DF2890 /* RKAwait.m */; };
+		8B51BF3E172C85A400DF2890 /* RKBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF17172C85A400DF2890 /* RKBinding.m */; };
+		8B51BF3F172C85A400DF2890 /* RKBlockBasedValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF19172C85A400DF2890 /* RKBlockBasedValueTransformer.m */; };
+		8B51BF40172C85A400DF2890 /* RKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF1B172C85A400DF2890 /* RKDefaults.m */; };
+		8B51BF41172C85A400DF2890 /* RKPossibility.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF1D172C85A400DF2890 /* RKPossibility.m */; };
+		8B51BF42172C85A400DF2890 /* RKPrelude.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF1F172C85A400DF2890 /* RKPrelude.m */; };
+		8B51BF43172C85A400DF2890 /* RKPromise.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF21172C85A400DF2890 /* RKPromise.m */; };
+		8B51BF44172C85A400DF2890 /* RKReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF23172C85A400DF2890 /* RKReachability.m */; };
+		8B51BF45172C85A400DF2890 /* RKURLRequestPromise.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF25172C85A400DF2890 /* RKURLRequestPromise.m */; };
+		8B51BF46172C85A400DF2890 /* RKURLRequestPromiseCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF27172C85A400DF2890 /* RKURLRequestPromiseCacheManager.m */; };
+		8B51BF52172C85C200DF2890 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B51BF51172C85C100DF2890 /* CFNetwork.framework */; };
+		8B51BF54172C85D700DF2890 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B51BF53172C85D700DF2890 /* SystemConfiguration.framework */; };
+		8B51BF56172C85E000DF2890 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B51BF55172C85E000DF2890 /* MediaPlayer.framework */; };
+		8B51BF59172C8A6E00DF2890 /* NSBundle+RTProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF58172C8A6E00DF2890 /* NSBundle+RTProcess.m */; };
+		8B51BF5D172C8BA600DF2890 /* PRTProjectManagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF5C172C8BA600DF2890 /* PRTProjectManagerViewController.m */; };
+		8B51BF61172C8DDF00DF2890 /* RTHostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B51BF60172C8DDF00DF2890 /* RTHostViewController.m */; };
+		8B5D189316A23DDB00D9D511 /* PRTRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5D189116A23DDB00D9D511 /* PRTRootViewController.m */; };
+		8B5D189816A23ECC00D9D511 /* PRTConsoleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5D189616A23ECC00D9D511 /* PRTConsoleViewController.m */; };
+		8B5D189916A23ECC00D9D511 /* PRTConsoleViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B5D189716A23ECC00D9D511 /* PRTConsoleViewController.xib */; };
+		8B5D18B516A3BDF600D9D511 /* RTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5D18B416A3BDF600D9D511 /* RTAppDelegate.m */; };
+		8B5D18B816A3BEEF00D9D511 /* RTProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5D18B716A3BEEF00D9D511 /* RTProcess.m */; };
+		8B5D192616A51E0700D9D511 /* ConsolePrelude.st in Resources */ = {isa = PBXBuildFile; fileRef = 8B5D192516A51E0700D9D511 /* ConsolePrelude.st */; };
+		8BB4D98F16A21DED00821168 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB4D98E16A21DED00821168 /* UIKit.framework */; };
+		8BB4D99116A21DED00821168 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB4D99016A21DED00821168 /* Foundation.framework */; };
+		8BB4D99316A21DED00821168 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB4D99216A21DED00821168 /* CoreGraphics.framework */; };
+		8BB4D99916A21DED00821168 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8BB4D99716A21DED00821168 /* InfoPlist.strings */; };
+		8BB4D99B16A21DED00821168 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D99A16A21DED00821168 /* main.m */; };
+		8BB4D99F16A21DED00821168 /* PRTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D99E16A21DED00821168 /* PRTAppDelegate.m */; };
+		8BB4D9A116A21DED00821168 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BB4D9A016A21DED00821168 /* Default.png */; };
+		8BB4D9A316A21DED00821168 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BB4D9A216A21DED00821168 /* Default@2x.png */; };
+		8BB4D9A516A21DED00821168 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BB4D9A416A21DED00821168 /* Default-568h@2x.png */; };
+		8BB4D9FE16A21E8000821168 /* STIntrospection.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9CB16A21E8000821168 /* STIntrospection.m */; };
+		8BB4D9FF16A21E8000821168 /* NSObject+SteinTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9CD16A21E8000821168 /* NSObject+SteinTools.m */; };
+		8BB4DA0016A21E8000821168 /* NSObject+SteinInternalSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9CF16A21E8000821168 /* NSObject+SteinInternalSupport.m */; };
+		8BB4DA0116A21E8000821168 /* STEnumerable.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9D216A21E8000821168 /* STEnumerable.m */; };
+		8BB4DA0216A21E8000821168 /* STInterpreter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9D416A21E8000821168 /* STInterpreter.m */; };
+		8BB4DA0316A21E8000821168 /* STScope.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9D616A21E8000821168 /* STScope.m */; };
+		8BB4DA0416A21E8000821168 /* STClosure.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9D816A21E8000821168 /* STClosure.m */; };
+		8BB4DA0516A21E8000821168 /* STBuiltInFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9DA16A21E8000821168 /* STBuiltInFunctions.m */; };
+		8BB4DA0616A21E8000821168 /* STModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9DC16A21E8000821168 /* STModule.m */; };
+		8BB4DA0916A21E8000821168 /* STObjectBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9E216A21E8000821168 /* STObjectBridge.m */; };
+		8BB4DA0A16A21E8000821168 /* STNativeFunctionWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9E416A21E8000821168 /* STNativeFunctionWrapper.m */; };
+		8BB4DA0B16A21E8000821168 /* STBridgedFunction.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9E616A21E8000821168 /* STBridgedFunction.m */; };
+		8BB4DA0C16A21E8000821168 /* STFunctionInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9E816A21E8000821168 /* STFunctionInvocation.m */; };
+		8BB4DA0D16A21E8000821168 /* STNativeBlockWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9EA16A21E8000821168 /* STNativeBlockWrapper.m */; };
+		8BB4DA0E16A21E8000821168 /* STTypeBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9EC16A21E8000821168 /* STTypeBridge.m */; };
+		8BB4DA0F16A21E8000821168 /* STStructClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9EE16A21E8000821168 /* STStructClasses.m */; };
+		8BB4DA1016A21E8000821168 /* STPointer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9F016A21E8000821168 /* STPointer.m */; };
+		8BB4DA1116A21E8000821168 /* STParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9F216A21E8000821168 /* STParser.m */; };
+		8BB4DA1216A21E8000821168 /* STList.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9F416A21E8000821168 /* STList.m */; };
+		8BB4DA1316A21E8000821168 /* STSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9F616A21E8000821168 /* STSymbol.m */; };
+		8BB4DA1416A21E8000821168 /* STStringWithCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9F816A21E8000821168 /* STStringWithCode.m */; };
+		8BB4DA1516A21E8000821168 /* SteinDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9FB16A21E8000821168 /* SteinDefines.m */; };
+		8BB4DA1616A21E8000821168 /* SteinException.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4D9FD16A21E8000821168 /* SteinException.m */; };
+		8BB4DA3F16A223D800821168 /* ffi.c in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4DA3A16A223D800821168 /* ffi.c */; };
+		8BB4DA4016A223D800821168 /* ffi.S in Sources */ = {isa = PBXBuildFile; fileRef = 8BB4DA3C16A223D800821168 /* ffi.S */; };
+		8BB4DA4116A223D800821168 /* libffi-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 8BB4DA3D16A223D800821168 /* libffi-LICENSE */; };
+		8BB4DA4216A223D800821168 /* libffi-README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 8BB4DA3E16A223D800821168 /* libffi-README.markdown */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		8B15E1DD1734886A00605418 /* PRTProjectCreationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRTProjectCreationViewController.h; sourceTree = "<group>"; };
+		8B15E1DE1734886A00605418 /* PRTProjectCreationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRTProjectCreationViewController.m; sourceTree = "<group>"; };
+		8B15E1DF1734886A00605418 /* PRTProjectCreationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PRTProjectCreationViewController.xib; sourceTree = "<group>"; };
+		8B15E1E21734927C00605418 /* PRTProjectDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRTProjectDetailViewController.h; sourceTree = "<group>"; };
+		8B15E1E31734927C00605418 /* PRTProjectDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRTProjectDetailViewController.m; sourceTree = "<group>"; };
+		8B51BF0E172C849F00DF2890 /* PRTProjectManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRTProjectManager.h; sourceTree = "<group>"; };
+		8B51BF0F172C849F00DF2890 /* PRTProjectManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRTProjectManager.m; sourceTree = "<group>"; };
+		8B51BF12172C85A400DF2890 /* RKActivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKActivityManager.h; sourceTree = "<group>"; };
+		8B51BF13172C85A400DF2890 /* RKActivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKActivityManager.m; sourceTree = "<group>"; };
+		8B51BF14172C85A400DF2890 /* RKAwait.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKAwait.h; sourceTree = "<group>"; };
+		8B51BF15172C85A400DF2890 /* RKAwait.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKAwait.m; sourceTree = "<group>"; };
+		8B51BF16172C85A400DF2890 /* RKBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKBinding.h; sourceTree = "<group>"; };
+		8B51BF17172C85A400DF2890 /* RKBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKBinding.m; sourceTree = "<group>"; };
+		8B51BF18172C85A400DF2890 /* RKBlockBasedValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKBlockBasedValueTransformer.h; sourceTree = "<group>"; };
+		8B51BF19172C85A400DF2890 /* RKBlockBasedValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKBlockBasedValueTransformer.m; sourceTree = "<group>"; };
+		8B51BF1A172C85A400DF2890 /* RKDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDefaults.h; sourceTree = "<group>"; };
+		8B51BF1B172C85A400DF2890 /* RKDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDefaults.m; sourceTree = "<group>"; };
+		8B51BF1C172C85A400DF2890 /* RKPossibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPossibility.h; sourceTree = "<group>"; };
+		8B51BF1D172C85A400DF2890 /* RKPossibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPossibility.m; sourceTree = "<group>"; };
+		8B51BF1E172C85A400DF2890 /* RKPrelude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPrelude.h; sourceTree = "<group>"; };
+		8B51BF1F172C85A400DF2890 /* RKPrelude.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPrelude.m; sourceTree = "<group>"; };
+		8B51BF20172C85A400DF2890 /* RKPromise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPromise.h; sourceTree = "<group>"; };
+		8B51BF21172C85A400DF2890 /* RKPromise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPromise.m; sourceTree = "<group>"; };
+		8B51BF22172C85A400DF2890 /* RKReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKReachability.h; sourceTree = "<group>"; };
+		8B51BF23172C85A400DF2890 /* RKReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKReachability.m; sourceTree = "<group>"; };
+		8B51BF24172C85A400DF2890 /* RKURLRequestPromise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURLRequestPromise.h; sourceTree = "<group>"; };
+		8B51BF25172C85A400DF2890 /* RKURLRequestPromise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLRequestPromise.m; sourceTree = "<group>"; };
+		8B51BF26172C85A400DF2890 /* RKURLRequestPromiseCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURLRequestPromiseCacheManager.h; sourceTree = "<group>"; };
+		8B51BF27172C85A400DF2890 /* RKURLRequestPromiseCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLRequestPromiseCacheManager.m; sourceTree = "<group>"; };
+		8B51BF28172C85A400DF2890 /* RoundaboutKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundaboutKit.h; sourceTree = "<group>"; };
+		8B51BF51172C85C100DF2890 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		8B51BF53172C85D700DF2890 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		8B51BF55172C85E000DF2890 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		8B51BF57172C8A6E00DF2890 /* NSBundle+RTProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+RTProcess.h"; sourceTree = "<group>"; };
+		8B51BF58172C8A6E00DF2890 /* NSBundle+RTProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+RTProcess.m"; sourceTree = "<group>"; };
+		8B51BF5B172C8BA600DF2890 /* PRTProjectManagerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRTProjectManagerViewController.h; sourceTree = "<group>"; };
+		8B51BF5C172C8BA600DF2890 /* PRTProjectManagerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRTProjectManagerViewController.m; sourceTree = "<group>"; };
+		8B51BF5F172C8DDF00DF2890 /* RTHostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTHostViewController.h; sourceTree = "<group>"; };
+		8B51BF60172C8DDF00DF2890 /* RTHostViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTHostViewController.m; sourceTree = "<group>"; };
+		8B5D189016A23DDB00D9D511 /* PRTRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRTRootViewController.h; sourceTree = "<group>"; };
+		8B5D189116A23DDB00D9D511 /* PRTRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRTRootViewController.m; sourceTree = "<group>"; };
+		8B5D189516A23ECB00D9D511 /* PRTConsoleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PRTConsoleViewController.h; sourceTree = "<group>"; };
+		8B5D189616A23ECC00D9D511 /* PRTConsoleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PRTConsoleViewController.m; sourceTree = "<group>"; };
+		8B5D189716A23ECC00D9D511 /* PRTConsoleViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PRTConsoleViewController.xib; sourceTree = "<group>"; };
+		8B5D18B316A3BDF600D9D511 /* RTAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTAppDelegate.h; sourceTree = "<group>"; };
+		8B5D18B416A3BDF600D9D511 /* RTAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTAppDelegate.m; sourceTree = "<group>"; };
+		8B5D18B616A3BEEF00D9D511 /* RTProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTProcess.h; sourceTree = "<group>"; };
+		8B5D18B716A3BEEF00D9D511 /* RTProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTProcess.m; sourceTree = "<group>"; };
+		8B5D192516A51E0700D9D511 /* ConsolePrelude.st */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ConsolePrelude.st; sourceTree = "<group>"; };
+		8BB4D98A16A21DED00821168 /* Stein.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stein.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BB4D98E16A21DED00821168 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		8BB4D99016A21DED00821168 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		8BB4D99216A21DED00821168 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		8BB4D99616A21DED00821168 /* Stein-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Stein-Info.plist"; sourceTree = "<group>"; };
+		8BB4D99816A21DED00821168 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8BB4D99A16A21DED00821168 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8BB4D99C16A21DED00821168 /* Stein-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stein-Prefix.pch"; sourceTree = "<group>"; };
+		8BB4D99D16A21DED00821168 /* PRTAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PRTAppDelegate.h; sourceTree = "<group>"; };
+		8BB4D99E16A21DED00821168 /* PRTAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PRTAppDelegate.m; sourceTree = "<group>"; };
+		8BB4D9A016A21DED00821168 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		8BB4D9A216A21DED00821168 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		8BB4D9A416A21DED00821168 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		8BB4D9CA16A21E8000821168 /* STIntrospection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STIntrospection.h; sourceTree = "<group>"; };
+		8BB4D9CB16A21E8000821168 /* STIntrospection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STIntrospection.m; sourceTree = "<group>"; };
+		8BB4D9CC16A21E8000821168 /* NSObject+SteinTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinTools.h"; sourceTree = "<group>"; };
+		8BB4D9CD16A21E8000821168 /* NSObject+SteinTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinTools.m"; sourceTree = "<group>"; };
+		8BB4D9CE16A21E8000821168 /* NSObject+SteinInternalSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SteinInternalSupport.h"; sourceTree = "<group>"; };
+		8BB4D9CF16A21E8000821168 /* NSObject+SteinInternalSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SteinInternalSupport.m"; sourceTree = "<group>"; };
+		8BB4D9D016A21E8000821168 /* STFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFunction.h; sourceTree = "<group>"; };
+		8BB4D9D116A21E8000821168 /* STEnumerable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STEnumerable.h; sourceTree = "<group>"; };
+		8BB4D9D216A21E8000821168 /* STEnumerable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STEnumerable.m; sourceTree = "<group>"; };
+		8BB4D9D316A21E8000821168 /* STInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STInterpreter.h; sourceTree = "<group>"; };
+		8BB4D9D416A21E8000821168 /* STInterpreter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STInterpreter.m; sourceTree = "<group>"; };
+		8BB4D9D516A21E8000821168 /* STScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STScope.h; sourceTree = "<group>"; };
+		8BB4D9D616A21E8000821168 /* STScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STScope.m; sourceTree = "<group>"; };
+		8BB4D9D716A21E8000821168 /* STClosure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STClosure.h; sourceTree = "<group>"; };
+		8BB4D9D816A21E8000821168 /* STClosure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STClosure.m; sourceTree = "<group>"; };
+		8BB4D9D916A21E8000821168 /* STBuiltInFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STBuiltInFunctions.h; sourceTree = "<group>"; };
+		8BB4D9DA16A21E8000821168 /* STBuiltInFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STBuiltInFunctions.m; sourceTree = "<group>"; };
+		8BB4D9DB16A21E8000821168 /* STModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STModule.h; sourceTree = "<group>"; };
+		8BB4D9DC16A21E8000821168 /* STModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STModule.m; sourceTree = "<group>"; };
+		8BB4D9E116A21E8000821168 /* STObjectBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STObjectBridge.h; sourceTree = "<group>"; };
+		8BB4D9E216A21E8000821168 /* STObjectBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STObjectBridge.m; sourceTree = "<group>"; };
+		8BB4D9E316A21E8000821168 /* STNativeFunctionWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeFunctionWrapper.h; sourceTree = "<group>"; };
+		8BB4D9E416A21E8000821168 /* STNativeFunctionWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeFunctionWrapper.m; sourceTree = "<group>"; };
+		8BB4D9E516A21E8000821168 /* STBridgedFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STBridgedFunction.h; sourceTree = "<group>"; };
+		8BB4D9E616A21E8000821168 /* STBridgedFunction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STBridgedFunction.m; sourceTree = "<group>"; };
+		8BB4D9E716A21E8000821168 /* STFunctionInvocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STFunctionInvocation.h; sourceTree = "<group>"; };
+		8BB4D9E816A21E8000821168 /* STFunctionInvocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STFunctionInvocation.m; sourceTree = "<group>"; };
+		8BB4D9E916A21E8000821168 /* STNativeBlockWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STNativeBlockWrapper.h; sourceTree = "<group>"; };
+		8BB4D9EA16A21E8000821168 /* STNativeBlockWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STNativeBlockWrapper.m; sourceTree = "<group>"; };
+		8BB4D9EB16A21E8000821168 /* STTypeBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTypeBridge.h; sourceTree = "<group>"; };
+		8BB4D9EC16A21E8000821168 /* STTypeBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTypeBridge.m; sourceTree = "<group>"; };
+		8BB4D9ED16A21E8000821168 /* STStructClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STStructClasses.h; sourceTree = "<group>"; };
+		8BB4D9EE16A21E8000821168 /* STStructClasses.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STStructClasses.m; sourceTree = "<group>"; };
+		8BB4D9EF16A21E8000821168 /* STPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STPointer.h; sourceTree = "<group>"; };
+		8BB4D9F016A21E8000821168 /* STPointer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STPointer.m; sourceTree = "<group>"; };
+		8BB4D9F116A21E8000821168 /* STParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STParser.h; sourceTree = "<group>"; };
+		8BB4D9F216A21E8000821168 /* STParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STParser.m; sourceTree = "<group>"; };
+		8BB4D9F316A21E8000821168 /* STList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STList.h; sourceTree = "<group>"; };
+		8BB4D9F416A21E8000821168 /* STList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STList.m; sourceTree = "<group>"; };
+		8BB4D9F516A21E8000821168 /* STSymbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STSymbol.h; sourceTree = "<group>"; };
+		8BB4D9F616A21E8000821168 /* STSymbol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STSymbol.m; sourceTree = "<group>"; };
+		8BB4D9F716A21E8000821168 /* STStringWithCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STStringWithCode.h; sourceTree = "<group>"; };
+		8BB4D9F816A21E8000821168 /* STStringWithCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STStringWithCode.m; sourceTree = "<group>"; };
+		8BB4D9F916A21E8000821168 /* Stein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stein.h; sourceTree = "<group>"; };
+		8BB4D9FA16A21E8000821168 /* SteinDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SteinDefines.h; sourceTree = "<group>"; };
+		8BB4D9FB16A21E8000821168 /* SteinDefines.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SteinDefines.m; sourceTree = "<group>"; };
+		8BB4D9FC16A21E8000821168 /* SteinException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SteinException.h; sourceTree = "<group>"; };
+		8BB4D9FD16A21E8000821168 /* SteinException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SteinException.m; sourceTree = "<group>"; };
+		8BB4DA3A16A223D800821168 /* ffi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffi.c; sourceTree = "<group>"; };
+		8BB4DA3B16A223D800821168 /* ffi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ffi.h; sourceTree = "<group>"; };
+		8BB4DA3C16A223D800821168 /* ffi.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = ffi.S; sourceTree = "<group>"; };
+		8BB4DA3D16A223D800821168 /* libffi-LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "libffi-LICENSE"; sourceTree = "<group>"; };
+		8BB4DA3E16A223D800821168 /* libffi-README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "libffi-README.markdown"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8BB4D98716A21DED00821168 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B51BF56172C85E000DF2890 /* MediaPlayer.framework in Frameworks */,
+				8B51BF54172C85D700DF2890 /* SystemConfiguration.framework in Frameworks */,
+				8B51BF52172C85C200DF2890 /* CFNetwork.framework in Frameworks */,
+				8BB4D98F16A21DED00821168 /* UIKit.framework in Frameworks */,
+				8BB4D99116A21DED00821168 /* Foundation.framework in Frameworks */,
+				8BB4D99316A21DED00821168 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8B51BF0D172C848900DF2890 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF0E172C849F00DF2890 /* PRTProjectManager.h */,
+				8B51BF0F172C849F00DF2890 /* PRTProjectManager.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		8B51BF11172C859300DF2890 /* RoundaboutKit */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF12172C85A400DF2890 /* RKActivityManager.h */,
+				8B51BF13172C85A400DF2890 /* RKActivityManager.m */,
+				8B51BF14172C85A400DF2890 /* RKAwait.h */,
+				8B51BF15172C85A400DF2890 /* RKAwait.m */,
+				8B51BF16172C85A400DF2890 /* RKBinding.h */,
+				8B51BF17172C85A400DF2890 /* RKBinding.m */,
+				8B51BF18172C85A400DF2890 /* RKBlockBasedValueTransformer.h */,
+				8B51BF19172C85A400DF2890 /* RKBlockBasedValueTransformer.m */,
+				8B51BF1A172C85A400DF2890 /* RKDefaults.h */,
+				8B51BF1B172C85A400DF2890 /* RKDefaults.m */,
+				8B51BF1C172C85A400DF2890 /* RKPossibility.h */,
+				8B51BF1D172C85A400DF2890 /* RKPossibility.m */,
+				8B51BF1E172C85A400DF2890 /* RKPrelude.h */,
+				8B51BF1F172C85A400DF2890 /* RKPrelude.m */,
+				8B51BF20172C85A400DF2890 /* RKPromise.h */,
+				8B51BF21172C85A400DF2890 /* RKPromise.m */,
+				8B51BF22172C85A400DF2890 /* RKReachability.h */,
+				8B51BF23172C85A400DF2890 /* RKReachability.m */,
+				8B51BF24172C85A400DF2890 /* RKURLRequestPromise.h */,
+				8B51BF25172C85A400DF2890 /* RKURLRequestPromise.m */,
+				8B51BF26172C85A400DF2890 /* RKURLRequestPromiseCacheManager.h */,
+				8B51BF27172C85A400DF2890 /* RKURLRequestPromiseCacheManager.m */,
+				8B51BF28172C85A400DF2890 /* RoundaboutKit.h */,
+			);
+			name = RoundaboutKit;
+			sourceTree = "<group>";
+		};
+		8B51BF5A172C8B9200DF2890 /* Project Management */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF5B172C8BA600DF2890 /* PRTProjectManagerViewController.h */,
+				8B51BF5C172C8BA600DF2890 /* PRTProjectManagerViewController.m */,
+				8B15E1DD1734886A00605418 /* PRTProjectCreationViewController.h */,
+				8B15E1DE1734886A00605418 /* PRTProjectCreationViewController.m */,
+				8B15E1DF1734886A00605418 /* PRTProjectCreationViewController.xib */,
+				8B15E1E21734927C00605418 /* PRTProjectDetailViewController.h */,
+				8B15E1E31734927C00605418 /* PRTProjectDetailViewController.m */,
+			);
+			name = "Project Management";
+			sourceTree = "<group>";
+		};
+		8B51BF5E172C8DD100DF2890 /* Generic */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF5F172C8DDF00DF2890 /* RTHostViewController.h */,
+				8B51BF60172C8DDF00DF2890 /* RTHostViewController.m */,
+			);
+			name = Generic;
+			sourceTree = "<group>";
+		};
+		8B5D188416A2257F00D9D511 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D9E116A21E8000821168 /* STObjectBridge.h */,
+				8BB4D9E216A21E8000821168 /* STObjectBridge.m */,
+				8BB4D9E316A21E8000821168 /* STNativeFunctionWrapper.h */,
+				8BB4D9E416A21E8000821168 /* STNativeFunctionWrapper.m */,
+				8BB4D9E516A21E8000821168 /* STBridgedFunction.h */,
+				8BB4D9E616A21E8000821168 /* STBridgedFunction.m */,
+				8BB4D9E716A21E8000821168 /* STFunctionInvocation.h */,
+				8BB4D9E816A21E8000821168 /* STFunctionInvocation.m */,
+				8BB4D9E916A21E8000821168 /* STNativeBlockWrapper.h */,
+				8BB4D9EA16A21E8000821168 /* STNativeBlockWrapper.m */,
+				8BB4D9EB16A21E8000821168 /* STTypeBridge.h */,
+				8BB4D9EC16A21E8000821168 /* STTypeBridge.m */,
+				8BB4D9ED16A21E8000821168 /* STStructClasses.h */,
+				8BB4D9EE16A21E8000821168 /* STStructClasses.m */,
+			);
+			name = Bridge;
+			sourceTree = "<group>";
+		};
+		8B5D188E16A23DCC00D9D511 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF5E172C8DD100DF2890 /* Generic */,
+				8B51BF5A172C8B9200DF2890 /* Project Management */,
+				8BB4D99D16A21DED00821168 /* PRTAppDelegate.h */,
+				8BB4D99E16A21DED00821168 /* PRTAppDelegate.m */,
+				8B5D189016A23DDB00D9D511 /* PRTRootViewController.h */,
+				8B5D189116A23DDB00D9D511 /* PRTRootViewController.m */,
+				8B5D189516A23ECB00D9D511 /* PRTConsoleViewController.h */,
+				8B5D189616A23ECC00D9D511 /* PRTConsoleViewController.m */,
+				8B5D189716A23ECC00D9D511 /* PRTConsoleViewController.xib */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		8B5D18B116A3BD6D00D9D511 /* App Runtime */ = {
+			isa = PBXGroup;
+			children = (
+				8B5D18B616A3BEEF00D9D511 /* RTProcess.h */,
+				8B5D18B716A3BEEF00D9D511 /* RTProcess.m */,
+				8B5D18B316A3BDF600D9D511 /* RTAppDelegate.h */,
+				8B5D18B416A3BDF600D9D511 /* RTAppDelegate.m */,
+				8B51BF57172C8A6E00DF2890 /* NSBundle+RTProcess.h */,
+				8B51BF58172C8A6E00DF2890 /* NSBundle+RTProcess.m */,
+			);
+			name = "App Runtime";
+			sourceTree = "<group>";
+		};
+		8BB4D97F16A21DED00821168 = {
+			isa = PBXGroup;
+			children = (
+				8BB4D99416A21DED00821168 /* Stein */,
+				8BB4D98D16A21DED00821168 /* Frameworks */,
+				8BB4D98B16A21DED00821168 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8BB4D98B16A21DED00821168 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D98A16A21DED00821168 /* Stein.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8BB4D98D16A21DED00821168 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF55172C85E000DF2890 /* MediaPlayer.framework */,
+				8B51BF53172C85D700DF2890 /* SystemConfiguration.framework */,
+				8B51BF51172C85C100DF2890 /* CFNetwork.framework */,
+				8BB4D98E16A21DED00821168 /* UIKit.framework */,
+				8BB4D99016A21DED00821168 /* Foundation.framework */,
+				8BB4D99216A21DED00821168 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8BB4D99416A21DED00821168 /* Stein */ = {
+			isa = PBXGroup;
+			children = (
+				8B51BF11172C859300DF2890 /* RoundaboutKit */,
+				8BB4DA3916A223D700821168 /* libffi */,
+				8BB4D9C916A21E7800821168 /* Language */,
+				8B51BF0D172C848900DF2890 /* Model */,
+				8B5D18B116A3BD6D00D9D511 /* App Runtime */,
+				8B5D188E16A23DCC00D9D511 /* Controllers */,
+				8BB4D99516A21DED00821168 /* Supporting Files */,
+			);
+			path = Stein;
+			sourceTree = "<group>";
+		};
+		8BB4D99516A21DED00821168 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D99616A21DED00821168 /* Stein-Info.plist */,
+				8BB4D99716A21DED00821168 /* InfoPlist.strings */,
+				8BB4D99A16A21DED00821168 /* main.m */,
+				8BB4D99C16A21DED00821168 /* Stein-Prefix.pch */,
+				8BB4D9A016A21DED00821168 /* Default.png */,
+				8BB4D9A216A21DED00821168 /* Default@2x.png */,
+				8BB4D9A416A21DED00821168 /* Default-568h@2x.png */,
+				8B5D192516A51E0700D9D511 /* ConsolePrelude.st */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8BB4D9C916A21E7800821168 /* Language */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D9F916A21E8000821168 /* Stein.h */,
+				8BB4D9FA16A21E8000821168 /* SteinDefines.h */,
+				8BB4D9FB16A21E8000821168 /* SteinDefines.m */,
+				8BB4D9FC16A21E8000821168 /* SteinException.h */,
+				8BB4D9FD16A21E8000821168 /* SteinException.m */,
+				8BB4DA4516A224EF00821168 /* Interpreter */,
+				8BB4DA4416A224BB00821168 /* Parser */,
+				8BB4DA4316A224B100821168 /* Extensions */,
+				8B5D188416A2257F00D9D511 /* Bridge */,
+			);
+			name = Language;
+			sourceTree = "<group>";
+		};
+		8BB4DA3916A223D700821168 /* libffi */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4DA3A16A223D800821168 /* ffi.c */,
+				8BB4DA3B16A223D800821168 /* ffi.h */,
+				8BB4DA3C16A223D800821168 /* ffi.S */,
+				8BB4DA3D16A223D800821168 /* libffi-LICENSE */,
+				8BB4DA3E16A223D800821168 /* libffi-README.markdown */,
+			);
+			path = libffi;
+			sourceTree = "<group>";
+		};
+		8BB4DA4316A224B100821168 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D9D116A21E8000821168 /* STEnumerable.h */,
+				8BB4D9D216A21E8000821168 /* STEnumerable.m */,
+				8BB4D9CA16A21E8000821168 /* STIntrospection.h */,
+				8BB4D9CB16A21E8000821168 /* STIntrospection.m */,
+				8BB4D9CC16A21E8000821168 /* NSObject+SteinTools.h */,
+				8BB4D9CD16A21E8000821168 /* NSObject+SteinTools.m */,
+				8BB4D9CE16A21E8000821168 /* NSObject+SteinInternalSupport.h */,
+				8BB4D9CF16A21E8000821168 /* NSObject+SteinInternalSupport.m */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		8BB4DA4416A224BB00821168 /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D9EF16A21E8000821168 /* STPointer.h */,
+				8BB4D9F016A21E8000821168 /* STPointer.m */,
+				8BB4D9F116A21E8000821168 /* STParser.h */,
+				8BB4D9F216A21E8000821168 /* STParser.m */,
+				8BB4D9F316A21E8000821168 /* STList.h */,
+				8BB4D9F416A21E8000821168 /* STList.m */,
+				8BB4D9F516A21E8000821168 /* STSymbol.h */,
+				8BB4D9F616A21E8000821168 /* STSymbol.m */,
+				8BB4D9F716A21E8000821168 /* STStringWithCode.h */,
+				8BB4D9F816A21E8000821168 /* STStringWithCode.m */,
+			);
+			name = Parser;
+			sourceTree = "<group>";
+		};
+		8BB4DA4516A224EF00821168 /* Interpreter */ = {
+			isa = PBXGroup;
+			children = (
+				8BB4D9D016A21E8000821168 /* STFunction.h */,
+				8BB4D9D316A21E8000821168 /* STInterpreter.h */,
+				8BB4D9D416A21E8000821168 /* STInterpreter.m */,
+				8BB4D9D516A21E8000821168 /* STScope.h */,
+				8BB4D9D616A21E8000821168 /* STScope.m */,
+				8BB4D9DB16A21E8000821168 /* STModule.h */,
+				8BB4D9DC16A21E8000821168 /* STModule.m */,
+				8BB4D9D716A21E8000821168 /* STClosure.h */,
+				8BB4D9D816A21E8000821168 /* STClosure.m */,
+				8BB4D9D916A21E8000821168 /* STBuiltInFunctions.h */,
+				8BB4D9DA16A21E8000821168 /* STBuiltInFunctions.m */,
+			);
+			name = Interpreter;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8BB4D98916A21DED00821168 /* Stein */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BB4D9A816A21DED00821168 /* Build configuration list for PBXNativeTarget "Stein" */;
+			buildPhases = (
+				8BB4D98616A21DED00821168 /* Sources */,
+				8BB4D98716A21DED00821168 /* Frameworks */,
+				8BB4D98816A21DED00821168 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Stein;
+			productName = Stein;
+			productReference = 8BB4D98A16A21DED00821168 /* Stein.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8BB4D98116A21DED00821168 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Kevin MacWhinnie";
+			};
+			buildConfigurationList = 8BB4D98416A21DED00821168 /* Build configuration list for PBXProject "Stein" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 8BB4D97F16A21DED00821168;
+			productRefGroup = 8BB4D98B16A21DED00821168 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8BB4D98916A21DED00821168 /* Stein */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8BB4D98816A21DED00821168 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BB4D99916A21DED00821168 /* InfoPlist.strings in Resources */,
+				8BB4D9A116A21DED00821168 /* Default.png in Resources */,
+				8BB4D9A316A21DED00821168 /* Default@2x.png in Resources */,
+				8BB4D9A516A21DED00821168 /* Default-568h@2x.png in Resources */,
+				8BB4DA4116A223D800821168 /* libffi-LICENSE in Resources */,
+				8BB4DA4216A223D800821168 /* libffi-README.markdown in Resources */,
+				8B5D189916A23ECC00D9D511 /* PRTConsoleViewController.xib in Resources */,
+				8B5D192616A51E0700D9D511 /* ConsolePrelude.st in Resources */,
+				8B15E1E11734886A00605418 /* PRTProjectCreationViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8BB4D98616A21DED00821168 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8BB4D99B16A21DED00821168 /* main.m in Sources */,
+				8BB4D99F16A21DED00821168 /* PRTAppDelegate.m in Sources */,
+				8BB4D9FE16A21E8000821168 /* STIntrospection.m in Sources */,
+				8BB4D9FF16A21E8000821168 /* NSObject+SteinTools.m in Sources */,
+				8BB4DA0016A21E8000821168 /* NSObject+SteinInternalSupport.m in Sources */,
+				8BB4DA0116A21E8000821168 /* STEnumerable.m in Sources */,
+				8BB4DA0216A21E8000821168 /* STInterpreter.m in Sources */,
+				8BB4DA0316A21E8000821168 /* STScope.m in Sources */,
+				8BB4DA0416A21E8000821168 /* STClosure.m in Sources */,
+				8BB4DA0516A21E8000821168 /* STBuiltInFunctions.m in Sources */,
+				8BB4DA0616A21E8000821168 /* STModule.m in Sources */,
+				8BB4DA0916A21E8000821168 /* STObjectBridge.m in Sources */,
+				8BB4DA0A16A21E8000821168 /* STNativeFunctionWrapper.m in Sources */,
+				8BB4DA0B16A21E8000821168 /* STBridgedFunction.m in Sources */,
+				8BB4DA0C16A21E8000821168 /* STFunctionInvocation.m in Sources */,
+				8BB4DA0D16A21E8000821168 /* STNativeBlockWrapper.m in Sources */,
+				8BB4DA0E16A21E8000821168 /* STTypeBridge.m in Sources */,
+				8BB4DA0F16A21E8000821168 /* STStructClasses.m in Sources */,
+				8BB4DA1016A21E8000821168 /* STPointer.m in Sources */,
+				8BB4DA1116A21E8000821168 /* STParser.m in Sources */,
+				8BB4DA1216A21E8000821168 /* STList.m in Sources */,
+				8BB4DA1316A21E8000821168 /* STSymbol.m in Sources */,
+				8BB4DA1416A21E8000821168 /* STStringWithCode.m in Sources */,
+				8BB4DA1516A21E8000821168 /* SteinDefines.m in Sources */,
+				8BB4DA1616A21E8000821168 /* SteinException.m in Sources */,
+				8BB4DA3F16A223D800821168 /* ffi.c in Sources */,
+				8BB4DA4016A223D800821168 /* ffi.S in Sources */,
+				8B5D189316A23DDB00D9D511 /* PRTRootViewController.m in Sources */,
+				8B5D189816A23ECC00D9D511 /* PRTConsoleViewController.m in Sources */,
+				8B5D18B516A3BDF600D9D511 /* RTAppDelegate.m in Sources */,
+				8B5D18B816A3BEEF00D9D511 /* RTProcess.m in Sources */,
+				8B51BF10172C849F00DF2890 /* PRTProjectManager.m in Sources */,
+				8B51BF3C172C85A400DF2890 /* RKActivityManager.m in Sources */,
+				8B51BF3D172C85A400DF2890 /* RKAwait.m in Sources */,
+				8B51BF3E172C85A400DF2890 /* RKBinding.m in Sources */,
+				8B51BF3F172C85A400DF2890 /* RKBlockBasedValueTransformer.m in Sources */,
+				8B51BF40172C85A400DF2890 /* RKDefaults.m in Sources */,
+				8B51BF41172C85A400DF2890 /* RKPossibility.m in Sources */,
+				8B51BF42172C85A400DF2890 /* RKPrelude.m in Sources */,
+				8B51BF43172C85A400DF2890 /* RKPromise.m in Sources */,
+				8B51BF44172C85A400DF2890 /* RKReachability.m in Sources */,
+				8B51BF45172C85A400DF2890 /* RKURLRequestPromise.m in Sources */,
+				8B51BF46172C85A400DF2890 /* RKURLRequestPromiseCacheManager.m in Sources */,
+				8B51BF59172C8A6E00DF2890 /* NSBundle+RTProcess.m in Sources */,
+				8B51BF5D172C8BA600DF2890 /* PRTProjectManagerViewController.m in Sources */,
+				8B51BF61172C8DDF00DF2890 /* RTHostViewController.m in Sources */,
+				8B15E1E01734886A00605418 /* PRTProjectCreationViewController.m in Sources */,
+				8B15E1E41734927C00605418 /* PRTProjectDetailViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		8BB4D99716A21DED00821168 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8BB4D99816A21DED00821168 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		8BB4D9A616A21DED00821168 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		8BB4D9A716A21DED00821168 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8BB4D9A916A21DED00821168 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Stein/Stein-Prefix.pch";
+				INFOPLIST_FILE = "Stein/Stein-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		8BB4D9AA16A21DED00821168 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Stein/Stein-Prefix.pch";
+				INFOPLIST_FILE = "Stein/Stein-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8BB4D98416A21DED00821168 /* Build configuration list for PBXProject "Stein" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BB4D9A616A21DED00821168 /* Debug */,
+				8BB4D9A716A21DED00821168 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8BB4D9A816A21DED00821168 /* Build configuration list for PBXNativeTarget "Stein" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BB4D9A916A21DED00821168 /* Debug */,
+				8BB4D9AA16A21DED00821168 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8BB4D98116A21DED00821168 /* Project object */;
+}
